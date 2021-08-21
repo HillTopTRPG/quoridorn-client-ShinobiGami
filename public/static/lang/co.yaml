@@ -1,0 +1,918 @@
+button:
+  commit: 확인
+  reject: 취소
+  ok: OK
+  cancel: Cancel
+  login: 로그인
+  create-new: 신규 작성
+  delete: 삭제
+  send: 전송
+  preview: 프리뷰
+  add: 추가
+  modify: 변경
+  copy: 복사
+  next: 다음
+  execution: 실행
+  close: 닫기
+  logout: ログアウト
+  exit-room: 退室
+  edit: 편집
+  chmod: 권한 설정
+  upload: 업로드
+  download: 다운로드
+  read: 불러오기
+  regist-cut-in: カットイン登録
+  setting: 設定
+  clear: クリア
+  open-dice-roll-result: 結果公開
+  create-other-text: 参照先からその他欄を生成
+  add-continuous-line: 連続線を追加
+
+type:
+  map-mask: 맵 마스크
+  map-marker: 맵 마커
+  dice-symbol: 다이스 심볼
+  chit: チット
+  character: 캐릭터
+  map: 맵
+  floor-tile: 플로어 타일
+  stand-image: 立ち絵
+  stand-image-diff: 立ち絵差分
+  user: ユーザー
+  actor: 액터
+  authority-group: 権限グループ
+  piece: 칸
+  card: 카드
+  card-object: 카드/덱
+  card-deck-small: 山札
+  gm: GM
+  pl: PL
+  visitor: 관전자
+  public-memo-list: 共有メモ
+  counter-remocon-list: カウンターリモコン
+  chat-tab-list: チャットタブ
+  authority-group-list: 権限グループ
+
+context:
+  bgm-setting: BGM 설정
+  add-map-mask: 맵 마스크 만들기
+  add-map-marker: マップマーカー作成
+  add-chit: 전표 만들기
+  add-character: 캐릭터 만들기
+  modify: 変更
+  copy: 복제
+  delete: 削除
+  fix: 고정
+  un-fix: 고정 해제
+  view-border: 테두리 표시
+  hide-border: 테두리 숨김
+  view-highlight: 하이라이트 표시
+  hide-highlight: 하이라이트 숨김
+  view-marker-deco: 装飾を表示
+  hide-marker-deco: 装飾を非表示
+  view-marker-back: 塗りつぶす
+  hide-marker-back: 塗りつぶさない
+  view-scene-list: 장면 목록 표시
+  chmod: 権限変更
+  shuffle: 셔플
+  draw: ドロー
+  turn-on-all: 전부 앞면으로 하기
+  turn-off-all: 전부 뒷면으로 하기
+  turn-on: 앞면으로 하기
+  turn-off: 裏にする
+  layout: 레이아웃
+  layout-pile-up: 겹치기
+  layout-spread-out: 펼치기
+  layout-tile: 타일
+  layout-line: 1열
+  layout-hand: 手札
+  setting-change: 설정변경
+  placement-reset: 배치 리셋
+  ref-url: 데이터 참조 URL 주소를 열기
+  edit-actor: 말의 액터를 편집
+  add-dice-symbol: ダイスシンボル作成
+  dice-pips-change: 出目変更
+  dice-hide: 出目を隠す
+  dice-view: 出目を表示
+  dice-roll: ダイスロール
+  create-chat-palette: チャットパレットを生成
+
+selection:
+  chat-color-type:
+    label: 文字色タイプ
+    owner: 오너와 같음
+    original: 개별 색 지정
+  direction:
+    label: 방향
+    none: 그대로
+    horizontal: 좌우반전
+    vertical: 상하반전
+    180deg: 180도 회전
+  background-location:
+    label: 배치
+    contain: 전체 (비율 유지)
+    cover-start: 커버 (위쪽)
+    cover-center: 커버 (중간)
+    cover-end: 커버 (아래쪽)
+    100per: 100%
+  permission:
+    view: 열람 권한
+    edit: 편집 권한
+    chmod: 권한변경 권한
+  chat-linkage-type:
+    label: 연동 기준
+    last: 채팅 말미
+    regexp: 정규표현
+  resource-type:
+    label: 종류
+    no-contents: 내용 없음
+    ref-normal: 정보 참조
+    ref-owner: 정보 참조 (오너)
+    text: 고정 텍스트
+    input-text: 입력 텍스트
+    number: 수치
+    check: 체크 박스
+    select: 선택지
+    combo: 콤보 박스
+    color: 색
+  ref-property:
+    label: 참조 속성
+    name: 이름
+    type: 種類
+    tag: 태그
+    actor-name: 이름 (액터)
+    actor-type: 종류 (액터)
+    actor-tag: 태그 (액터)
+    owner-name: 이름 (오너)
+    owner-type: 종류 (오너)
+    object-layer: 레이어
+    actor-status-name: 스테이터스
+    actor-chat-text-color: 채팅 문자색
+    actor-stand-image-position: 스탠딩 위치
+  selection-value:
+    label: 選択肢の値
+  user-type:
+    label: 유저 종류
+    gm: GM
+    pl: PL
+    visitor: 見学者
+  counter-remocon-target-type:
+    label: 対象タイプ
+    every-one: すべて
+    own: 自分のもの
+  counter-remocon-modify-type:
+    label: 編集タイプ
+    plus: +
+    minus: '-'
+    substitute: '='
+    plus-minus: ±
+  screen-mode:
+    label: モード
+    normal: 通常
+    draw-map: マップ直書き
+  map-draw-type:
+    label: 描画タイプ
+    text: テキスト
+    polygon: 多角形
+    line: 線
+  text-style:
+    label: 文字スタイル
+    normal: 通常
+    italic: イタリック
+    bold: 太字
+  anchor:
+    label: 基点
+    left-top: 左上
+    left-center: 左
+    left-bottom: 左下
+    center-top: 上
+    center: 中央
+    center-bottom: 下
+    right-top: 右上
+    right-center: 右
+    right-bottom: 右下
+  view-type:
+    view: 表示
+    hide: 非表示
+  is-fit-grid:
+    label: コマをセルに
+    fit: 合わせる
+    non-fit: 合わせない
+  window-view-setting:
+    label: 画面表示設定
+    free: 自由
+    init-view: 入室時表示
+    always-open: 常に表示
+    not-use: 使用不可
+
+resource-master-info-form:
+  label:
+    auto-add-actor: 이니셔티브 표의 열 (액터)
+    auto-add-map-object: 이니셔티브 표의 열 (말)
+    value-min: 최솟값
+    value-max: 최댓값
+    value-interval: 변화값
+    value-default: 기본값
+    value-selection: 선택지 (쉼표로 구분)
+    value-selection-value: 선택지의 기본값
+
+card-deck-frame-setting-component:
+  label:
+    card-width: 카드의 너비(px)
+    card-height: 카드의 높이(px)
+    card-corner-radius: 모서리 반지름(px)
+    card-padding-horizontal: 가로 여백(px)
+    card-padding-top: 윗 여백 (px)
+    card-padding-bottom: 아래 여백 (px)
+    card-name-height: 이름 부분의 높이(px)
+    card-name-font-size: 이름 부분의 폰트 사이즈(px)
+    card-name-background-color: 이름 부분의 배경색
+    card-text-height: 텍스트 부분의 높이(px)
+    card-text-font-size: 텍스트 부분의 폰트 사이즈(px)
+    card-text-padding: 텍스트 부분의 내부 여백(px)
+    card-text-background-color: 텍스트 부분의 배경색
+
+card-deck-create-card-component:
+  label:
+    card-name-font-size: 名前部分のフォントサイズ(px)
+    card-name-background-color: 名前部分の背景色
+    card-text-font-size: テキスト部分のフォントサイズ(px)
+    card-text-background-color: テキスト部分の背景色
+    card-text-padding: テキスト部分の内余白(px)
+
+bgm-info-form:
+  label:
+    repeat: 루프
+    stand-by: 대기
+    force-continue: 같은 곡 재생 시 처음부터 재생하지 않기
+    force-new: 같은 탭 곡 재생 시 처음부터 재생하기
+    fade-in: 페이드 인
+    fade-out: 페이드 아웃
+    volume: 볼륨
+    play-start: 재생 개시
+    play-end: 재생 종료
+    second: 초
+    url-placeholder: 指定なしで「停止」の指定
+
+map-draw-info-form:
+  label:
+    correct-x: 補正座標X
+    correct-y: 補正座標y
+
+bcdice-manager:
+  label:
+    default-dicebot: ダイスボット(指定なし)
+
+like-info-form:
+  label:
+    resource-restriction: 連動リソースは数値タイプかつ自動付与（アクター）のリソースから選択可能
+
+counter-remocon-info-form:
+  label:
+    value: 値(空文字:選択形式)
+    interval: 選択形式の値の間隔
+    message-format: メッセージ
+
+menu:
+  window: 画面
+  management: 管理
+  directing: 演出
+  export-room-data: 部屋データエクスポート
+  import-room-data: 部屋データインポート
+  export-chat-log: チャットログ取得
+  window-position-reset: 画面配置リセット
+  create: 作成
+  help: ヘルプ
+  goto-official-site: 公式サイトへ
+  bug-reports: 不具合報告
+
+label:
+  exist: 있음
+  not-exist: 없음
+  user-name: 유저 이름
+  password: 비밀번호
+  password-placeholder: (공백이면 비밀번호 없음)
+  require-text: 필수
+  permission: 권한
+  room-name: 플레이 룸 이름
+  no-target: 지정 안됨
+  text: 텍스트
+  background-color: 背景色
+  height: 높이
+  width: 가로
+  tag: タグ
+  non-tag: 태그 없음
+  layer: レイヤー
+  image: 이미지
+  other-text: 기타 란
+  client: 클라이언트
+  server: 서버
+  version: 버전
+  background: 배경
+  main: 메인
+  margin: 공백
+  color: 色
+  texture: 텍스처
+  rows: 가로
+  columns: 세로
+  name: 名前
+  font-color: 문자 색
+  chat-font-color: チャット文字色
+  border-style: 罫線のスタイル
+  size: 사이즈
+  decoration: 장식
+  style: 스타일
+  map: 맵
+  none: なし
+  allow: 허가
+  deny: 불허
+  permission-type: 권한 종류
+  permission-node-type: 権限対象種別
+  owner: 오너
+  user: ユーザー
+  character: キャラクター
+  group: グループ
+  map-object: 맵 오브젝트
+  place: 場所
+  field: フィールド
+  graveyard: 墓地
+  backstage: 控え室
+  actor-status: 状態
+  x: X
+  y: Y
+  original-address: 独自座標
+  char: 문자
+  additional-info: 추가 정보
+  chat-linkage: 채팅 연동
+  chat-linkage-target: 채팅 연동 대상
+  javascript-regexp: Javascriptの正規表現
+  last-str: 末尾の文字列
+  url: URL
+  title: 타이틀
+  editing: 編集中
+  unknown: '[不明]'
+  input-bcdice-url: BCDice-API서버의 URL을 설정합니다
+  target-all: 전체
+  all: 전체
+  status: ステータス
+  edited: '[編集済]'
+  use: 使う
+  un-use: 사용하지 않는다
+  sort: 정렬
+  stand-image-position: 立ち絵の位置
+  view-type: 표시 모드
+  search-name-box: 이름 검색란
+  search: 검색
+  operation: 조작
+  local: ローカル
+  dropbox: Dropbox
+  youtube: Youtube
+  music: 音楽
+  system: システム
+  special-process: 특수기능
+  import-failure: インポートに失敗しました。
+  resist: 등록
+  layout: レイアウト
+  ref-url: 데이터 참조 URL 주소
+  basic: 기본
+  icon: 아이콘
+  resource: リソース
+  read-aloud: 채팅 음성 지원
+  read-aloud-volume: 채팅 음성 지원 볼륨
+  tab-list: 탭 목록
+  other: 그 외
+  actor: アクター
+  secret: 귓속말
+  non-secret: 공개
+  scene-object: コマ
+  non-select: 選択なし
+  dice: ダイス
+  dice-type: ダイス種類
+  pips: 出目
+  tab: タブ
+  non-tab: タブ無し
+  input-tab: タブの文字を入力
+  contents: コンテンツ
+  non-name: 無名
+  like-list: いいね一覧
+  throw: 飛ばす
+  non-throw: 飛ばさない
+  linkage-resource: 連動リソース
+  export: エクスポート
+  fill: 塗りつぶす
+  bgm: BGM
+  bgm-setting: BGM設定
+  image-setting: 画像設定
+  simple: シンプル
+  detail: 詳細
+  size-target-edge: サイズ指定する辺
+  legend: 凡例
+  line-color: 線の色
+  line-width: 線の幅
+  vertex-num: 頂点の数
+  font-size: 文字サイズ
+  ref-latest: 最新($1)
+  ref-old: 旧($1)
+  grid-address: マス座標
+  map-rotate: マップ回転
+  map-object-rotate-marker: コマの回転マーカー
+  grid-line: マス罫線
+  room-share-setting: 部屋設定
+  room-window-setting: 画面設定
+  private-setting: 個人設定
+  command: コマンド
+  dice-roll: ダイスロール
+  list: 一覧
+
+message:
+  copy-to-clipboard: 클립보드로 복사했습니다.
+  setting-up-quoridorn: Quoridorn을 세트업 중입니다!
+  processing: 처리중입니다!
+  creating-room: 방을 만들고 있습니다!
+  entering-room: 방에 입장합니다!
+  add-preset-room: 프리셋 데이터를 등록하고 있습니다!
+  last-process-room: 방을 표시하고 있습니다!
+  delete-deck: 山札を削除しますか？
+  change-pips-dice-symbol: ダイスシンボルの目を変更（{0}：{1} -> {2}）
+  change-pips-dice-symbol-hide: ダイスシンボル（秘匿）の目を変更
+  dice-roll-dice-symbol: ダイスシンボル（秘匿）の目を変更（ダイスロール）
+  dice-roll-dice-symbol-hide: ダイスシンボルの目を変更（ダイスロール）
+  hide-dice-symbol: ダイスシンボルを秘匿
+  view-dice-symbol: ダイスシンボルを公開（{0}：{1}）
+  view-dice-symbol-dice-roll: ダイスシンボルを公開（{0}：{1}）ダイスロール結果：{2}
+  dice-roll-secret-dice: シークレットダイスをロール
+  open-secret-dice: シークレットダイスを公開
+  room-create-password: 部屋を作成するにはパスワードが必要です
+  drop-area: |-
+    どうぞそのまま
+    ドロップインしてください。
+  really-delete: 本当に削除しますか？
+  choose-image-bgm: 画像と音楽を選択してください。
+  choose-image: 이미지를 선택해 주세요.
+  choose-bgm: 音楽を選択してください。
+  drag-piece: 맵에 드래그하면 추가 가능합니다.
+  delete-tab: |-
+    本当にタブ「$1」を削除しますか？
+    この操作は取り消せません。
+  original: 元：{text}
+  duplicate: '{text}が重複します。'
+  delete-failure: 削除に失敗しました。
+  load-other-text-character-sheet: その他欄生成
+  load-other-text-character-sheet-text: |-
+    データ参照先URLからデータを読み込みます。
+    タブ名が重複する場合は上書きします。
+  load-chat-palette-character-sheet: チャットパレット生成
+  load-chat-palette-character-sheet-text: |-
+    データ参照先URLからデータを読み込みます。
+    タブ名が重複する場合は上書きします。
+  success: 成功
+  error: エラー
+  login-text: '{0} が入室しました。'
+
+play-youtube-window:
+  window-title: Youtube再生画面
+
+cut-in-list-window:
+  window-title: 컷인
+  table-columns:
+  - - 연동
+    - タグ
+    - 타이틀
+    - 이미지
+    - BGM
+    - 시간
+    - 루프
+    - 볼륨
+    - 페이드
+
+login-window:
+  window-title: 로그인 화면
+  label:
+    terms-of-use: 이용약관
+    empty-room: (빈 방)
+    possible: 가능
+    creating: 作成中
+    version-info: 버전 정보
+  message-list:
+    deleted: 방을 삭제했습니다.
+    delete-failue: 部屋の削除に失敗しました。
+  table-columns:
+  - - No.
+    - 플레이 룸 명
+    - 게임 시스템
+    - 입실 인원수
+    - 비밀번호
+    - 관전
+    - 최종갱신시각
+    - 削除
+
+create-new-room-window:
+  window-title: 신규 플레이 룸 만들기
+  message: 신규 플레이 룸을 만듭니다.
+  label:
+    room-name-placeholder: 방 이름 (필수항목)
+    game-system-input: 게임 시스템 (입력 지정 가능)
+    room-password: 入室パスワード
+    room-create-password: 部屋作成パスワード
+
+user-login-window:
+  window-title: 유저 로그인
+  message: 유저 정보를 입력해 주세요.
+
+bcdice-api-server-setting-window:
+  window-title: BCDice-APIサーバ設定
+  message: BCDice-APIサーバに関する設定
+  testing: テスト中
+  success: 接続成功
+  error: 接続失敗
+  error-messages:
+    connect-error: 接続に失敗しました。
+    un-supported-version-error: 対応できないBCDice-APIバージョン
+
+app-server-setting-window:
+  window-title: 어플리케이션 서버 설정
+  message: 어플리케이션 서버에 관한 설정
+  testing: テスト中
+  not-quoridorn: Quoridornサーバではありません
+  no-such-server: 接続できませんでした
+  internal-server-error: サーバ内でエラーが発生しました
+  un-match-version: 互換性の無いバージョンのサーバです
+  success: 接続成功
+
+terms-of-use-window:
+  window-title: 이용 약관 확인
+  message: 다음은 프로그램 설치자가 정한 이용 약관입니다. 사용자는 이 두 가지를 모두 지켜 이용해주시길 바랍니다.
+
+delete-room-window:
+  window-title: 방 삭제
+  message: 방을 삭제합니다.
+
+confirm-window:
+  window-title: 確認画面
+  delete-room:
+    title: 部屋削除
+    message: 방을 삭제하겠습니까?
+
+login-room-window:
+  window-title: ログインチェック
+  message: 部屋にログインします。
+
+version-info-window:
+  window-title: バージョン情報
+  label:
+    adequate-client: 적정 클라이언트
+    adequate-server: 적정 서버
+    version-compatible: 버전 호환성
+    adequate: 적정
+    inadequate: 부적정
+
+room-info-window:
+  window-title: 플레이 룸 정보 표시
+  label:
+    bcdice-api-url: BCDice-API의 URL 주소
+    bcdice-api-version: BCDice-APIのバージョン
+    game-system-view: 게임 시스템
+    comeback-url: 복귀 URL
+    invite-url: 초대 URL
+    room-member-num: 입실 인원수
+    room-no: 룸 번호
+
+map-mask-add-window:
+  window-title: 맵 마스크 만들기
+
+map-mask-edit-window:
+  window-title: 맵 마스크 편집
+
+map-marker-add-window:
+  window-title: マップマーカー作成
+
+map-marker-edit-window:
+  window-title: マップマーカー編集
+
+chit-add-window:
+  window-title: 전표 만들기
+
+chit-edit-window:
+  window-title: 전표 편집
+
+scene-list-window:
+  window-title: 장면 목록
+
+edit-scene-window:
+  window-title: 장면 편집
+  label:
+    sub: 서브
+    grid-size: 칸(px)
+    grid-line: 격자선
+    grid-line-color: 격자선 색
+    blur: 블러
+    mask: 마스크
+    frame-border: 외곽선
+  message-select:
+    layer-view: 레이어 표시・비표시를 바꿉니다.
+    layer-order-mode-on: 레이어 순서 변경 모드로 바꿉니다.
+    layer-order-mode-off: 通常のモードに戻します。
+    layer-order: ドラッグでレイヤーの順番を入れ替えます。
+    original-address: 他のシーンと異なる座標を持つかの設定です。
+    object-order-mode-on: 컷인 설정 화면
+    object-order-mode-off: 通常のモードに戻します。
+    object-order: ドラッグでオブジェクトの順番を入れ替えます。
+
+chmod-window:
+  window-title: 권한변경
+
+chmod-input-window:
+  window-title: 権限変更
+
+cut-in-add-window:
+  window-title: CutIn 추가
+
+cut-in-edit-window:
+  window-title: CutIn 편집
+
+chat-window:
+  window-title: 채팅
+  placeholder: |-
+    메세지 (줄 바꿈은 Shift+Enter)
+    부분 본트 변경은 "&"을 입력
+  options:
+    select-sender: 전송자 선택
+    select-output-tab: 전송할 탭 선택
+    select-target: 전송 대상 선택
+    select-chat-format: 부분 포맷 선택
+    select-is-secret: 귓속말 여부
+    resource-change-resource-master: 変更するリソースの選択
+    resource-change-target-operation: 演算子または対象の選択
+    resource-change-operation: 演算子の選択
+    resource-change-value: 値の選択
+    selected-item: '[선택 중]'
+    goto-head: '[처음으로]'
+    goto-next: '[다음으로]'
+    goto-last: '[앞으로]'
+    goto-tail: '[마지막으로]'
+  input-info:
+    message-sender: 現在の送信者を表示しています
+    message-target: チャットの送信先を表示しています
+    message-output-tab: チャットを表示するタブを表示しています
+    message-secret: 秘匿チャットかどうかを表示しています
+  dialog:
+    delete-chat: |-
+      本当にこのチャットを消しますか？
+      この操作は取り消せません。
+
+chat-setting-window:
+  window-title: 채팅 설정
+  message-list:
+    edit: 編集
+    chmod: 権限編集
+    delete: 削除
+
+chat-tab-add-window:
+  window-title: 채팅 탭 만들기
+
+chat-tab-edit-window:
+  window-title: 채팅 탭 편집
+
+actor-add-window:
+  window-title: 액터 만들기
+
+actor-edit-window:
+  window-title: 액터 편집
+
+player-box-window:
+  window-title: 플레이어 박스
+  message-list:
+    edit: 編集
+    chmod: 権限編集
+    delete: 削除
+  dialog:
+    delete-actor: |-
+      本当にアクター「$1」を削除しますか？
+      このアクターに紐づくコマがあれば、一緒に削除されます。
+      この操作は取り消せません。
+
+card-deck-builder:
+  title: Quoridorn 카드 덱 빌더 Ver.1.0.0a1
+  description:
+    tool: 방 데이터에 덱을 1개 등록하기 위한 기능입니다.
+    import-text-paranoia-rebooted: |-
+      클릭으로 파일 지정 다이얼로그가 표시됩니다.
+      전용 텍스트 파일을 읽어들여, 덱을 만드는 것이 가능합니다.
+      Paranoia Rebooted 공식 사이트에서 다운로드 가능한 온라인 세션용 카드 이미지 파일 zip 압축을 풀어, 포함된 「cards_free_200x300)」폴더 안의 텍스트 파일을 지정해 주십시오.
+      「allCards.txt」만으로는 사용할 수 없습니다.
+      사전에 이미지 파일을 Quoridorn에 업로드 해둘 필요가 있습니다.
+  card-frame-preset:
+    text-template: |-
+      텍스트 템플릿
+      (inSANe)
+    template-image: 画像テンプレート
+    full-image-paranoia: |-
+      이미지 템플릿
+      （Paranoia Rebooted）
+    full-image-tnm: |-
+      이미지 템플릿
+      （도쿄・나이트메어）
+    full-image-tnx: |-
+      이미지 템플릿
+      （도쿄N◎VA）
+  button:
+    import-text-paranoia-rebooted: 텍스트에서 불러오기 (Paranoia Rebooted)
+  message-list:
+    choose-base-deck: 베이스 덱 선택
+    create-card: 덱 신규 작성
+    create-deck-entrance: |-
+      Quoridorn에 업로드 된 이미지를 사용해, 새로운 덱을 만듭니다.
+      특수처리를 사용하지 않는 경우에는 화면 아래의 화살표로 넘어가 주세요.
+    setting-frame: |-
+      카드의 앞면 프레임을 설정해주세요.
+      여기서 지정한 프레임이 다음 과정에 나오는 이미지나 문자의 베이스가 됩니다.
+    choose-back-image: |-
+      덱에 공용되는 카드의 뒷면을 선택해 주세요.
+      신규작성시 설정할 수 있는 뒷면의 종류는 한 가지뿐입니다.
+      여러 개의 뒷면을 가진 덱은 여러 개의 덱을 조합해서 작성해야 합니다.
+    create-front: 카드 앞면을 고른 상태에서 카드 데이터를 입력해주세요.
+    choose-card: 카드 선택・덱 등록
+  header:
+    deck-set-preset: 프리셋
+    deck-set-room: 방 데이터
+    card-list: 카드 목록
+  options:
+    count-zero: 0장
+    count-one: 1장
+    count-two: 2장
+    count-three: 3장
+    count-four: 4장
+    count-more: 5장 이상
+
+card-deck-list-window:
+  window-title: 카드 목록
+
+media-upload-window:
+  window-title: メディアアップロード
+  dialog:
+    input-tag: まとめて設定するタグを入力してください。
+    delete-together: まとめて削除しますか？
+  message-list:
+    edit-tag-together: まとめてタグ編集
+    delete-together: まとめて削除
+
+media-list-window:
+  window-title: 미디어 목록
+  label:
+    thumbnail: サムネイル
+    list: リスト
+  message-list:
+    choose-view-mode: 表示形式の変更
+    how-to-upload: アップロードするには画面にファイルをドロップインしてください
+  dialog:
+    delete-media: |-
+      本当にメディア「$1」を削除しますか？
+      この操作は取り消せません。
+
+card-deck-small-edit-window:
+  window-title: 덱 편집
+  label:
+    hand-card-area-width: 손패 영역의 너비
+    card-deck-columns: 가로(칸 수)
+    card-deck-rows: 세로(칸 수)
+    card-width-ratio: 카드 가로(비율)
+    card-height-ratio: 카드 세로(비율)
+    card-layout-columns: 카드 배치 열 수
+    card-layout-rows: 카드 배치 행 수
+    hover-view: 마우스 커서 ON으로 보기
+
+play-bgm-file-window:
+  window-title: 音楽ファイル再生
+
+character-add-window:
+  window-title: 캐릭터 만들기
+
+character-edit-window:
+  window-title: 캐릭터 편집
+
+initiative-window:
+  window-title: イニシアティブ(INI)表
+
+resource-master-add-window:
+  window-title: 리소스 추가
+
+resource-master-edit-window:
+  window-title: 리소스 편집
+
+resource-master-list-window:
+  window-title: 리소스 일람
+  header:
+    name: 리소스 이름
+    type: 種類
+    initiative: 자동 부여
+    initiative-actor: アクター
+    initiative-map-object: コマ
+  dialog:
+    delete-resource: |-
+      本当にこのリソースを消しますか？
+      この操作は取り消せません。
+
+chat-palette-window:
+  window-title: チャットパレット
+
+chat-palette-add-window:
+  window-title: チャットパレット作成
+
+chat-palette-edit-window:
+  window-title: チャットパレット編集
+
+dice-symbol-add-window:
+  window-title: ダイスシンボル作成
+
+dice-symbol-edit-window:
+  window-title: ダイスシンボル編集
+
+secret-dice-roll-window:
+  window-title: 隠しダイスロール結果
+
+simple-text-input-window:
+  window-title: テキスト入力（この文言は実際には表示されない）
+
+memo-tab-setting-window:
+  window-title: メモタブ設定
+
+chat-palette-tab-setting-window:
+  window-title: チャットパレットタブ設定
+
+public-memo-add-window:
+  window-title: 共有メモ作成
+  message-list:
+    select-icon: アイコンを選択してください。
+
+public-memo-edit-window:
+  window-title: 共有メモ編集
+
+like-add-window:
+  window-title: いいね作成
+
+like-edit-window:
+  window-title: いいね編集
+
+image-view-window:
+  window-title: 画像表示
+
+media-url-add-window:
+  window-title: メディアURL登録
+
+media-url-edit-window:
+  window-title: メディアURL編集
+
+counter-remocon-add-window:
+  window-title: カウンターリモコン作成
+
+counter-remocon-edit-window:
+  window-title: カウンターリモコン編集
+
+counter-remocon-window:
+  window-title: カウンターリモコン
+
+group-chat-setting-window:
+  window-title: グループチャット設定
+  message-list:
+    edit: 編集
+    chmod: 権限編集
+    delete: 削除
+
+group-chat-tab-add-window:
+  window-title: グループチャットタブ作成
+
+group-chat-tab-edit-window:
+  window-title: グループチャットタブ編集
+
+authority-group-list-window:
+  window-title: 権限グループ一覧
+  dialog:
+    delete-group: |-
+      本当に権限グループ「$1」を削除しますか？
+      この権限グループが使われているグループチャットタブも一緒に削除されます。
+      この操作は取り消せません。
+
+authority-group-add-window:
+  window-title: 権限グループ作成
+
+authority-group-edit-window:
+  window-title: 権限グループ編集
+
+room-data-edit-window:
+  window-title: 部屋情報編集
+
+room-info-extend-edit-window:
+  window-title: 設定編集
+
+original-table-list-window:
+  window-title: オリジナル表一覧
+  dialog:
+    delete-table: |-
+      本当にオリジナル表「$1」を削除しますか？
+      この操作は取り消せません。
+
+original-table-add-window:
+  window-title: オリジナル表追加
+
+original-table-edit-window:
+  window-title: オリジナル表編集

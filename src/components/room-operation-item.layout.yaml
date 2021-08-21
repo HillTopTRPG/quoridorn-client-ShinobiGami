@@ -1,0 +1,17 @@
+---
+layout: v-box
+flexWrap: false
+alignContent: flex-start
+blockList:
+  - layout: h-box
+    flexWrap: false
+    blockList:
+      - slotName: room-no
+        layout: h-box
+        flexWrap: false
+      - slotName: room-info
+        layout: h-box
+        flexWrap: false
+  - slotName: room-operation
+    layout: v-box
+    flexWrap: false

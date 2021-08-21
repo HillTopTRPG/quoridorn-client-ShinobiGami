@@ -1,0 +1,21 @@
+---
+layout: v-box
+flexWrap: false
+blockList:
+  - slotName: title
+    layout: h-box
+    flexWrap: false
+    justifyContent: center
+    minHeight:
+      rem: 2
+  - slotName: info-block
+    layout: v-box
+    flexWrap: false
+  - slotName: room-list-header
+    layout: h-box
+    flexWrap: false
+    minHeight:
+      rem: 2
+  - slotName: room-list
+    layout: v-box
+    flexWrap: false

@@ -1,0 +1,160 @@
+import { reactive } from 'vue'
+import SocketFacade from '@/SocketFacade'
+import { ExcludeFunctionProperty, makeNumberArray } from '@/utility/typescript'
+import { makeStore } from '@/utility/vue3'
+
+export type WindowSetting =
+  | 'not-use' // 使えなくします
+  | 'free' // 特に指定はありません
+  | 'init-view' // 入室時に表示します
+  | 'always-open'; // 常に開いています。閉じることはできません。
+
+export type WindowSettings = {
+  chat: WindowSetting;
+  initiative: WindowSetting;
+  'chat-palette': WindowSetting;
+  'counter-remocon': WindowSetting;
+};
+
+export type RoomInfoExtend = {
+  visitable: boolean; // 見学許可
+  isFitGrid: boolean; // マップオブジェクトをセルに自動調整するか
+  isViewDice: boolean; // ダイスを表示するか
+  isViewCutIn: boolean; // カットインを表示するか
+  isDrawGridId: boolean; // マップ座標を表示するか
+  mapRotatable: boolean; // マップを回転させるか
+  isShowStandImage: boolean; // 立ち絵を表示するか,
+  standImageGridNum: number; // 立ち絵を表示する位置の数
+  isShowRotateMarker: boolean; // マップオブジェクトの回転マーカーを表示するか
+  windowSettings: WindowSettings;
+};
+
+export type ClientRoomDataStatus = 'none' | 'initial-touched' | 'added' | 'modified'
+export type ClientRoomData = {
+  roomNo: number;
+  status: ClientRoomDataStatus;
+  operator: string; // socket.id
+  detail: null | {
+    roomName: string;
+    loggedIn: number;
+    memberNum: number;
+    extend?: RoomInfoExtend;
+  }
+}
+
+export type GetRoomListResponse = {
+  roomList: ClientRoomData[] | null;
+  maxRoomNo: number;
+  appServerInfo: {
+    title: string;
+    descriptions: string[];
+    termsOfUse: string;
+  };
+  isNeedRoomCreatePassword: boolean;
+};
+
+type Store = {
+  roomList: ClientRoomData[];
+  maxRoomNo: number;
+  serverName: string;
+  serverDescription: string[];
+  termsOfUse: string;
+  isNeedRoomCreatePassword: boolean;
+}
+
+export default makeStore<Store>('roomStore', () => {
+  const state = reactive<ExcludeFunctionProperty<Store>>({
+    roomList: [],
+    maxRoomNo: -1,
+    serverName: '',
+    serverDescription: [],
+    termsOfUse: '',
+    isNeedRoomCreatePassword: false
+  })
+
+  console.log('room store ignition.');
+
+  (async () => {
+    try {
+      SocketFacade.instance.socketOn<ClientRoomData>('notify-room-update', (err, payload) => {
+        if (err) {
+          console.error(err)
+          return
+        }
+        console.log('notify-room-update')
+        console.log(JSON.stringify(payload, null, '  '))
+        if (!payload.detail) {
+          const index = state.roomList.findIndex(r => r.roomNo === payload.roomNo)
+          if (index < 0) return
+          state.roomList.splice(index, 1, payload)
+        } else {
+          const index = state.roomList.findIndex(r => r.roomNo === payload.roomNo)
+          if (index < 0) return
+          state.roomList.splice(index, 1, payload)
+        }
+      })
+      SocketFacade.instance.socketOn<number[]>('notify-room-delete', (err, roomNoList) => {
+        if (err) {
+          console.error(err)
+          return
+        }
+        console.log('notify-room-delete')
+        console.log(roomNoList)
+        state.roomList
+          .map((r, idx): { idx: number; roomNo: number } => ({ idx, roomNo: roomNoList.some(rn => rn === r.roomNo) ? r.roomNo : -1 }))
+          .filter(({ roomNo }) => roomNo > -1)
+          .forEach(({ idx, roomNo }) => {
+            state.roomList.splice(idx, 1, {
+              roomNo,
+              status: 'none' as ClientRoomDataStatus,
+              operator: '',
+              detail: null
+            })
+          })
+      })
+
+      console.log('部屋一覧取得開始')
+      // 部屋一覧を取得
+      const result = await SocketFacade.instance.sendSocketServerRoundTripRequest<string, GetRoomListResponse>(
+        'room-api-get-room-list',
+        '0.0.1'
+      )
+      state.serverName = result.appServerInfo.title
+      state.serverDescription = result.appServerInfo.descriptions.map(d =>
+        d
+          .replace('<', '&lt;')
+          .replace('>', '&gt;')
+          .replace(/\[([^"<>\]]+)]\(([^)"<>]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+      )
+      state.maxRoomNo = result.maxRoomNo
+      state.termsOfUse = result.appServerInfo.termsOfUse
+      state.isNeedRoomCreatePassword = result.isNeedRoomCreatePassword
+      if (!result.roomList) {
+        // TODO バージョン依存性NGパターンa
+      } else {
+        const roomList = result.roomList
+        // eslint-disable-next-line no-console
+        console.log(JSON.stringify(result, null, '  '))
+        state.roomList.splice(0, state.roomList.length, ...makeNumberArray(state.maxRoomNo, 1).map(roomNo => {
+          return roomList.find(r => r.roomNo === roomNo) || {
+            roomNo,
+            status: 'none' as ClientRoomDataStatus,
+            operator: '',
+            detail: null
+          }
+        }))
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  })()
+
+  return {
+    get roomList() { return state.roomList },
+    get serverName() { return state.serverName },
+    get maxRoomNo() { return state.maxRoomNo },
+    get serverDescription() { return state.serverDescription },
+    get termsOfUse() { return state.termsOfUse },
+    get isNeedRoomCreatePassword() { return state.isNeedRoomCreatePassword }
+  }
+})

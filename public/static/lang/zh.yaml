@@ -1,0 +1,921 @@
+button:
+  commit: 確認
+  reject: 取消
+  ok: OK
+  cancel: 取消
+  login: 登入
+  create-new: 新增
+  delete: 刪除
+  send: 輸入
+  preview: 預覽
+  add: 增加
+  modify: 變更
+  copy: 複製
+  next: 下一個
+  execution: 實行
+  close: 關閉
+  logout: 登出
+  exit-room: 退出房間
+  edit: 編輯
+  chmod: 權限變更
+  upload: 上傳
+  download: 下載
+  read: 讀取
+  regist-cut-in: 註冊Cut-in
+  setting: 設定
+  clear: 清除
+  open-dice-roll-result: 公開結果
+  create-other-text: 參考其他欄位新增
+  add-continuous-line: 連続線を追加
+
+type:
+  map-mask: 地圖遮罩
+  map-marker: 地圖迷霧
+  dice-symbol: 骰子結果
+  chit: 棋子
+  character: 角色
+  map: 地圖
+  floor-tile: 地型
+  stand-image: 立繪
+  stand-image-diff: 不同的立繪
+  user: 使用者
+  actor: 演員
+  authority-group: 権限グループ
+  piece: 塊
+  card: 咭牌
+  card-object: 咭牌/牌堆
+  card-deck-small: 牌堆
+  gm: GM
+  pl: PL
+  visitor: 訪客
+  public-memo-list: 共用筆記
+  counter-remocon-list: カウンターリモコン
+  chat-tab-list: チャットタブ
+  authority-group-list: 権限グループ
+
+context:
+  bgm-setting: BGM設定
+  add-map-mask: 新增地圖遮罩
+  add-map-marker: 新增地圖迷霧
+  add-chit: 新增棋子
+  add-character: 新增角色
+  modify: 變更
+  copy: 複製
+  delete: 刪除
+  fix: 固定
+  un-fix: 解除固定
+  view-border: 顯示格線
+  hide-border: 不顯示格線
+  view-highlight: 顯示高亮
+  hide-highlight: 不顯示高亮
+  view-marker-deco: 顯示裝飾
+  hide-marker-deco: 不顯示裝飾
+  view-marker-back: 顯示填充
+  hide-marker-back: 不顯示填充
+  view-scene-list: 顯示場景清單
+  chmod: 變更權限
+  shuffle: 隨機
+  draw: 抽
+  turn-on-all: 顯示表面
+  turn-off-all: 反轉顯示
+  turn-on: 顯示
+  turn-off: 反轉
+  layout: 配置
+  layout-pile-up: 重疊
+  layout-spread-out: 分發
+  layout-tile: 配置表面
+  layout-line: １列
+  layout-hand: 手牌
+  setting-change: 設定變更
+  placement-reset: 重置配置
+  ref-url: 參考用URL
+  edit-actor: 演員編輯
+  add-dice-symbol: 新增骰子結果
+  dice-pips-change: 骰子結果變更
+  dice-hide: 骰子結果隱藏
+  dice-view: 骰子結果顯示
+  dice-roll: 擲骰
+  create-chat-palette: チャットパレットを生成
+
+selection:
+  chat-color-type:
+    label: 文字顏色類型
+    owner: 擁有者
+    original: 個別顏色
+  direction:
+    label: 方向
+    none: 按照原來
+    horizontal: 左右反轉
+    vertical: 上下反轉
+    180deg: 180度旋轉
+  background-location:
+    label: 配置
+    contain: 內容
+    cover-start: 封面(始)
+    cover-center: 封面(中)
+    cover-end: 封面(後)
+    100per: 100%
+  permission:
+    view: 閲覧權限
+    edit: 編輯權限
+    chmod: 權限變更
+  chat-linkage-type:
+    label: 連動基準
+    last: 最後
+    regexp: 正規表示
+  resource-type:
+    label: 種類
+    no-contents: 沒有内容
+    ref-normal: 參考資訊
+    ref-owner: 參考資訊(擁有者)
+    text: 固定文字
+    input-text: 輸入文字
+    number: 數值
+    check: 複選框
+    select: 選擇框
+    combo: 組合框
+    color: 顏色
+  ref-property:
+    label: 參考屬性
+    name: 名字
+    type: 種類
+    tag: 標籤
+    actor-name: 名字(演員)
+    actor-type: 種類(演員)
+    actor-tag: 標籤(演員)
+    owner-name: 名字(擁有者)
+    owner-type: 種類(擁有者)
+    object-layer: 圖層
+    actor-status-name: 狀態
+    actor-chat-text-color: 聊天文字顏色
+    actor-stand-image-position: 立繪的位置
+  selection-value:
+    label: 選擇框的數値
+  user-type:
+    label: 使用者類型
+    gm: GM
+    pl: PL
+    visitor: 訪客
+  counter-remocon-target-type:
+    label: 対象タイプ
+    every-one: すべて
+    own: 自分のもの
+  counter-remocon-modify-type:
+    label: 編集タイプ
+    plus: +
+    minus: '-'
+    substitute: '='
+    plus-minus: ±
+  screen-mode:
+    label: モード
+    normal: 通常
+    draw-map: マップ直書き
+  map-draw-type:
+    label: 描画タイプ
+    text: テキスト
+    polygon: 多角形
+    line: 線
+  text-style:
+    label: 文字スタイル
+    normal: 通常
+    italic: イタリック
+    bold: 太字
+  anchor:
+    label: 基点
+    left-top: 左上
+    left-center: 左
+    left-bottom: 左下
+    center-top: 上
+    center: 中央
+    center-bottom: 下
+    right-top: 右上
+    right-center: 右
+    right-bottom: 右下
+  view-type:
+    view: 表示
+    hide: 非表示
+  is-fit-grid:
+    label: コマをセルに
+    fit: 合わせる
+    non-fit: 合わせない
+  window-view-setting:
+    label: 画面表示設定
+    free: 自由
+    init-view: 入室時表示
+    always-open: 常に表示
+    not-use: 使用不可
+
+resource-master-info-form:
+  label:
+    auto-add-actor: 自動新增（演員）
+    auto-add-map-object: 自動新增（場景）
+    value-min: 最小値
+    value-max: 最大値
+    value-interval: 變化値
+    value-default: 默認值
+    value-selection: 選擇框(使用逗號隔開)
+    value-selection-value: 選擇框的初期値
+
+card-deck-frame-setting-component:
+  label:
+    card-width: 咭牌的闊度(px)
+    card-height: 咭牌的高度(px)
+    card-corner-radius: 角的半径(px)
+    card-padding-horizontal: 横方向的留白(px)
+    card-padding-top: 上部的留白(px)
+    card-padding-bottom: 下部的留白(px)
+    card-name-height: 名字部分的高度(px)
+    card-name-font-size: 名字部分的文字大小(px)
+    card-name-background-color: 名字部分的背景色
+    card-text-height: 文字部分的高度(px)
+    card-text-font-size: 文字部分的文字大小(px)
+    card-text-padding: 文字部分的内留白(px)
+    card-text-background-color: 文字部分的背景色
+
+card-deck-create-card-component:
+  label:
+    card-name-font-size: 名字部分的文字大小(px)
+    card-name-background-color: 名字部分的背景色
+    card-text-font-size: 文字部分的文字大小(px)
+    card-text-background-color: 文字部分的背景色
+    card-text-padding: 文字部分的内留白(px)
+
+bgm-info-form:
+  label:
+    repeat: 重播
+    stand-by: 待機
+    force-continue: 在多次播放時優先播放現有的
+    force-new: 強制重新播放
+    fade-in: 淡入
+    fade-out: 淡出
+    volume: 音量
+    play-start: 播放開始
+    play-end: 播放後了
+    second: 秒
+    url-placeholder: 沒有指定時「停止」
+
+map-draw-info-form:
+  label:
+    correct-x: 補正座標X
+    correct-y: 補正座標y
+
+bcdice-manager:
+  label:
+    default-dicebot: 骰子機器人(沒有指定)
+
+like-info-form:
+  label:
+    resource-restriction: 可以從相同類型的資源中選擇鏈接的資源，這些資源會自動分配（演員）。
+
+counter-remocon-info-form:
+  label:
+    value: 値(空文字:選択形式)
+    interval: 選択形式の値の間隔
+    message-format: メッセージ
+
+menu:
+  window: 圖面
+  management: 管理
+  directing: 演出
+  export-room-data: 匯出房間資料
+  import-room-data: 匯入房間資料
+  export-chat-log: 匯出聊天紀錄
+  window-position-reset: 重置圖面配置
+  create: 新增
+  help: 幫助信息
+  goto-official-site: 官方網站
+  bug-reports: 回報錯誤
+
+label:
+  exist: 已存在
+  not-exist: 沒有
+  user-name: 使用者名稱
+  password: 密碼
+  password-placeholder: (留空則沒有密碼)
+  require-text: 必須
+  permission: 權限
+  room-name: 房間名稱
+  no-target: 沒有指定目標
+  text: 文字
+  background-color: 背景色
+  height: 高度
+  width: 闊度
+  tag: 標籤
+  non-tag: 沒有標籤
+  layer: 圖層
+  image: 圖像
+  other-text: 其他欄
+  client: 客戶端
+  server: Server
+  version: 本
+  background: 背景
+  main: 主要
+  margin: 留白
+  color: 顏色
+  texture: 質地
+  rows: 行
+  columns: 列
+  name: 名字
+  font-color: 文字顏色
+  chat-font-color: 聊天文字顏色
+  border-style: 格線的風格
+  size: 大小
+  decoration: 裝飾
+  style: 風格
+  map: 地圖
+  none: 沒有
+  allow: 允許
+  deny: 拒絕
+  permission-type: 權限類型
+  permission-node-type: 權限對象類型
+  owner: 擁有者
+  user: 使用者
+  character: 角色
+  group: 組別
+  map-object: 地圖物體
+  place: 場所
+  field: 分野
+  graveyard: 墓地
+  backstage: 等候室
+  actor-status: 狀態
+  x: X
+  y: Y
+  original-address: 獨立座標
+  char: 文字
+  additional-info: 附加資訊
+  chat-linkage: 聊天室連動
+  chat-linkage-target: 聊天室連動對象
+  javascript-regexp: Javascript的正規表示
+  last-str: 最後的文字列
+  url: URL
+  title: 標題
+  editing: 編輯中
+  unknown: '[不明]'
+  input-bcdice-url: 設置BCDice-API伺服器的URL
+  target-all: 所有
+  all: 所有
+  status: 狀態
+  edited: '[已編輯]'
+  use: 使用
+  un-use: 沒有使用
+  sort: 排序
+  stand-image-position: 立繪的位置
+  view-type: 顯示模式
+  search-name-box: 名字搜索欄
+  search: 搜索
+  operation: 操作
+  local: 本地
+  dropbox: Dropbox
+  youtube: Youtube
+  music: 音樂
+  system: 系統
+  special-process: 特殊功能
+  import-failure: 匯入失敗。
+  resist: 登録
+  layout: 配置
+  ref-url: 參考URL
+  basic: 基本
+  icon: 圖示
+  resource: 資源
+  read-aloud: 大聲朗讀
+  read-aloud-volume: 大聲朗讀音量
+  tab-list: 分頁列表
+  other: 其他
+  actor: 演員
+  secret: 機密
+  non-secret: 公開
+  scene-object: 場景
+  non-select: 沒有選擇
+  dice: ダイス
+  dice-type: ダイス種類
+  pips: 骰子結果
+  tab: 分頁
+  non-tab: 沒有分頁
+  input-tab: 輸入分頁的文字
+  contents: 內容
+  non-name: 沒有名字
+  like-list: like列表
+  throw: 投
+  non-throw: 沒有投
+  linkage-resource: 連動資源
+  export: 匯出
+  fill: 填充
+  bgm: BGM
+  bgm-setting: BGM設定
+  image-setting: 画像設定
+  simple: シンプル
+  detail: 詳細
+  size-target-edge: サイズ指定する辺
+  legend: 凡例
+  line-color: 線の色
+  line-width: 線の幅
+  vertex-num: 頂点の数
+  font-size: 文字サイズ
+  ref-latest: 最新($1)
+  ref-old: 旧($1)
+  grid-address: マス座標
+  map-rotate: マップ回転
+  map-object-rotate-marker: コマの回転マーカー
+  grid-line: マス罫線
+  room-share-setting: 部屋設定
+  room-window-setting: 画面設定
+  private-setting: 個人設定
+  command: コマンド
+  dice-roll: ダイスロール
+  list: 一覧
+
+message:
+  copy-to-clipboard: 將其複製到剪貼板。
+  setting-up-quoridorn: 正在建立Quoridorn！
+  processing: 處理中！
+  creating-room: 新增房間中！
+  entering-room: 進入房間中！
+  add-preset-room: 正在註冊預設數據！
+  last-process-room: 正在盡力展示房間！
+  delete-deck: 刪除牌堆？
+  change-pips-dice-symbol: 骰子結果變更（{0}：{1} -> {2}）
+  change-pips-dice-symbol-hide: 骰子結果（機密）變更
+  dice-roll-dice-symbol: 骰子結果（機密）變更（擲骰）
+  dice-roll-dice-symbol-hide: 骰子結果變更（擲骰）
+  hide-dice-symbol: 隱藏骰子結果
+  view-dice-symbol: 公開骰子結果（{0}：{1}）
+  view-dice-symbol-dice-roll: 公開骰子結果（{0}：{1}）擲骰結果：{2}
+  dice-roll-secret-dice: 秘密擲骰
+  open-secret-dice: 公開秘密擲骰
+  room-create-password: 新增房間必需要密碼
+  drop-area: |-
+    請拖放
+    可以直接插入。
+  really-delete: 真的要刪除？
+  choose-image-bgm: 画像と音楽を選択してください。
+  choose-image: 選擇圖像。
+  choose-bgm: 音楽を選択してください。
+  drag-piece: 您可以通過拖動去新增地圖。
+  delete-tab: |-
+    您確定要刪除分頁「$1」？
+    此操作無法取消。
+  original: 本來：{text}
+  duplicate: 重複{text}。
+  delete-failure: 刪除失敗。
+  load-other-text-character-sheet: 其他欄建立
+  load-other-text-character-sheet-text: |-
+    從目標URL讀取數據。
+    如果頁面名稱重複，它將被覆蓋。
+  load-chat-palette-character-sheet: 聊天組合板生成
+  load-chat-palette-character-sheet-text: |-
+    從REF URL讀取數據。
+    如果Tab的名稱重複，它將被覆蓋。
+  success: 成功
+  error: 錯誤
+  login-text: '{0} 的房間。'
+
+play-youtube-window:
+  window-title: Youtube播放畫面
+
+cut-in-list-window:
+  window-title: Cut-in列表
+  table-columns:
+  - - 連動
+    - 標籤
+    - 標題
+    - 圖像
+    - BGM
+    - 時間
+    - 重覆
+    - 音量
+    - フェード
+
+login-window:
+  window-title: 登入畫面
+  label:
+    terms-of-use: 使用合約
+    empty-room: （空房間）
+    possible: 可
+    creating: 新增中
+    version-info: 版本資訊
+  message-list:
+    deleted: 部屋を削除しました。
+    delete-failue: 部屋の削除に失敗しました。
+  table-columns:
+  - - No.
+    - 房間名
+    - 遊戲系統
+    - 房間人數
+    - 密碼
+    - 訪客
+    - 最後更新時間
+    - 刪除
+
+create-new-room-window:
+  window-title: 新增新房間
+  message: 新增新房間。
+  label:
+    room-name-placeholder: 房間名(必要項目)
+    game-system-input: 遊戲系統(可以輸入指定)
+    room-password: 房間密碼
+    room-create-password: 新增房間密碼
+
+user-login-window:
+  window-title: 使用者登入
+  message: 請輸入使用者資訊。
+
+bcdice-api-server-setting-window:
+  window-title: BCDice-API設定
+  message: BCDice-API伺服器設定
+  testing: テスト中
+  success: 連接成功
+  error: 連接失敗
+  error-messages:
+    connect-error: 連接失敗。
+    un-supported-version-error: 対応できないBCDice-APIバージョン
+
+app-server-setting-window:
+  window-title: 應用程序伺服器設置
+  message: 應用伺服器設定
+  testing: 測試中
+  not-quoridorn: Quoridorn伺服器尚未存在
+  no-such-server: 無法連接
+  internal-server-error: 伺服器發生錯誤
+  un-match-version: 它不是伺服器的兼容版本。
+  success: 連接成功
+
+terms-of-use-window:
+  window-title: 使用協議確認
+  message: 以下是程序的使用協議。使用時請牢記。
+
+delete-room-window:
+  window-title: 刪除房間
+  message: 刪除房間。
+
+confirm-window:
+  window-title: 確認畫面
+  delete-room:
+    title: 房間刪除
+    message: 要刪除房間？
+
+login-room-window:
+  window-title: 登入檢查
+  message: 登入房間。
+
+version-info-window:
+  window-title: 版本資訊
+  label:
+    adequate-client: 合適的客戶端
+    adequate-server: 合適的伺服器
+    version-compatible: 版本互換性
+    adequate: 合適
+    inadequate: 不合適
+
+room-info-window:
+  window-title: 房間資訊顯示
+  label:
+    bcdice-api-url: BCDice-API的URL
+    bcdice-api-version: BCDice-APIのバージョン
+    game-system-view: 遊戲系統
+    comeback-url: 再連接URL
+    invite-url: 招待URL
+    room-member-num: 房間人數
+    room-no: 房間號碼
+
+map-mask-add-window:
+  window-title: 新增地圖迷霧
+
+map-mask-edit-window:
+  window-title: 編輯地圖迷霧
+
+map-marker-add-window:
+  window-title: マップマーカー作成
+
+map-marker-edit-window:
+  window-title: マップマーカー編集
+
+chit-add-window:
+  window-title: 新增棋子
+
+chit-edit-window:
+  window-title: 編輯棋子
+
+scene-list-window:
+  window-title: 場景列表
+
+edit-scene-window:
+  window-title: 編輯場景
+  label:
+    sub: 副
+    grid-size: 大小(px)
+    grid-line: 格線
+    grid-line-color: 格線顏色
+    blur: Blur
+    mask: 迷霧
+    frame-border: 格線
+  message-select:
+    layer-view: 圖層的顯示・非顯示之間切換。
+    layer-order-mode-on: 圖層的順序更改模式開啓。
+    layer-order-mode-off: 回到通常模式。
+    layer-order: 通過拖動更改圖層的順序。
+    original-address: 此設置的坐標與其他場景不同。
+    object-order-mode-on: 開啓物體的順序更改模式。
+    object-order-mode-off: 回到通常模式。
+    object-order: 通過拖動物體的更改順序。
+
+chmod-window:
+  window-title: 權限變更
+
+chmod-input-window:
+  window-title: 權限變更
+
+cut-in-add-window:
+  window-title: 新增CutIn
+
+cut-in-edit-window:
+  window-title: 編輯CutIn
+
+chat-window:
+  window-title: 聊天室
+  placeholder: |-
+    輸入（改行按Shift + Enter）
+    部分字型變更 "&" 輸入
+  options:
+    select-sender: 選擇發送者
+    select-output-tab: 選擇分頁
+    select-target: 選擇發送對像
+    select-chat-format: 選擇格式
+    select-is-secret: 是否秘密聊天室
+    resource-change-resource-master: 変更するリソースの選択
+    resource-change-target-operation: 演算子または対象の選択
+    resource-change-operation: 演算子の選択
+    resource-change-value: 値の選択
+    selected-item: '[選擇中]'
+    goto-head: '[最初]'
+    goto-next: '[下一次]'
+    goto-last: '[上一次]'
+    goto-tail: '[最後]'
+  input-info:
+    message-sender: 顯示當前發送人
+    message-target: 顯示聊天室的發送對像
+    message-output-tab: 顯示聊天室的發送分頁
+    message-secret: 顯示是否秘密聊天室
+  dialog:
+    delete-chat: |-
+      真的要把該聊天室刪除？
+      這操作不能撒回。
+
+chat-setting-window:
+  window-title: 聊天室設定
+  message-list:
+    edit: 編輯
+    chmod: 編輯權限
+    delete: 刪除
+
+chat-tab-add-window:
+  window-title: 新增聊天室分頁
+
+chat-tab-edit-window:
+  window-title: 編輯聊天室分頁
+
+actor-add-window:
+  window-title: 新增演員
+
+actor-edit-window:
+  window-title: 編輯演員
+
+player-box-window:
+  window-title: 玩家盒
+  message-list:
+    edit: 編輯
+    chmod: 編輯權限
+    delete: 刪除
+  dialog:
+    delete-actor: |-
+      本当にアクター「$1」を削除しますか？
+      このアクターに紐づくコマがあれば、一緒に削除されます。
+      この操作は取り消せません。
+
+card-deck-builder:
+  title: Quoridorn咭牌牌堆創建工具 Ver.1.0.0a1
+  description:
+    tool: 這是一個有用的功能，可以在房間註冊一個牌堆。
+    import-text-paranoia-rebooted: |-
+      クリックすることで檔案指定ダイアログが顯示します。
+      専用的文字檔案を読み込んで、牌堆を構築することができます。
+      Paranoia Rebooted公式サイトからダウンロードできるオンラインセッション用咭牌圖像檔案zipを解凍し、
+      そこに含まれている「cards_free_200x300」フォルダ直下的文字檔案を指定してください。
+      「allCards.txt」だけは使用できません。
+      事前に圖像檔案をQuoridorn上にアップロードしておく必要が已存在ます。
+  card-frame-preset:
+    text-template: |-
+      文字模板
+      （inSANe）
+    template-image: 圖像模板
+    full-image-paranoia: |-
+      圖像
+      （Paranoia Rebooted）
+    full-image-tnm: |-
+      圖像
+      （トーキョー・ナイトメア）
+    full-image-tnx: |-
+      圖像
+      （トーキョーN◎VA）
+  button:
+    import-text-paranoia-rebooted: |-
+      匯入文字
+      （Paranoia Rebooted）
+  message-list:
+    choose-base-deck: 選擇牌堆底部
+    create-card: 新增牌堆
+    create-deck-entrance: |-
+      使用上傳到Quoridorn的圖片新增新的牌堆。
+      如果您不使用特殊處理，請遵循圖像底部的方向。
+    setting-frame: |-
+      請設定一個咭牌的表面。
+      此處圖像將是將在後續過程中指定的圖像或文字。
+    choose-back-image: |-
+      請選擇所有牌堆共用的背面。
+      新增時，只能設置一種背面。
+      複數背面的牌堆、請另外新增。
+    create-front: 請輸入咭牌表面數據。
+    choose-card: 選擇咭牌・登録牌堆
+  header:
+    deck-set-preset: 預設
+    deck-set-room: 房間數據
+    card-list: 咭牌列表
+  options:
+    count-zero: 0張
+    count-one: 1張
+    count-two: 2張
+    count-three: 3張
+    count-four: 4張
+    count-more: 5張以上
+
+card-deck-list-window:
+  window-title: 牌堆列表
+
+media-upload-window:
+  window-title: 上傳媒體
+  dialog:
+    input-tag: 請輸入要一起設置的標籤。
+    delete-together: 是否要一次將其全部刪除？？
+  message-list:
+    edit-tag-together: 一次性編輯標籤
+    delete-together: 一次性刪除
+
+media-list-window:
+  window-title: 媒體列表
+  label:
+    thumbnail: 縮圖
+    list: 列表
+  message-list:
+    choose-view-mode: 變更顯示形式
+    how-to-upload: 請放入版面中進行上傳
+  dialog:
+    delete-media: |-
+      真的要把媒體「$1」刪除？
+      這操作不能撒回。
+
+card-deck-small-edit-window:
+  window-title: 牌堆編輯
+  label:
+    hand-card-area-width: 手牌領域的闊度
+    card-deck-columns: 闊度(行數)
+    card-deck-rows: 高度(行數)
+    card-width-ratio: 咭牌闊度(比例)
+    card-height-ratio: 咭牌高度(比例)
+    card-layout-columns: 配置咭牌列數
+    card-layout-rows: 配置咭牌行數
+    hover-view: 滑鼠光標在視圖上
+
+play-bgm-file-window:
+  window-title: 播放音樂檔案
+
+character-add-window:
+  window-title: 新增角色
+
+character-edit-window:
+  window-title: 編輯角色
+
+initiative-window:
+  window-title: 行動(INI)表
+
+resource-master-add-window:
+  window-title: 新增資源
+
+resource-master-edit-window:
+  window-title: 編輯資源
+
+resource-master-list-window:
+  window-title: 資源列表
+  header:
+    name: 資源名稱
+    type: 種類
+    initiative: 自動授予
+    initiative-actor: 演員
+    initiative-map-object: 場景
+  dialog:
+    delete-resource: |-
+      真的要把此資源刪除？
+      這操作不能撒回。
+
+chat-palette-window:
+  window-title: 聊天組合版
+
+chat-palette-add-window:
+  window-title: 新增聊天組合版
+
+chat-palette-edit-window:
+  window-title: 編輯聊天組合版
+
+dice-symbol-add-window:
+  window-title: 新增骰子結果
+
+dice-symbol-edit-window:
+  window-title: 編輯骰子結果
+
+secret-dice-roll-window:
+  window-title: 隱藏擲骰結果
+
+simple-text-input-window:
+  window-title: 文字輸入（該內容實際上並未顯示）
+
+memo-tab-setting-window:
+  window-title: 筆記分頁設定
+
+chat-palette-tab-setting-window:
+  window-title: 聊天室分頁設定
+
+public-memo-add-window:
+  window-title: 新增共用筆記
+  message-list:
+    select-icon: 請選擇圖示。
+
+public-memo-edit-window:
+  window-title: 編輯共用筆記
+
+like-add-window:
+  window-title: 新增Like
+
+like-edit-window:
+  window-title: 編輯Like
+
+image-view-window:
+  window-title: 画像表示
+
+media-url-add-window:
+  window-title: メディアURL登録
+
+media-url-edit-window:
+  window-title: メディアURL編集
+
+counter-remocon-add-window:
+  window-title: カウンターリモコン作成
+
+counter-remocon-edit-window:
+  window-title: カウンターリモコン編集
+
+counter-remocon-window:
+  window-title: カウンターリモコン
+
+group-chat-setting-window:
+  window-title: グループチャット設定
+  message-list:
+    edit: 編集
+    chmod: 権限編集
+    delete: 削除
+
+group-chat-tab-add-window:
+  window-title: グループチャットタブ作成
+
+group-chat-tab-edit-window:
+  window-title: グループチャットタブ編集
+
+authority-group-list-window:
+  window-title: 権限グループ一覧
+  dialog:
+    delete-group: |-
+      本当に権限グループ「$1」を削除しますか？
+      この権限グループが使われているグループチャットタブも一緒に削除されます。
+      この操作は取り消せません。
+
+authority-group-add-window:
+  window-title: 権限グループ作成
+
+authority-group-edit-window:
+  window-title: 権限グループ編集
+
+room-data-edit-window:
+  window-title: 部屋情報編集
+
+room-info-extend-edit-window:
+  window-title: 設定編集
+
+original-table-list-window:
+  window-title: オリジナル表一覧
+  dialog:
+    delete-table: |-
+      本当にオリジナル表「$1」を削除しますか？
+      この操作は取り消せません。
+
+original-table-add-window:
+  window-title: オリジナル表追加
+
+original-table-edit-window:
+  window-title: オリジナル表編集

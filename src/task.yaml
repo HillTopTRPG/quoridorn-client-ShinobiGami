@@ -1,0 +1,137 @@
+# test
+- taskAttribute:
+    isIgniteWithParam: false
+    isLastValueCapture: false
+    isTraceFinally: false
+    isTest: true
+    statusList:
+      - finished
+  types: []
+
+# product
+- taskAttribute:
+    isIgniteWithParam: false
+    isLastValueCapture: false
+    isTraceFinally: false
+    isTest: false
+    statusList:
+      - finished
+  types:
+    - context-open
+    - window-minimize
+    - window-normalize
+    - left-pane-frame-moving
+    - action-wheel
+    - window-moving
+    - window-move-end
+    - window-active
+    - window-font-size
+    - right-pane-frame-moving
+    - pane-relocation
+    - window-resize
+    - task-finally
+    - bcdice-ready
+    - socket-connect
+    - socket-connect-error
+    - socket-reconnecting
+    - language-change
+    - mode-change
+    - room-initialize
+    - global-enter
+    - change-border-view
+    - change-highlight-view
+    - lock-object
+    - copy-object
+    - delete-object
+    - added-object
+    - bgm-volume-change
+    - bgm-mute-change
+    - other-text-view
+    - other-text-hide
+    - change-focus-scene-object
+    - resize
+    - throw-parabola
+    - stand-by-return
+    - tab-move
+    - row-select
+    - drop-piece
+    - card-draw
+    - card-turn-on
+    - card-turn-off
+    - card-placement-reset-from-card
+    - card-shuffle-from-card
+    - card-turn-on-all-from-card
+    - card-turn-off-all-from-card
+    - card-layout-spread-out-from-card
+    - card-layout-pile-up-from-card
+    - card-layout-tile-from-card
+    - card-layout-line-from-card
+    - card-layout-hand-from-card
+    - card-setting-change-from-card
+    - card-placement-reset-from-deck
+    - card-shuffle-from-deck
+    - card-turn-on-all-from-deck
+    - card-turn-off-all-from-deck
+    - card-layout-spread-out-from-deck
+    - card-layout-pile-up-from-deck
+    - card-layout-tile-from-deck
+    - card-layout-line-from-deck
+    - card-layout-hand-from-deck
+    - card-setting-change-from-deck
+    - open-ref-url
+    - edit-actor
+    - dice-roll
+    - dice-pips-change
+    - change-dice-view
+    - resource-update
+    - export-object
+    - other-text-update
+    - create-chat-palette
+    - change-marker-back-view
+    - counter-remocon-click
+    - counter-remocon-execute
+    - select-map-draw
+    - chat-inputting-notify
+    - room-data-update
+
+- taskAttribute:
+    isIgniteWithParam: false
+    isLastValueCapture: false
+    isTraceFinally: true
+    isTest: false
+    statusList:
+      - finished
+  types:
+    - window-open
+
+- taskAttribute:
+    isIgniteWithParam: false
+    isLastValueCapture: false
+    isTraceFinally: false
+    isTest: false
+    statusList:
+      - closing
+      - finished
+  types:
+    - window-close
+
+- taskAttribute:
+    isIgniteWithParam: false
+    isLastValueCapture: true
+    isTraceFinally: false
+    isTest: false
+    statusList:
+      - finished
+  types:
+    - mouse-moving
+
+- taskAttribute:
+    isIgniteWithParam: false
+    isLastValueCapture: true
+    isTraceFinally: false
+    isTest: false
+    statusList:
+      - finished
+  types:
+    - mouse-move-end-left
+    - mouse-move-end-right
