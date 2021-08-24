@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client'
-import { loadYaml } from '@/FileUtility'
-import { errorDialog } from '@/Utility'
+import { loadYaml, StoreData } from '@/utility/FileUtility'
+import { errorDialog } from '@/utility/Utility'
 import { SystemError } from '@/error/SystemError'
 
 type ConnectInfo = {
@@ -16,6 +16,13 @@ export type SendDataRequest<T> = {
   event: string;
   data?: T;
   error?: Error;
+};
+
+export type AddDirectRequest<T> = {
+  collectionSuffix: string;
+  share: 'room' | 'room-mate';
+  list: (Partial<StoreData<T>> & { data: T })[];
+  force: boolean;
 };
 
 export default class SocketFacade {

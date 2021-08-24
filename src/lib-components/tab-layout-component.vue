@@ -82,10 +82,18 @@ import {
   onBeforeUnmount,
   reactive
 } from 'vue'
-import { TabInfo, UiSize } from '@/types/common'
-import * as uiSize from '@/composable/ui-size'
 import { v4 as uuidv4 } from 'uuid'
 import { refObj } from '@/utility/vue-util'
+import { TabInfo, UiSize, uiSize2css } from '@/lib-components/flexible-data-layout.vue'
+import { PickPropTypeKeys } from '@/utility/typescript'
+
+type SizePropType = {
+  minWidth?: UiSize
+  maxWidth?: UiSize
+  minHeight?: UiSize
+  maxHeight?: UiSize
+  viewWeight?: number
+}
 
 export default defineComponent({
   name: 'TabLayoutComponent',
@@ -111,13 +119,7 @@ export default defineComponent({
       default: null
     },
     size: {
-      type: Object as PropType<{
-        minWidth?: UiSize
-        maxWidth?: UiSize
-        minHeight?: UiSize
-        maxHeight?: UiSize
-        viewWeight?: number
-      }>,
+      type: Object as PropType<SizePropType>,
       required: false,
       default: null
     }
@@ -252,18 +254,13 @@ export default defineComponent({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const styleObj: any = {}
         if (props.size) {
-          if (props.size.minWidth) {
-            styleObj['min-width'] = uiSize.uiSize2css(props.size.minWidth)
+          const setUiSize = (prop: PickPropTypeKeys<SizePropType, UiSize>) => {
+            if (props.size[prop]) styleObj[prop] = uiSize2css(props.size[prop])
           }
-          if (props.size.maxWidth) {
-            styleObj['max-width'] = uiSize.uiSize2css(props.size.maxWidth)
-          }
-          if (props.size.minHeight) {
-            styleObj['min-height'] = uiSize.uiSize2css(props.size.minHeight)
-          }
-          if (props.size.maxHeight) {
-            styleObj['max-height'] = uiSize.uiSize2css(props.size.maxHeight)
-          }
+          setUiSize('minWidth' as PickPropTypeKeys<SizePropType, UiSize>)
+          setUiSize('maxWidth' as PickPropTypeKeys<SizePropType, UiSize>)
+          setUiSize('minHeight' as PickPropTypeKeys<SizePropType, UiSize>)
+          setUiSize('maxHeight' as PickPropTypeKeys<SizePropType, UiSize>)
           if (props.size.viewWeight) {
             styleObj.flex = props.size.viewWeight
           }

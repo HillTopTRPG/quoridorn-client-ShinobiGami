@@ -1,0 +1,45 @@
+---
+layout: v-box
+flexWrap: false
+blockList:
+  - layout: h-box
+    flexWrap: false
+    blockList:
+      - slotName: room-no
+        layout: h-box
+        justifyContent: flex-end
+        alignItems: center
+        minWidth:
+          em: 3
+        maxWidth:
+          em: 3
+        flexWrap: false
+      - slotName: room-info
+        layout: h-box
+        flexWrap: false
+        maxWidth:
+          vw: 100
+          em: -3
+        flex: 1
+        alignItems: center
+        justifyContent: space-between
+  - layout: h-box
+    flexWrap: false
+    blockList:
+      - slotName: emp
+        layout: h-box
+        minWidth:
+          em: 3
+        maxWidth:
+          em: 3
+        flexWrap: false
+        justifyContent: flex-end
+      - slotName: room-operation
+        layout: v-box
+        alignItems: flex-start
+        flexWrap: false
+        maxWidth:
+          vw: 100
+          em: -3
+        flex: 1
+        justifyContent: space-between

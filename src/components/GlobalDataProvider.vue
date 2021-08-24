@@ -6,6 +6,7 @@
 import CountStore from '@/store/count'
 import RoomStore from '@/store/room'
 import UserStore from '@/store/user'
+import CharacterStore from '@/store/character'
 
 export default {
   name: 'GlobalDataProvider',
@@ -13,6 +14,7 @@ export default {
     CountStore.provider()
     RoomStore.provider()
     UserStore.provider()
+    CharacterStore.provider()
   }
 }
 </script>

@@ -1,21 +1,35 @@
 <template>
-  <room-operate-area></room-operate-area>
+  <global-data-provider>
+    <the-rooms @loggedIn="onLoggedIn()" v-if="!isLoggedIn" />
+    <the-play v-if="isLoggedIn" />
+  </global-data-provider>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import RoomOperateArea from '@/components/RoomOperateArea.vue'
-import RoomStore from '@/store/room'
-import UserStore from '@/store/user'
+import { defineComponent, ref } from 'vue'
+import TheRooms from '@/components/the-rooms/the-rooms.vue'
+import ThePlay from '@/components/the-play/the-play.vue'
+import IgnoreWatchUpdateKeyStore from '@/store/ignore-watch-update-key'
+import GlobalDataProvider from '@/components/GlobalDataProvider.vue'
 
 export default defineComponent({
   name: 'App',
   components: {
-    RoomOperateArea
+    GlobalDataProvider,
+    TheRooms,
+    ThePlay
   },
-  setup(): void {
-    RoomStore.provider()
-    UserStore.provider()
+  setup() {
+    const isLoggedIn = ref(false)
+    const onLoggedIn = (): void => {
+      isLoggedIn.value = true
+      console.log('onLoggedIn')
+    }
+    IgnoreWatchUpdateKeyStore.provider()
+    return {
+      isLoggedIn,
+      onLoggedIn
+    }
   }
 })
 </script>
@@ -31,5 +45,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  position: relative;
 }
 </style>

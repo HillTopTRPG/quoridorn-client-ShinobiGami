@@ -1,7 +1,7 @@
 import SocketFacade from './SocketFacade'
 import { ApplicationError } from '@/error/ApplicationError'
-import { getSrc } from '@/Utility'
-import LanguageManager from '@/LanguageManager'
+import { getSrc } from '@/utility/Utility'
+import LanguageManager from '@/utility/LanguageManager'
 import yaml from 'js-yaml'
 
 /**
@@ -59,8 +59,8 @@ export type StoreData<T> = {
     | 'touched-released'
     | 'modified'
     | null
-  createTime: Date
-  updateTime: Date | null
+  createDateTime: number
+  updateDateTime: number
   refList: DataReference[] // このデータへの参照
   data?: T
 }
@@ -76,7 +76,7 @@ export type ExportDataFormat<T> = {
   data: T
 }
 
-export function createSize (width: number, height: number): Size {
+export function createSize(width: number, height: number): Size {
   return { width, height }
 }
 
@@ -98,7 +98,7 @@ export async function loadText(
   }
 }
 
-export function unicodeEscape (str: string): string {
+export function unicodeEscape(str: string): string {
   let code = ''
   const head: { [key: number]: string } = {
     1: '\\u000',
@@ -116,7 +116,7 @@ export function unicodeEscape (str: string): string {
  *
  * @param path
  */
-export async function loadYaml<T> (path: string): Promise<T> {
+export async function loadYaml<T>(path: string): Promise<T> {
   let text: string
   try {
     text = await loadText(path)
@@ -137,7 +137,7 @@ export async function loadYaml<T> (path: string): Promise<T> {
  *
  * @param path
  */
-export async function loadJson<T> (path: string): Promise<T> {
+export async function loadJson<T>(path: string): Promise<T> {
   try {
     const text = await loadText(path)
     return JSON.parse(text)
@@ -148,7 +148,7 @@ export async function loadJson<T> (path: string): Promise<T> {
   }
 }
 
-export async function getImageSize (path: string): Promise<Size | null> {
+export async function getImageSize(path: string): Promise<Size | null> {
   const loadImage = async (): Promise<HTMLImageElement> => {
     return new Promise((resolve, reject) => {
       const img = new Image()
@@ -177,7 +177,7 @@ async function showOpenFileDialog(): Promise<File | null> {
   })
 }
 
-async function readAsText (file: File | null): Promise<string | null> {
+async function readAsText(file: File | null): Promise<string | null> {
   return new Promise(resolve => {
     if (!file) return null
     const reader = new FileReader()
@@ -199,7 +199,7 @@ export async function readJsonFiles<T>(fileList: File[]): Promise<T[]> {
  *
  * @param type
  */
-export async function importJson<T> (
+export async function importJson<T>(
   type: string
 ): Promise<ExportDataFormat<T> | null> {
   const file = await showOpenFileDialog()
@@ -216,7 +216,7 @@ export async function importJson<T> (
 /**
  * Textファイルをインポートする
  */
-export async function importText (): Promise<string | null> {
+export async function importText(): Promise<string | null> {
   const file = await showOpenFileDialog()
   return await readAsText(file)
 }
@@ -254,7 +254,7 @@ export function createJsonBlob(type: string, payload: any): Blob {
  * @param type
  * @param data
  */
-export function saveJson<T> (name: string, type: string, data: T): void {
+export function saveJson<T>(name: string, type: string, data: T): void {
   saveFile(`${name}.json`, createJsonBlob(type, data))
 }
 
@@ -264,7 +264,7 @@ export function saveJson<T> (name: string, type: string, data: T): void {
  * @param name
  * @param text
  */
-export function saveHTML (name: string, text: string): void {
+export function saveHTML(name: string, text: string): void {
   const blob = new Blob([text], {
     type: 'text/html'
   })
@@ -277,7 +277,7 @@ export function saveHTML (name: string, text: string): void {
  * @param name
  * @param blob
  */
-export function saveFile (name: string, blob: Blob): void {
+export function saveFile(name: string, blob: Blob): void {
   const url = URL.createObjectURL(blob)
 
   const anchor = document.createElement('a')
@@ -340,7 +340,7 @@ type UploadMediaInfo = MediaStore & { key?: string } & (
 }
   )
 
-export function getUrlParam (
+export function getUrlParam(
   name: string,
   url: string = window.location.href
 ): string | null {
@@ -352,11 +352,11 @@ export function getUrlParam (
   return decodeURIComponent(results[2].replace(/(\+)|(¥%20)/g, ' '))
 }
 
-export function getYoutubeThunbnail (url: string): string {
+export function getYoutubeThunbnail(url: string): string {
   return `https://i.ytimg.com/vi/${getUrlParam('v', url)}/default.jpg`
 }
 
-export function getFileName (url: string): string {
+export function getFileName(url: string): string {
   const matchExt: string[] | null = url.match(/[^/]+$/)
   return matchExt ? matchExt[0] : ''
 }
@@ -451,7 +451,7 @@ export async function exchangeMediaInfo(
   return uploadMediaInfoList
 }
 
-export async function raw2UploadMediaInfoList (
+export async function raw2UploadMediaInfoList(
   rawList: (string | File)[],
   metaList?: { urlType: UrlType; iconClass: IconClass }[]
 ): Promise<UploadMediaInfo[]> {
@@ -499,7 +499,7 @@ type UploadMediaResponse = {
   urlType: UrlType
 }[]
 
-export async function mediaUpload (
+export async function mediaUpload(
   uploadMediaRequest: UploadMediaRequest
 ): Promise<UploadMediaResponse> {
   // // DropBox連携
@@ -572,11 +572,11 @@ async function blob2ArrayBuffer (blob: Blob | File): Promise<ArrayBuffer> {
   })
 }
 
-export function extname (path: string): string {
+export function extname(path: string): string {
   return path.replace(/^.+\./, '')
 }
 
-export async function file2Base64 (file: File): Promise<string> {
+export async function file2Base64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = () => resolve(reader.result?.toString() || '')

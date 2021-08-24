@@ -1,5 +1,6 @@
 <template>
   <tab-layout-component
+    :id="definition.key"
     v-if="definition.layout === 'tab'"
     :tab-list="definition.tabList"
     :model-value="currentTab.val"
@@ -17,6 +18,7 @@
         <suspense v-else-if="tab.blockList">
           <flexible-union-layout
             :definition="tab.block"
+            :barList="barList"
             @tab-changed="_tab => $emit('tabChanged', _tab)"
             @open-tab-setting="_tabKey => $emit('openTabSetting', _tabKey)"
           >
@@ -32,10 +34,9 @@
 
 <script lang="ts">
 import { defineComponent, PropType, computed, reactive } from 'vue'
-import { SlotTab, SlotTabInfo, UiSize } from '@/types/common'
-import TabLayoutComponent from '@/lib-components/TabLayoutComponent.vue'
+import TabLayoutComponent from '@/lib-components/tab-layout-component.vue'
 import { refObj } from '@/utility/vue-util'
-import { getSlotNameList } from '@/composable/changed-by'
+import { BarInfo, getSlotNameList, SlotTab, SlotTabInfo, UiSize } from '@/lib-components/flexible-data-layout.vue'
 
 export default defineComponent({
   name: 'FlexibleTabLayout',
@@ -48,6 +49,10 @@ export default defineComponent({
       validator: (definition: SlotTabInfo) =>
         definition.layout === 'tab' &&
         !definition.tabList.some(tab => !(tab.slotName ?? tab.blockList))
+    },
+    barList: {
+      type: Array as PropType<BarInfo[]>,
+      required: true
     }
   },
   setup(props, { emit }) {

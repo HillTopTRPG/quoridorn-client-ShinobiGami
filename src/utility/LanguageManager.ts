@@ -1,8 +1,9 @@
 import { createI18n, I18n, useI18n } from 'vue-i18n'
 import { loadYaml } from './FileUtility'
 import TaskManager from './TaskManager'
+import { DateTimeFormats as IntlDateTimeFormats } from '@intlify/core-base'
 
-export function listToEmpty (list: Array<unknown>): void {
+export function listToEmpty(list: Array<unknown>): void {
   list.splice(0, list.length)
 }
 
@@ -33,6 +34,7 @@ export default class LanguageManager {
 
   private static _instance: LanguageManager;
   private messages: Message = {};
+  private datetimeFormats: IntlDateTimeFormats = {};
 
   // コンストラクタの隠蔽
   private constructor () { /**/ }
@@ -41,6 +43,30 @@ export default class LanguageManager {
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.messages[langInfo.lang] = await loadYaml<any>(langInfo.path)
+      this.datetimeFormats[langInfo.lang] = {
+        short: {
+          year: 'numeric', month: 'short', day: 'numeric'
+        },
+        'pattern-1': {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        },
+        'pattern-2': {
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: true
+        },
+        long: {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          weekday: 'short',
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: true
+        }
+      }
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(err.toString())
@@ -91,7 +117,8 @@ export default class LanguageManager {
     const r = createI18n({
       locale: navigator.language,
       fallbackLocale: 'en',
-      messages: this.messages
+      messages: this.messages,
+      datetimeFormats: this.datetimeFormats
     })
     r.global.locale = navigator.language
     return r

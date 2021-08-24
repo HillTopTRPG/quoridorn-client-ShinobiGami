@@ -1,12 +1,12 @@
-import { StoreData } from '@/FileUtility'
+import { StoreData } from '@/utility/FileUtility'
 import LanguageManager from './LanguageManager'
-import { ApplicationError } from './error/ApplicationError'
+import { ApplicationError } from '../error/ApplicationError'
 import jsonp from 'jsonp'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const urljoin = require('url-join')
 
-export function getSrc (
+export function getSrc(
   path: string
 ): { url: string; dataLocation: 'server' | 'direct' } {
   if (!path) return { url: path, dataLocation: 'direct' }
@@ -20,7 +20,7 @@ export function getSrc (
   return { url, dataLocation: 'server' }
 }
 
-export function shuffleOrder (list: StoreData<unknown>[]): void {
+export function shuffleOrder(list: StoreData<unknown>[]): void {
   for (let i = list.length - 1; i > 0; i--) {
     const r = Math.floor(Math.random() * (i + 1))
     const tmpOrder = list[i].order
@@ -139,7 +139,7 @@ export function shuffleOrder (list: StoreData<unknown>[]): void {
  *
  * @param text
  */
-export function execCopy (text: string): boolean {
+export function execCopy(text: string): boolean {
   const temp = document.createElement('div')
 
   temp.appendChild(document.createElement('pre')).textContent = text
@@ -169,7 +169,7 @@ export function execCopy (text: string): boolean {
   return result
 }
 
-export function someByStr (list: string[], str: string | null): boolean {
+export function someByStr(list: string[], str: string | null): boolean {
   return list.some(s => s === str)
 }
 
@@ -278,7 +278,7 @@ async function simpleDialog(obj: {
   })
 }
 
-export async function errorDialog (obj: {
+export async function errorDialog(obj: {
   title: string;
   text: string;
 }): Promise<void> {
@@ -308,7 +308,7 @@ export async function successDialog(obj: {
   })
 }
 
-export async function questionDialog (obj: {
+export async function questionDialog(obj: {
   title: string;
   text?: string;
   confirmButtonText: string;
@@ -328,7 +328,7 @@ export async function questionDialog (obj: {
   return confirm.isConfirmed
 }
 
-export function replaceArrayElements (
+export function replaceArrayElements(
   list: unknown[],
   targetIdx: number,
   sourceIdx: number
@@ -341,7 +341,7 @@ export function replaceArrayElements (
   return cloneArray
 }
 
-export function setOrderByListOrder (dataList: StoreData<unknown>[]): void {
+export function setOrderByListOrder(dataList: StoreData<unknown>[]): void {
   const orderList: number[] = dataList.map(data => data.order)
   orderList.sort()
   dataList.forEach((data, idx) => (data.order = orderList[idx]))

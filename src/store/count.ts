@@ -1,6 +1,5 @@
 import { reactive } from 'vue'
-import { makeStore } from '@/utility/vue3'
-import { ExcludeFunctionProperty } from '@/utility/typescript'
+import { ExcludeFunctionProperty, makeStore } from '@/utility/vue3'
 
 type Store = {
   count: number;

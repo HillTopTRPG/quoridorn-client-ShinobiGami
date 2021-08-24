@@ -1,0 +1,90 @@
+---
+key: section-root
+layout: v-box
+flexWrap: false
+maxWidth:
+  vw: 100
+minWidth:
+  vw: 100
+maxHeight:
+  vh: 100
+minHeight:
+  vh: 100
+blockList:
+- key: top-box
+  slotName: top-box
+  layout: h-box
+  flexWrap: false
+  minHeight:
+    em: 3
+- key: section-not-top
+  layout: h-box
+  flexWrap: false
+  flex: 1
+  dynamicSize: true
+  blockList:
+  - key: section-left-bottom
+    layout: v-box
+    flexWrap: false
+    flex: 1
+    dynamicSize: true
+    blockList:
+    - key: section-middle
+      layout: h-box
+      flexWrap: false
+      flex: 1
+      dynamicSize: true
+      blockList:
+      - key: left-box
+        slotName: left-box
+        layout: v-box
+        flexWrap: false
+        minWidth:
+          px: 100
+        maxWidth:
+          px: 100
+      - key: section-core
+        layout: h-box
+        flexWrap: true
+        flex: 1
+        alignItems: flex-start
+        alignContent: flex-start
+        blockList:
+        - key: simple-center
+          slotName: simple-center
+          layout: v-box
+          overflowX: hidden
+          flexWrap: false
+        - key: section-scene
+          layout: v-box
+          flex: 1
+          flexWrap: false
+          overflowX: auto
+          blockList:
+          - key: dramatic-scene
+            slotName: dramatic-scene
+            layout: h-box
+            flexWrap: false
+            minHeight:
+              em: 3
+          - key: velocity-system
+            slotName: velocity-system
+            layout: h-box
+            flex: 1
+            flexWrap: false
+    - key: bottom-box
+      slotName: bottom-box
+      layout: h-box
+      flexWrap: false
+      minHeight:
+        px: 80
+      maxHeight:
+        px: 80
+  - key: right-box
+    slotName: right-box
+    layout: v-box
+    flexWrap: false
+    minWidth:
+      px: 100
+    maxWidth:
+      px: 100

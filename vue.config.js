@@ -58,6 +58,15 @@ module.exports = {
       .loader('yaml-loader')
       .end()
     config.module
+      .rule('layout')
+      .test(/\.layout$/)
+      .use('json-loader')
+      .loader('json-loader')
+      .end()
+      .use('yaml-loader')
+      .loader('yaml-loader')
+      .end()
+    config.module
       .rule('text')
       .test(/\.te?xt$/)
       .use('raw-loader')

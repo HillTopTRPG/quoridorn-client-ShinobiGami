@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import LanguageManager from '@/LanguageManager'
-import SocketFacade from '@/SocketFacade'
+import LanguageManager from '@/utility/LanguageManager'
+import SocketFacade from '@/utility/SocketFacade'
 import libComponentPlugin from '@/lib-components'
 import Vue3TouchEvents from 'vue3-touch-events'
 

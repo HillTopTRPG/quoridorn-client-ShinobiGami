@@ -1,4 +1,4 @@
-import { findByKey } from '@/Utility'
+import { findByKey } from '@/utility/Utility'
 import { ApplicationError } from '@/error/ApplicationError'
 import uuid from 'uuid'
 // eslint-disable-next-line @typescript-eslint/no-var-requires

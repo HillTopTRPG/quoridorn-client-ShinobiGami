@@ -1,7 +1,6 @@
 import { reactive } from 'vue'
-import SocketFacade from '@/SocketFacade'
-import { ExcludeFunctionProperty } from '@/utility/typescript'
-import { makeStore } from '@/utility/vue3'
+import SocketFacade from '@/utility/SocketFacade'
+import { ExcludeFunctionProperty, makeStore } from '@/utility/vue3'
 import { RoomInfoExtend } from '@/store/room'
 
 export type UserType = 'gm' | 'pl' | 'visitor';
@@ -48,7 +47,7 @@ export type ClientUserData = {
 type Store = {
   userList: ClientUserData[];
   selectedRoomNo: number,
-  lastRoomLoginType: 'create' | 'login' | '',
+  lastRoomLoginType: 'create' | 'login' | 'touch' | '',
   userLoginResponse: UserLoginResponse | null;
   createRoom: (roomNo: number, roomName: string, roomPassword: string) => Promise<void>;
   touchRoom: (roomNo: number) => Promise<void>;
@@ -95,27 +94,22 @@ export default makeStore<Store>('userStore', () => {
       return state.userLoginResponse
     },
     touchRoom: async (roomNo: number): Promise<void> => {
+      // 部屋作成準備
       try {
         await SocketFacade.instance.sendSocketServerRoundTripRequest<number, string>('room-api-touch-room', roomNo)
       } catch (err) {
         console.error(err)
         return
       }
+      state.userList.splice(0, state.userList.length)
+      state.userLoginResponse = null
       state.selectedRoomNo = roomNo
-      state.lastRoomLoginType = ''
-    },
-    selectRoom: async (roomNo: number) => {
-      state.selectedRoomNo = roomNo
-      if (state.lastRoomLoginType !== '') {
-        state.lastRoomLoginType = ''
-        state.userList.splice(0, state.userList.length)
-        state.userLoginResponse = null
-      }
+      state.lastRoomLoginType = 'touch'
     },
     createRoom: async (roomNo: number, roomName: string, roomPassword: string): Promise<void> => {
-      console.log('click', roomNo)
+      // 部屋作成
       const crReq: CreateRoomRequest = {
-        name: `${roomName}部屋`,
+        name: roomName,
         system: 'ShinobiGami',
         bcdiceServer: 'https://bcdice.onlinesession.app',
         bcdiceVersion: 'v3',
@@ -125,9 +119,20 @@ export default makeStore<Store>('userStore', () => {
         CreateRoomRequest,
         ClientUserData[]
         >('room-api-create-room', crReq))
+      state.userList.splice(0, state.userList.length)
+      state.userLoginResponse = null
+      state.selectedRoomNo = roomNo
       state.lastRoomLoginType = 'create'
     },
+    selectRoom: async (roomNo: number) => {
+      // 入室準備
+      state.userList.splice(0, state.userList.length)
+      state.userLoginResponse = null
+      state.selectedRoomNo = roomNo
+      state.lastRoomLoginType = ''
+    },
     loginRoom: async (roomNo: number, roomPassword: string) => {
+      // 入室
       const crReq: RoomLoginRequest = {
         roomNo: roomNo,
         roomPassword: roomPassword
@@ -136,9 +141,11 @@ export default makeStore<Store>('userStore', () => {
         RoomLoginRequest,
         ClientUserData[]
         >('room-api-login-room', crReq))
+      state.userLoginResponse = null
       state.lastRoomLoginType = 'login'
     },
     loginUser: async (userName: string, userType: UserType, userPassword: string): Promise<void> => {
+      // 入室
       const crReq: UserLoginRequest = {
         type: userType,
         name: userName,

@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
-import SocketFacade from '@/SocketFacade'
-import { ExcludeFunctionProperty, makeNumberArray } from '@/utility/typescript'
-import { makeStore } from '@/utility/vue3'
+import SocketFacade from '@/utility/SocketFacade'
+import { makeNumberArray } from '@/utility/typescript'
+import { ExcludeFunctionProperty, makeStore } from '@/utility/vue3'
 
 export type WindowSetting =
   | 'not-use' // 使えなくします
@@ -30,16 +30,19 @@ export type RoomInfoExtend = {
 };
 
 export type ClientRoomDataStatus = 'none' | 'initial-touched' | 'added' | 'modified'
+export type ClientRoomDataDetail = {
+  roomName: string;
+  loggedIn: number;
+  memberNum: number;
+  extend?: RoomInfoExtend;
+}
 export type ClientRoomData = {
   roomNo: number;
   status: ClientRoomDataStatus;
   operator: string; // socket.id
-  detail: null | {
-    roomName: string;
-    loggedIn: number;
-    memberNum: number;
-    extend?: RoomInfoExtend;
-  }
+  createDateTime: number;
+  updateDateTime: number;
+  detail: ClientRoomDataDetail | null
 }
 
 export type GetRoomListResponse = {
@@ -63,8 +66,9 @@ type Store = {
 }
 
 export default makeStore<Store>('roomStore', () => {
+  const roomListRaw: ClientRoomData[] = []
   const state = reactive<ExcludeFunctionProperty<Store>>({
-    roomList: [],
+    roomList: roomListRaw,
     maxRoomNo: -1,
     serverName: '',
     serverDescription: [],
@@ -81,25 +85,17 @@ export default makeStore<Store>('roomStore', () => {
           console.error(err)
           return
         }
-        console.log('notify-room-update')
-        console.log(JSON.stringify(payload, null, '  '))
-        if (!payload.detail) {
-          const index = state.roomList.findIndex(r => r.roomNo === payload.roomNo)
-          if (index < 0) return
-          state.roomList.splice(index, 1, payload)
-        } else {
-          const index = state.roomList.findIndex(r => r.roomNo === payload.roomNo)
-          if (index < 0) return
-          state.roomList.splice(index, 1, payload)
-        }
+        // console.log('notify-room-update')
+        // console.log(JSON.stringify(payload, null, '  '))
+        const index = state.roomList.findIndex(r => r.roomNo === payload.roomNo)
+        if (index < 0) return
+        state.roomList.splice(index, 1, payload)
       })
       SocketFacade.instance.socketOn<number[]>('notify-room-delete', (err, roomNoList) => {
         if (err) {
           console.error(err)
           return
         }
-        console.log('notify-room-delete')
-        console.log(roomNoList)
         state.roomList
           .map((r, idx): { idx: number; roomNo: number } => ({ idx, roomNo: roomNoList.some(rn => rn === r.roomNo) ? r.roomNo : -1 }))
           .filter(({ roomNo }) => roomNo > -1)
@@ -108,6 +104,8 @@ export default makeStore<Store>('roomStore', () => {
               roomNo,
               status: 'none' as ClientRoomDataStatus,
               operator: '',
+              createDateTime: -1,
+              updateDateTime: -1,
               detail: null
             })
           })
@@ -135,13 +133,17 @@ export default makeStore<Store>('roomStore', () => {
         const roomList = result.roomList
         // eslint-disable-next-line no-console
         console.log(JSON.stringify(result, null, '  '))
-        state.roomList.splice(0, state.roomList.length, ...makeNumberArray(state.maxRoomNo, 1).map(roomNo => {
-          return roomList.find(r => r.roomNo === roomNo) || {
+        state.roomList.splice(0, state.roomList.length, ...makeNumberArray(state.maxRoomNo, 1).map((roomNo): ClientRoomData => {
+          const obj: ClientRoomData = {
             roomNo,
             status: 'none' as ClientRoomDataStatus,
             operator: '',
+            createDateTime: -1,
+            updateDateTime: -1,
             detail: null
           }
+          const result: ClientRoomData = roomList.find(r => r.roomNo === roomNo) || obj
+          return result
         }))
       }
     } catch (e) {

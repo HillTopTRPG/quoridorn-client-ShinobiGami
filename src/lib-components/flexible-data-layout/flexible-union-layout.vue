@@ -2,6 +2,7 @@
   <suspense v-if="definition.layout === 'h-box' || definition.layout === 'v-box'">
     <flexible-flex-layout
       :definition="definition"
+      :barList="barList"
       @tab-changed="_tab => $emit('tabChanged', _tab)"
       @open-tab-setting="_tabKey => $emit('openTabSetting', _tabKey)"
     >
@@ -13,6 +14,7 @@
   <suspense v-if="definition.layout === 'tab'">
     <flexible-tab-layout
       :definition="definition"
+      :barList="barList"
       @tab-changed="_tab => $emit('tabChanged', _tab)"
       @open-tab-setting="_tabKey => $emit('openTabSetting', _tabKey)"
     >
@@ -25,8 +27,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
-import { SlotUnionInfo } from '@/types/common'
-import { getSlotNameList } from '@/composable/changed-by'
+import { getSlotNameList, SlotUnionInfo, BarInfo } from '@/lib-components/flexible-data-layout.vue'
 
 export default defineComponent({
   name: 'FlexibleUnionLayout',
@@ -39,6 +40,10 @@ export default defineComponent({
         definition.layout === 'h-box' ||
         definition.layout === 'v-box' ||
         definition.layout === 'tab'
+    },
+    barList: {
+      type: Array as PropType<BarInfo[]>,
+      required: true
     }
   },
   setup(props) {
