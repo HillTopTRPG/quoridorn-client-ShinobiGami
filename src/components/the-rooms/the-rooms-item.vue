@@ -159,12 +159,14 @@ export default defineComponent({
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-::v-deep .room-no {
+@use "../common";
+
+@include common.deep(".room-no") {
   box-sizing: border-box;
   padding-right: 0.5rem;
 }
 
-::v-deep .room-info {
+@include common.deep(".room-info") {
   position: relative;
 
   .content {
@@ -206,7 +208,7 @@ export default defineComponent({
   }
 }
 
-::v-deep .room-operation {
+@include common.deep(".room-operation") {
   .room-create-description {
     font-size: 70%;
   }

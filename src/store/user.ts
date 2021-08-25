@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
-import SocketFacade from '@/utility/SocketFacade'
 import { ExcludeFunctionProperty, makeStore } from '@/utility/vue3'
 import { RoomInfoExtend } from '@/store/room'
+import SocketStore from '@/store/socket'
 
 export type UserType = 'gm' | 'pl' | 'visitor';
 
@@ -64,7 +64,9 @@ export default makeStore<Store>('userStore', () => {
     userLoginResponse: null
   })
 
-  SocketFacade.instance.socketOn<ClientUserData>('notify-user-update', (err, payload) => {
+  const socketStore = SocketStore.injector()
+
+  socketStore.socketOn<ClientUserData>('notify-user-update', (err, payload) => {
     if (err) {
       console.error(err)
       return
@@ -96,7 +98,7 @@ export default makeStore<Store>('userStore', () => {
     touchRoom: async (roomNo: number): Promise<void> => {
       // 部屋作成準備
       try {
-        await SocketFacade.instance.sendSocketServerRoundTripRequest<number, string>('room-api-touch-room', roomNo)
+        await socketStore.sendSocketServerRoundTripRequest<number, string>('room-api-touch-room', roomNo)
       } catch (err) {
         console.error(err)
         return
@@ -115,10 +117,8 @@ export default makeStore<Store>('userStore', () => {
         bcdiceVersion: 'v3',
         roomPassword: roomPassword
       }
-      state.userList.splice(0, state.userList.length, ...await SocketFacade.instance.sendSocketServerRoundTripRequest<
-        CreateRoomRequest,
-        ClientUserData[]
-        >('room-api-create-room', crReq))
+      state.userList.splice(0, state.userList.length, ...await socketStore.sendSocketServerRoundTripRequest<CreateRoomRequest,
+        ClientUserData[]>('room-api-create-room', crReq))
       state.userList.splice(0, state.userList.length)
       state.userLoginResponse = null
       state.selectedRoomNo = roomNo
@@ -137,10 +137,8 @@ export default makeStore<Store>('userStore', () => {
         roomNo: roomNo,
         roomPassword: roomPassword
       }
-      state.userList.splice(0, state.userList.length, ...await SocketFacade.instance.sendSocketServerRoundTripRequest<
-        RoomLoginRequest,
-        ClientUserData[]
-        >('room-api-login-room', crReq))
+      state.userList.splice(0, state.userList.length, ...await socketStore.sendSocketServerRoundTripRequest<RoomLoginRequest,
+        ClientUserData[]>('room-api-login-room', crReq))
       state.userLoginResponse = null
       state.lastRoomLoginType = 'login'
     },
@@ -151,7 +149,7 @@ export default makeStore<Store>('userStore', () => {
         name: userName,
         password: userPassword
       }
-      state.userLoginResponse = await SocketFacade.instance.sendSocketServerRoundTripRequest<UserLoginRequest, UserLoginResponse>('room-api-login-user', crReq)
+      state.userLoginResponse = await socketStore.sendSocketServerRoundTripRequest<UserLoginRequest, UserLoginResponse>('room-api-login-user', crReq)
     }
   }
 })

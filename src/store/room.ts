@@ -1,5 +1,5 @@
 import { reactive } from 'vue'
-import SocketFacade from '@/utility/SocketFacade'
+import SocketStore from '@/store/socket'
 import { makeNumberArray } from '@/utility/typescript'
 import { ExcludeFunctionProperty, makeStore } from '@/utility/vue3'
 
@@ -76,28 +76,63 @@ export default makeStore<Store>('roomStore', () => {
     isNeedRoomCreatePassword: false
   })
 
-  console.log('room store ignition.');
+  console.log('room store ignition.')
+  const socketStore = SocketStore.injector();
 
   (async () => {
-    try {
-      SocketFacade.instance.socketOn<ClientRoomData>('notify-room-update', (err, payload) => {
+    console.log('部屋一覧取得開始')
+    // 部屋一覧を取得
+    const result = await socketStore.sendSocketServerRoundTripRequest<string, GetRoomListResponse>(
+      'room-api-get-room-list',
+      '0.0.1'
+    )
+    state.serverName = result.appServerInfo.title
+    state.serverDescription = result.appServerInfo.descriptions.map(d =>
+      d
+        .replace('<', '&lt;')
+        .replace('>', '&gt;')
+        .replace(/\[([^"<>\]]+)]\(([^)"<>]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+    )
+    state.maxRoomNo = result.maxRoomNo
+    state.termsOfUse = result.appServerInfo.termsOfUse
+    state.isNeedRoomCreatePassword = result.isNeedRoomCreatePassword
+    if (!result.roomList) {
+      // TODO バージョン依存性NGパターン
+    } else {
+      const roomList = result.roomList
+      // eslint-disable-next-line no-console
+      console.log(JSON.stringify(result, null, '  '))
+      state.roomList.splice(0, state.roomList.length, ...makeNumberArray(state.maxRoomNo, 1)
+        .map((roomNo): ClientRoomData => {
+          const obj: ClientRoomData = {
+            roomNo,
+            status: 'none' as ClientRoomDataStatus,
+            operator: '',
+            createDateTime: -1,
+            updateDateTime: -1,
+            detail: null
+          }
+          return roomList.find(r => r.roomNo === roomNo) || obj
+        }))
+      socketStore.socketOn<ClientRoomData>('notify-room-update', (err, payload) => {
         if (err) {
           console.error(err)
           return
         }
-        // console.log('notify-room-update')
-        // console.log(JSON.stringify(payload, null, '  '))
         const index = state.roomList.findIndex(r => r.roomNo === payload.roomNo)
         if (index < 0) return
         state.roomList.splice(index, 1, payload)
       })
-      SocketFacade.instance.socketOn<number[]>('notify-room-delete', (err, roomNoList) => {
+      socketStore.socketOn<number[]>('notify-room-delete', (err, roomNoList) => {
         if (err) {
           console.error(err)
           return
         }
         state.roomList
-          .map((r, idx): { idx: number; roomNo: number } => ({ idx, roomNo: roomNoList.some(rn => rn === r.roomNo) ? r.roomNo : -1 }))
+          .map((r, idx): { idx: number; roomNo: number } => ({
+            idx,
+            roomNo: roomNoList.some(rn => rn === r.roomNo) ? r.roomNo : -1
+          }))
           .filter(({ roomNo }) => roomNo > -1)
           .forEach(({ idx, roomNo }) => {
             state.roomList.splice(idx, 1, {
@@ -110,53 +145,27 @@ export default makeStore<Store>('roomStore', () => {
             })
           })
       })
-
-      console.log('部屋一覧取得開始')
-      // 部屋一覧を取得
-      const result = await SocketFacade.instance.sendSocketServerRoundTripRequest<string, GetRoomListResponse>(
-        'room-api-get-room-list',
-        '0.0.1'
-      )
-      state.serverName = result.appServerInfo.title
-      state.serverDescription = result.appServerInfo.descriptions.map(d =>
-        d
-          .replace('<', '&lt;')
-          .replace('>', '&gt;')
-          .replace(/\[([^"<>\]]+)]\(([^)"<>]+)\)/g, '<a href="$2" target="_blank">$1</a>')
-      )
-      state.maxRoomNo = result.maxRoomNo
-      state.termsOfUse = result.appServerInfo.termsOfUse
-      state.isNeedRoomCreatePassword = result.isNeedRoomCreatePassword
-      if (!result.roomList) {
-        // TODO バージョン依存性NGパターンa
-      } else {
-        const roomList = result.roomList
-        // eslint-disable-next-line no-console
-        console.log(JSON.stringify(result, null, '  '))
-        state.roomList.splice(0, state.roomList.length, ...makeNumberArray(state.maxRoomNo, 1).map((roomNo): ClientRoomData => {
-          const obj: ClientRoomData = {
-            roomNo,
-            status: 'none' as ClientRoomDataStatus,
-            operator: '',
-            createDateTime: -1,
-            updateDateTime: -1,
-            detail: null
-          }
-          const result: ClientRoomData = roomList.find(r => r.roomNo === roomNo) || obj
-          return result
-        }))
-      }
-    } catch (e) {
-      console.error(e)
     }
   })()
 
   return {
-    get roomList() { return state.roomList },
-    get serverName() { return state.serverName },
-    get maxRoomNo() { return state.maxRoomNo },
-    get serverDescription() { return state.serverDescription },
-    get termsOfUse() { return state.termsOfUse },
-    get isNeedRoomCreatePassword() { return state.isNeedRoomCreatePassword }
+    get roomList() {
+      return state.roomList
+    },
+    get serverName() {
+      return state.serverName
+    },
+    get maxRoomNo() {
+      return state.maxRoomNo
+    },
+    get serverDescription() {
+      return state.serverDescription
+    },
+    get termsOfUse() {
+      return state.termsOfUse
+    },
+    get isNeedRoomCreatePassword() {
+      return state.isNeedRoomCreatePassword
+    }
   }
 })

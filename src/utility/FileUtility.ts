@@ -1,8 +1,9 @@
-import SocketFacade from './SocketFacade'
 import { ApplicationError } from '@/error/ApplicationError'
 import { getSrc } from '@/utility/Utility'
 import LanguageManager from '@/utility/LanguageManager'
 import yaml from 'js-yaml'
+import { Store as SocketStore } from '@/store/socket'
+import { ComputedObject } from '@/utility/vue3'
 
 /**
  * 権限対象の種別
@@ -500,7 +501,8 @@ type UploadMediaResponse = {
 }[]
 
 export async function mediaUpload(
-  uploadMediaRequest: UploadMediaRequest
+  uploadMediaRequest: UploadMediaRequest,
+  socketStore: ComputedObject<SocketStore>
 ): Promise<UploadMediaResponse> {
   // // DropBox連携
   // if (DropBoxManager.instance.ready) {
@@ -522,7 +524,7 @@ export async function mediaUpload(
   // }
 
   // アップロードする
-  return await SocketFacade.instance.sendSocketServerRoundTripRequest<
+  return await socketStore.sendSocketServerRoundTripRequest<
     UploadMediaRequest,
     UploadMediaResponse
   >('upload-media', uploadMediaRequest)

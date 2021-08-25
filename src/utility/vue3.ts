@@ -1,20 +1,17 @@
-import { inject, InjectionKey, provide, computed, watch } from 'vue'
-import { ComputedRef } from '@vue/reactivity'
+import { inject, InjectionKey, provide, computed, watch, ref } from 'vue'
+import { ComputedRef, Ref } from '@vue/reactivity'
 import { clone, compare, ExcludePropType, removeFilter } from '@/utility/typescript'
 import { StoreData } from '@/utility/FileUtility'
 import IgnoreWatchUpdateKeyStore from '@/store/ignore-watch-update-key'
-import SocketFacade from '@/utility/SocketFacade'
+import SocketStore, { AddDirectRequest, Store as SocketStoreType } from '@/store/socket'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ComputedObject<T> = { [K in keyof T]: T[K] extends (...args: any[]) => any ? T[K] : ComputedRef<T[K]> }
+export type ComputedObject<T> = { [K in keyof T]: T[K] extends (...args: any[]) => any ? T[K] : ComputedRef<T[K]> }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ExcludeFunctionProperty<T> = ExcludePropType<T, (...args: any[]) => any>;
 
-export function makeStore<T>(storeName: string, f: () => T): {
-  provider: () => void,
-  injector: () => ComputedObject<T>
-} {
+export function makeStore<T>(storeName: string, f: () => T): { provider: () => void; injector: () => ComputedObject<T> } {
   const StoreInjectionKey: InjectionKey<ReturnType<() => T>> = Symbol(storeName)
   return {
     provider: () => {
@@ -79,10 +76,20 @@ export type UpdateDataRequest<T> = {
   list: (Partial<StoreData<Partial<T>>> & { key: string })[];
 };
 
-export function makeStoreDataWatch<T, U extends keyof T>(
+type CommonStoreDataIf<T> = {
+  ready: Ref<boolean>;
+  insertData: (...c: T[]) => Promise<void>;
+  requestData: () => Promise<void>;
+}
+
+export function commonStoreDataProcess<T, U extends keyof T>(
   dataList: StoreData<T>[],
-  ...dataProperties: U[]
-): void {
+  collectionName: string,
+  dataProperties: U[],
+  _socketStore?: ComputedObject<SocketStoreType>
+): CommonStoreDataIf<T> {
+  const socketStore = _socketStore || SocketStore.injector()
+  const ready = ref(false)
   const { removeWatchKey } = IgnoreWatchUpdateKeyStore.injector()
   watch(() => clone(dataList), (newList, oldList) => {
     // if (removeWatchKey(n.key).length) return false
@@ -98,7 +105,7 @@ export function makeStoreDataWatch<T, U extends keyof T>(
 
     if (diffInfoList.length) {
       (async () => {
-        SocketFacade.instance.sendSocketServerRoundTripRequest<UpdateDataRequest<T>, never>(
+        await socketStore.sendSocketServerRoundTripRequest<UpdateDataRequest<T>, never>(
           'db-api-update',
           {
             collectionSuffix: newList[0].collection,
@@ -110,6 +117,72 @@ export function makeStoreDataWatch<T, U extends keyof T>(
       outputDiffContents(diffInfoList)
     }
   }, { deep: true, immediate: false })
+
+  socketStore.socketOn<StoreData<T>>('notify-update-data', (err, payload) => {
+    if (err) {
+      console.error(err)
+      return
+    }
+    if (payload.collection !== collectionName) return
+    if (!ready.value) {
+      console.warn('!!WARNING!!WARNING!!WARNING!!WARNING!!WARNING!!')
+      console.warn('notify-insert-dataを読み飛ばした！！！！！！')
+    }
+    const index = dataList.findIndex(r => r.key === payload.key)
+    if (index < 0) return
+    dataList.splice(index, 1, payload)
+  })
+
+  socketStore.socketOn<StoreData<T>>('notify-insert-data', (err, payload) => {
+    if (err) {
+      console.error(err)
+      return
+    }
+    if (payload.collection !== collectionName) return
+    if (!ready.value) {
+      console.warn('!!WARNING!!WARNING!!WARNING!!WARNING!!WARNING!!')
+      console.warn('notify-insert-dataを読み飛ばした！！！！！！')
+    }
+    const list = [payload]
+    console.log('notify-insert-data', list.length)
+    list.forEach(upData => {
+      const index = dataList.findIndex(r => r.key === upData.key)
+      if (index > -1) {
+        dataList.splice(index, 1, upData)
+      } else {
+        const insertIndex = dataList.findIndex(r => upData.order < r.order)
+        if (insertIndex === -1) {
+          dataList.push(upData)
+        } else {
+          dataList.splice(insertIndex, 0, upData)
+        }
+      }
+    })
+  })
+
+  return {
+    ready,
+    requestData: async () => {
+      dataList.splice(0, dataList.length, ...await socketStore.sendSocketServerRoundTripRequest<string, StoreData<T>[]>(
+        'db-api-get',
+        collectionName
+      ))
+      ready.value = true
+    },
+    insertData: async (...list): Promise<void> => {
+      console.log('addCharacterForTest')
+      const result = await socketStore.sendSocketServerRoundTripRequest<AddDirectRequest<T>, string[]>(
+        'db-api-insert',
+        {
+          collectionSuffix: collectionName,
+          share: 'room',
+          force: true,
+          list: list.map(data => ({ data }))
+        }
+      )
+      console.log(result)
+    }
+  }
 }
 
 export function getWatchDiffForDbUpdate<T, U extends keyof StoreData<T>, V extends keyof T>(

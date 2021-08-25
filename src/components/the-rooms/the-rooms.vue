@@ -1,6 +1,8 @@
 <template>
+  <div class="mascot-normal" :class="classObj"></div>
+  <div class="mascot-slide-out" :class="classObj"></div>
   <div id="the-rooms" :class="classObj">
-    <div v-show="!roomList.length">データ取得中</div>
+    <div v-show="!roomList.length">サーバー通信中</div>
     <flexible-data-layout :definition="layoutData" v-show="roomList.length">
       <template #title>
         <h1 class="name">{{ serverName }}</h1>
@@ -58,14 +60,18 @@ export default defineComponent({
   name: 'the-rooms',
   components: { TheRoomsItem },
   emits: ['loggedIn'],
-  setup(_, { emit }) {
+  setup() {
+    const classObj = ref<string[]>(['display'])
     const filterType = ref<FilterMode>('none')
+
     const userStore = UserStore.injector()
-    const classObj = ref<string[]>(['play'])
 
     watch(userStore.userLoginResponse, () => {
-      classObj.value.splice(0, 1, userStore.userLoginResponse.value ? 'play' : 'login')
-      if (userStore.userLoginResponse.value) emit('loggedIn')
+      classObj.value.splice(
+        0,
+        1,
+        userStore.userLoginResponse.value ? 'hide' : 'display'
+      )
     }, { immediate: true })
 
     return {
@@ -81,38 +87,105 @@ export default defineComponent({
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-#the-rooms {
-  z-index: 1;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  overflow-y: auto;
+@use "../animations";
+@use "../common";
 
-  &.login {
-    z-index: 1;
-    opacity: 1;
-    //z-index: 0;
-    //opacity: 0;
+.mascot-normal {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  width: 40vmin;
+  height: 40vmin;
+  transform: translateX(0) rotate(-27deg);
+  background-image: url("https://quoridorn.com/img/mascot/normal/mascot_normal.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-origin: border-box;
+  background-position: right center;
+
+  &:after {
+    content: "";
+    @include common.position-full-size();
+    background-color: rgba(255, 255, 255, 0.4);
   }
 
-  &.play {
-    z-index: 0;
-    opacity: 0;
-    //z-index: 1;
-    //opacity: 1;
+  &.hide {
+    display: none;
+    transform: translateX(-100vw) rotate(-27deg);
+
+    &:after {
+      background-color: rgba(255, 255, 255, 0);
+    }
   }
 }
 
-::v-deep .title {
+.mascot-slide-out {
+  position: fixed;
+  z-index: 2;
+  right: 0;
+  bottom: 0;
+  width: 40vmin;
+  height: 40vmin;
+  transform: translate(0, 0) rotate(-27deg);
+  background-image: url("https://quoridorn.com/img/mascot/normal/mascot_normal.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-origin: border-box;
+  background-position: right center;
+
+  &:after {
+    content: "";
+    @include common.position-full-size();
+    background-color: rgba(255, 255, 255, 0.4);
+  }
+
+  &.display {
+    display: none;
+  }
+
+  &.hide {
+    animation-name: mascot-slide;
+    animation-fill-mode: both;
+    animation-duration: animations.$login-animation-duration;
+    animation-iteration-count: 1;
+    animation-timing-function: linear;
+    animation-delay: 0s;
+    animation-direction: normal;
+
+    &:after {
+      animation-name: bg-color-to-transparent;
+      animation-fill-mode: both;
+      animation-duration: animations.$play-slide-animation-delay;
+      animation-iteration-count: 1;
+      animation-timing-function: linear;
+      animation-delay: 0s;
+      animation-direction: normal;
+    }
+  }
+}
+
+#the-rooms {
+  z-index: 1;
+  @include common.position-full-size(fixed);
+  overflow-y: auto;
+
+  transition: all animations.$play-slide-animation-duration animations.$play-slide-animation-delay linear;
+  &.display {
+    transform: translateX(0);
+  }
+  &.hide {
+    transform: translateX(-100vw);
+  }
+}
+
+@include common.deep(".title") {
   h1 {
     margin: 0;
     justify-self: center;
   }
 }
 
-::v-deep .info-block {
+@include common.deep(".info-block") {
   ul.server-description {
     padding: 0.5em;
     margin: 0;
@@ -154,10 +227,9 @@ export default defineComponent({
   }
 }
 
-::v-deep .room-list-header {
+@include common.deep(".room-list-header") {
   .inline-radio {
-    display: flex;
-    flex-direction: row;
+    @include common.flex-box(row);
     white-space: nowrap;
     min-width: 15em;
     width: 100%;
@@ -169,10 +241,7 @@ export default defineComponent({
       position: relative;
       box-sizing: border-box;
       flex: 1;
-      display: flex;
-      flex-direction: row;
-      align-items: stretch;
-      justify-content: stretch;
+      @include common.flex-box(row, stretch, stretch);
       cursor: pointer;
 
       &:last-child span {
@@ -192,10 +261,8 @@ export default defineComponent({
     span {
       color: #b6b6b6;
       background: #fff;
-      display: flex;
+      @include common.flex-box(row, center, center);
       height: 2em;
-      align-items: center;
-      justify-content: center;
       box-sizing: border-box;
       font-weight: bold;
       flex: 1;
@@ -205,7 +272,7 @@ export default defineComponent({
   }
 }
 
-::v-deep .room-list {
+@include common.deep(".room-list") {
   max-width: 100vw;
 
   ol {
@@ -214,8 +281,7 @@ export default defineComponent({
 
     > li {
       list-style-type: none;
-      display: flex;
-      align-items: stretch;
+      @include common.flex-box(row, null, stretch);
       overflow: hidden;
       white-space: nowrap;
       border-top: 1px dashed lightgray;

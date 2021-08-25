@@ -1,0 +1,26 @@
+@mixin position-full-size($position: absolute) {
+  position: $position;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+@mixin deep($selecter) {
+  :deep(#{ $selecter }) {
+    @content;
+  }
+}
+
+@mixin flex-box(
+  $direction: row,
+  $horizontal: null,
+  $vertical: null,
+  $wrap: nowrap
+) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: if($direction == row, $horizontal, $vertical);
+  align-items: if($direction == row, $vertical, $horizontal);
+  flex-wrap: $wrap;
+}

@@ -1,0 +1,52 @@
+$login-animation-duration: 1s;
+$play-slide-animation-duration: 0.6s;
+$play-slide-animation-delay: 0.4s;
+
+.fuwafuwa {
+  animation: fuwafuwa 3s infinite .8s ease-in-out alternate;
+  background: url("https://quoridorn.com/img/mascot/normal/mascot_normal.png") no-repeat center center / 60px auto;
+  display: inline-block;
+  transition: 1.5s ease-in-out;
+  width: 70px;
+  height: 70px;
+  margin-top: 15px;
+}
+
+@keyframes fuwafuwa {
+  0% {
+    transform:translate(0, 0) rotate(-7deg);
+  }
+  50% {
+    transform:translate(0, -7px) rotate(0deg);
+  }
+  100% {
+    transform:translate(0, 0) rotate(7deg);
+  }
+}
+
+@keyframes bg-color-to-transparent {
+  0% {
+    background-color: rgba(255, 255, 255, 0.4);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes mascot-slide {
+  0% {
+    width: 40vmin;
+    height: 40vmin;
+    transform: translate(0, 0) rotate(-27deg);
+  }
+  40% {
+    width: 40vmin;
+    height: 40vmin;
+    transform: translate(2vmin, 0) rotate(0);
+  }
+  100% {
+    width: 40vmin;
+    height: 40vmin;
+    transform: translate(calc(-100vw + 2vmin), 0) rotate(0);
+  }
+}

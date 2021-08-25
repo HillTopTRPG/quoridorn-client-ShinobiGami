@@ -1,6 +1,6 @@
 <template>
   <div id="hello" :class="classObj">
-    <flexible-data-layout :definition="layoutData">
+    <flexible-data-layout :definition="layoutData" :barSetDelay="1000">
       <template #simple-center>
         <button @click="addCharacter()">addCharacter</button>
         <div class="scene-status">
@@ -132,9 +132,10 @@ type Velocity = VelocityColumn[]
 
 export default defineComponent({
   setup() {
-    const characterStore = CharacterStore.injector()
     const userStore = UserStore.injector()
-    const classObj = ref<string[]>(['play'])
+    const characterStore = CharacterStore.injector()
+
+    const classObj = ref<string[]>(['display'])
     const reactiveLayout = reactive<SlotUnionInfo>(layoutData)
     const velocity = reactive<Velocity>([
       { k: '零', a: '静止した時間', e: 'Mundain' },
@@ -157,14 +158,18 @@ export default defineComponent({
     const addCharacter = () => {
       const item = list.pop()
       if (item) {
-        characterStore.addCharacterForTest(item)
+        characterStore.insertData(item)
       }
     }
 
     characterStore.requestData()
 
     watch(userStore.userLoginResponse, () => {
-      classObj.value.splice(0, 1, userStore.userLoginResponse.value ? 'play' : 'login')
+      classObj.value.splice(
+        0,
+        1,
+        userStore.userLoginResponse.value ? 'display' : 'hide'
+      )
     }, { immediate: true })
 
     return {
@@ -180,41 +185,43 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+@use "../animations";
+@use "../common";
+
 #hello {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
+  @include common.position-full-size(fixed);
+  animation-name: fadeInAnime;
+  animation-fill-mode: backwards;
+  animation-duration: animations.$play-slide-animation-duration;
+  animation-iteration-count: 1;
+  animation-timing-function: linear;
+  animation-delay: animations.$play-slide-animation-delay;
+  animation-direction: normal;
+}
 
-  &.login {
-    z-index: 0;
-    opacity: 0;
-    //z-index: 2;
-    //opacity: 1;
+@keyframes fadeInAnime{
+  0% {
+    transform: translateX(100%);
   }
 
-  &.play {
-    z-index: 2;
-    opacity: 1;
-    //z-index: 0;
-    //opacity: 0;
+  100% {
+    transform: translateX(0);
   }
 }
 
-::v-deep .top-box {
+@include common.deep(".top-box") {
   background-color: yellow;
 }
 
-::v-deep .bottom-box {
+@include common.deep(".bottom-box") {
   background-color: yellow;
 }
 
-::v-deep .left-box {
+@include common.deep(".left-box") {
   background-color: cyan;
 }
 
-::v-deep .right-box {
+@include common.deep(".right-box") {
   background-color: darkblue;
 }
 
@@ -228,19 +235,14 @@ export default defineComponent({
 * {
   box-sizing: border-box;
 }
-::v-deep .simple-center {
+@include common.deep(".simple-center") {
   gap: 0.5rem;
 
   .scene-status {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: flex-end;
+    @include common.flex-box(row, null, flex-end, wrap);
 
     label {
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
+      @include common.flex-box(column, null, flex-start);
 
       select {
         font-size: 120%;
@@ -250,8 +252,7 @@ export default defineComponent({
   }
 
   .character-status-area {
-    display: flex;
-    flex-direction: row;
+    @include common.flex-box(row);
     max-width: 100vw;
     overflow-x: auto;
     gap: 0 0.2rem;
@@ -261,17 +262,14 @@ export default defineComponent({
       max-width: 5em;
       overflow: hidden;
       position: relative;
-      display: flex;
-      flex-direction: column;
-      justify-content: stretch;
+      @include common.flex-box(column, null, stretch);
 
       .character {
         width: 100%;
         font-size: 80%;
         overflow: hidden;
         position: relative;
-        display: flex;
-        justify-content: center;
+        @include common.flex-box(row, center, center);
 
         &:before {
           content: '';
@@ -280,14 +278,8 @@ export default defineComponent({
         }
 
         span {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          @include common.position-full-size();
+          @include common.flex-box(row, center, center);
         }
       }
 
@@ -298,7 +290,7 @@ export default defineComponent({
   }
 }
 
-::v-deep .dramatic-scene {
+@include common.deep(".dramatic-scene") {
   border: 1px solid black;
 
   .character {
@@ -306,8 +298,7 @@ export default defineComponent({
     height: 4em;
     overflow: hidden;
     margin: 3px 0 3px 3px;
-    display: flex;
-    justify-content: center;
+    @include common.flex-box(row, center, center);
 
     &:last-child {
       margin-right: 3px;
@@ -315,15 +306,15 @@ export default defineComponent({
   }
 }
 
-::v-deep #section-core {
+@include common.deep("#section-core") {
   gap: 0.5rem 0.5rem;
 }
-::v-deep #section-scene {
+@include common.deep("#section-scene") {
   min-width: unquote(min(calc(24em + 47px), 100%));
   max-width: unquote(min(40em, 100%));
 }
 
-::v-deep .velocity-system {
+@include common.deep(".velocity-system") {
   justify-self: flex-end;
   min-width: unquote(min(calc(24em + 47px), 100%));
   max-width: unquote(min(40em, 100%));
@@ -335,9 +326,8 @@ export default defineComponent({
 
   .velocity-column {
     flex: 1;
-    display: flex;
+    @include common.flex-box(column);
     box-sizing: border-box;
-    flex-direction: column;
     min-width: 3em;
 
     .character {
@@ -346,8 +336,7 @@ export default defineComponent({
       overflow: hidden;
       position: relative;
       margin: 3px 3px 0 3px;
-      display: flex;
-      justify-content: center;
+      @include common.flex-box(row, center, center);
 
       &:last-child {
         margin-bottom: 3px;
@@ -360,14 +349,8 @@ export default defineComponent({
       }
 
       span {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        @include common.position-full-size();
+        @include common.flex-box(row, center, center);
       }
     }
 
@@ -384,10 +367,8 @@ export default defineComponent({
 
     .label {
       background-color: rgba(255, 255, 255, 0.2);
-      display: flex;
-      flex-direction: column;
+      @include common.flex-box(column, null, flex-srart);
       box-sizing: border-box;
-      justify-content: flex-start;
       height: 4em;
       border-top: 1px solid black;
       border-left: 1px solid black;
@@ -415,8 +396,7 @@ export default defineComponent({
       background-color: rgba(255, 255, 255, 0.2);
       box-sizing: border-box;
       min-height: 5em;
-      display: flex;
-      flex-direction: column;
+      @include common.flex-box(column);
       flex: 1;
       border-style: solid;
       border-color: black;
@@ -426,9 +406,7 @@ export default defineComponent({
 
       .n {
         position: absolute;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
+        @include common.flex-box(column, null, center);
         bottom: 0;
         width: 100%;
         height: 2em;

@@ -136,13 +136,14 @@ export function updateBarList(
         const elm: HTMLElement | null = document.getElementById(block.key)
         if (elm) {
           const rect = elm.getBoundingClientRect()
+          console.log(JSON.stringify(rect, null, '  '))
           if (data.layout === 'v-box') {
             layout.left = rect.x + 'px'
-            layout.top = rect.y + (side === 'after' ? rect.height : 0) + 'px'
+            layout.top = (side === 'after' ? rect.bottom : rect.top) + 'px'
             layout.width = rect.width + 'px'
           }
           if (data.layout === 'h-box') {
-            layout.left = rect.x + (side === 'after' ? rect.width : 0) + 'px'
+            layout.left = (side === 'after' ? rect.right : rect.left) + 'px'
             layout.top = rect.y + 'px'
             layout.height = rect.height + 'px'
           }
@@ -252,18 +253,31 @@ export default defineComponent({
         definition.layout === 'h-box' ||
           definition.layout === 'v-box' ||
           definition.layout === 'tab'
+    },
+    barSetDelay: {
+      type: Number,
+      default: 0
     }
   },
   setup(props) {
     const barList = reactive<BarInfo[]>([])
     const barActive = ref(false)
     onMounted(() => {
-      updateBarList(props.definition, barList)
-      if (barList.length) {
-        window.addEventListener('resize', () => {
+      setTimeout(() => {
+        // 初期配置
+        updateBarList(props.definition, barList)
+
+        // 初回の配置によって起きるズレのために再配置することでズレを解消
+        setTimeout(() => {
           updateBarList(props.definition, barList)
         })
-      }
+
+        if (barList.length) {
+          window.addEventListener('resize', () => {
+            updateBarList(props.definition, barList)
+          })
+        }
+      }, props.barSetDelay)
     })
     const oldBlockSize = reactive<{ w: number; h: number }>({ w: 0, h: 0 })
     const mouse = reactive<MouseMove>({
@@ -382,7 +396,7 @@ export default defineComponent({
   position: relative;
 }
 
-::v-deep > .flexible-flex-layout {
+:deep(> .flexible-flex-layout) {
   width: 100%;
   height: 100%;
 }

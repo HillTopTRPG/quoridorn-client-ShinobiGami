@@ -13,7 +13,9 @@ export default makeStore<Store>('ignoreUpdateKeyStore', () => {
     ignoreUpdateKeyList: []
   })
 
-  const setIgnoreWatchKey = (...keys: string[]) => { state.ignoreUpdateKeyList.push(...keys) }
+  const setIgnoreWatchKey = (...keys: string[]) => {
+    state.ignoreUpdateKeyList.push(...keys)
+  }
   const removeWatchKey = (...removeKeys: (string | undefined)[]) =>
     removeFilter(state.ignoreUpdateKeyList, k => removeKeys.some(rk => rk === k))
 
