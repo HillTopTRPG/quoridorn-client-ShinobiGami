@@ -3,14 +3,15 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from 'vue'
 import RoomStore from '@/store/room'
 import UserStore from '@/store/user'
 
-export default {
+export default defineComponent({
   name: 'LoginProvider',
-  setup(): void {
+  setup() {
     RoomStore.provider()
     UserStore.provider()
   }
-}
+})
 </script>

@@ -1,3 +1,10 @@
+$header-height: 48px;
+$menu-gap: 8px;
+$menu-padding: 8px;
+$menu-item-min-height: 32px;
+$menu-item-max-height: 64px;
+$menu-back-color: #f7f7f7;
+
 @mixin position-full-size($position: absolute) {
   position: $position;
   top: 0;
@@ -24,3 +31,33 @@
   align-items: if($direction == row, $vertical, $horizontal);
   flex-wrap: $wrap;
 }
+
+//// 変数の定義
+//// min-width
+//$breakpoint-up: (
+//  'sm': 'screen and (min-width: 400px)',
+//  'md': 'screen and (min-width: 768px)',
+//  'lg': 'screen and (min-width: 1000px)',
+//  'xl': 'screen and (min-width: 1200px)',
+//) !default;
+//
+//// max-width
+//$breakpoint-down: (
+//        'sm': 'screen and (max-width: 399px)',
+//        'md': 'screen and (max-width: 767px)',
+//        'lg': 'screen and (max-width: 999px)',
+//        'xl': 'screen and (max-width: 1199px)',
+//) !default;
+//
+//// @mixinの定義
+//@mixin mq-up($breakpoint: md) {
+//  @media #{map-get($breakpoint-up, $breakpoint)} {
+//    @content;
+//  }
+//}
+//
+//@mixin mq-down($breakpoint: md) {
+//  @media #{map-get($breakpoint-down, $breakpoint)} {
+//    @content;
+//  }
+//}

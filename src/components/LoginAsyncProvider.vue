@@ -3,13 +3,13 @@
 </template>
 
 <script lang="ts">
-import UserStore, { UserLoginResponse } from '@/store/user'
-import { ComputedRef } from '@vue/reactivity'
+import { defineComponent } from 'vue'
+import UserStore from '@/store/user'
 
-export default {
+export default defineComponent({
   name: 'LoginAsyncProvider',
-  setup(): { userLoginResponse: ComputedRef<UserLoginResponse | null> } {
+  setup() {
     return UserStore.injector()
   }
-}
+})
 </script>

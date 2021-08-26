@@ -428,6 +428,13 @@ export default defineComponent({
   background-color: #495478;
   cursor: pointer;
   user-select: none;
+  animation-name: fade-in;
+  animation-fill-mode: none;
+  animation-duration: 1s;
+  animation-iteration-count: 1;
+  animation-timing-function: linear;
+  animation-delay: 0s;
+  animation-direction: normal;
 
   &.active {
     background-color: #495478;

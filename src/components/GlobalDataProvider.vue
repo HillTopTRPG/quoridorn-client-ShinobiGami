@@ -3,12 +3,13 @@
 </template>
 
 <script lang="ts">
+import { defineComponent } from 'vue'
 import CharacterStore from '@/store/character'
 
-export default {
+export default defineComponent({
   name: 'GlobalDataProvider',
-  setup(): void {
+  setup() {
     CharacterStore.provider()
   }
-}
+})
 </script>

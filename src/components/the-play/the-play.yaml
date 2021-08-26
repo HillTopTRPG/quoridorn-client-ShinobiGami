@@ -16,7 +16,7 @@ blockList:
   layout: h-box
   flexWrap: false
   minHeight:
-    em: 3
+    px: 48
 - key: section-not-top
   layout: h-box
   flexWrap: false
