@@ -1,15 +1,16 @@
 import { reactive } from 'vue'
 import { ExcludeFunctionProperty, makeStore, commonStoreDataProcess } from '@/utility/vue3'
 import { StoreData } from '@/utility/FileUtility'
+import { Shinobigami } from '@/components/the-play/ope-part/shinobigami'
 
 export type Character = {
-  name: string;
   type: 'character';
-  pcNo: number;
   plot: number;
+  pcNo: number;
   isFumble: boolean;
   isActed: boolean;
   color: string;
+  sheetInfo: Shinobigami;
 }
 
 type Store = {
@@ -29,13 +30,13 @@ export default makeStore<Store>('characterStore', () => {
     state.characterList,
     'character',
     [
-      'name',
       'type',
-      'color',
-      'isFumble',
-      'pcNo',
       'plot',
-      'isActed'
+      'pcNo',
+      'isFumble',
+      'isActed',
+      'color',
+      'sheetInfo'
     ]
   )
 

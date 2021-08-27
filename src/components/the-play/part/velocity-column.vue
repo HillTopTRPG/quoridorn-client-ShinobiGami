@@ -12,7 +12,7 @@
             class="character"
             :style="{ backgroundColor: c.data.color }"
             v-if="c.data && c.data.plot === ind && !c.data.isFumble"
-          ><span>{{ c.data.name }}</span></div>
+          ><span>{{ c.data.sheetInfo.characterName }}</span></div>
         </transition>
       </template>
       <span class="n">{{ ind }}</span>
@@ -24,7 +24,7 @@
             class="character"
             :style="{ backgroundColor: c.data.color }"
             v-if="c.data && c.data.plot === ind && c.data.isFumble"
-          ><span>{{ c.data.name }}</span></div>
+          ><span>{{ c.data.sheetInfo.characterName }}</span></div>
         </transition>
       </template>
     </div>

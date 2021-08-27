@@ -136,7 +136,6 @@ export function updateBarList(
         const elm: HTMLElement | null = document.getElementById(block.key)
         if (elm) {
           const rect = elm.getBoundingClientRect()
-          console.log(JSON.stringify(rect, null, '  '))
           if (data.layout === 'v-box') {
             layout.left = rect.x + 'px'
             layout.top = (side === 'after' ? rect.bottom : rect.top) + 'px'

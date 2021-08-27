@@ -5,7 +5,7 @@
         class="character"
         :style="{ backgroundColor: c.data.color }"
         v-if="c.data && c.data.plot === -1"
-      >{{ c.data.name }}</div>
+      >{{ c.data.sheetInfo.characterName }}</div>
     </transition>
   </template>
 </template>
@@ -42,6 +42,7 @@ export default defineComponent({
   overflow: hidden;
   margin: 3px 0 3px 3px;
   @include common.flex-box(row, center, center);
+  color: white;
 
   &:last-child {
     margin-right: 3px;

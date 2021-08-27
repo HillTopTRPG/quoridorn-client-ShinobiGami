@@ -58,7 +58,7 @@ function outputDiffContents(diffInfoList: DiffInfo<unknown>[]) {
           reportObj.data = {}
           Object.keys(d.n.data).forEach((dk) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            reportObj.data[dk] = `${(d.o.data as any)[dk]} -> ${(d.n.data as any)[dk]}`
+            reportObj.data[dk] = `${JSON.stringify((d.o.data as any)[dk])} -> ${JSON.stringify((d.n.data as any)[dk])}`
           })
         }
       } else {

@@ -46,3 +46,7 @@ export function removeFilter<T>(list: (T)[], filterFunc: (d: T) => boolean): T[]
       return info.data
     })
 }
+
+export interface HtmlEvent<T = EventTarget> {
+  target: T;
+}

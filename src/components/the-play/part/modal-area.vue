@@ -18,6 +18,9 @@
     <transition name="right-pane">
       <div class="right-pane" @click.stop  :class="rightPaneType" v-show="rightPaneType">
         <button @click="rightPaneType = ''">閉じる</button>
+        <div class="container">
+          <ope-character/>
+        </div>
       </div>
     </transition>
   </div>
@@ -26,6 +29,7 @@
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue'
 import UserStore from '@/store/user'
+import OpeCharacter from '@/components/the-play/ope-part/ope-character.vue'
 
 type MenuItem = {
   label: string;
@@ -34,6 +38,7 @@ type MenuItem = {
 
 export default defineComponent({
   name: 'modal-area',
+  components: { OpeCharacter },
   setup() {
     const userStore = UserStore.injector()
     const menuItemList = reactive<MenuItem[]>([])
@@ -248,7 +253,7 @@ export default defineComponent({
   }
 
   .right-pane {
-    @include common.flex-box(column, stretch, flex-start);
+    @include common.flex-box(column, flex-start, stretch);
     padding: 1em;
     flex: 1;
     box-sizing: border-box;
@@ -256,6 +261,11 @@ export default defineComponent({
     border-top: 1px solid #495478;
     border-left: 1px solid #495478;
     margin-left: -1px;
+
+    .container {
+      @include common.flex-box(column, stretch, flex-start);
+      overflow: auto;
+    }
   }
 }
 </style>

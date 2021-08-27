@@ -13,6 +13,11 @@
       <template #velocity-system>
         <velocity-column :characterList="characterList" />
       </template>
+      <template #right-box>
+        <template v-for="c in characterList" :key="c.key">
+          <character-detail-view :character="c" />
+        </template>
+      </template>
     </flexible-data-layout>
   </div>
 </template>
@@ -26,11 +31,12 @@ import CharacterStatusArea from '@/components/the-play/part/character-status-are
 import SceneStatus from '@/components/the-play/part/scene-status.vue'
 import ModalArea from '@/components/the-play/part/modal-area.vue'
 import DramaticScene from '@/components/the-play/part/dramatic-scene.vue'
+import CharacterDetailView from '@/components/the-play/part/character-detail-view.vue'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const layoutData = require('./the-play.yaml')
 
 export default defineComponent({
-  components: { DramaticScene, ModalArea, SceneStatus, CharacterStatusArea, VelocityColumn },
+  components: { CharacterDetailView, DramaticScene, ModalArea, SceneStatus, CharacterStatusArea, VelocityColumn },
   setup() {
     const reactiveLayout = reactive<SlotUnionInfo>(layoutData)
     const characterStore = CharacterStore.injector()

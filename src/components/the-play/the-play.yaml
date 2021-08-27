@@ -82,6 +82,9 @@ blockList:
         px: 80
   - key: right-box
     slotName: right-box
+    alignItems: stretch
+    justifyContent: flex-start
+    overflowY: auto
     layout: v-box
     flexWrap: false
     minWidth:

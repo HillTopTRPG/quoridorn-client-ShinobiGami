@@ -5,7 +5,7 @@
         <div
           class="character"
           :style="{ backgroundColor: c.data.color }"
-        ><span>{{ c.data.name }}</span></div>
+        ><span>{{ c.data.sheetInfo.characterName }}</span></div>
         <select v-model="c.data.isActed">
           <option disabled>行動</option>
           <option :value="false">未</option>
@@ -62,6 +62,7 @@ export default defineComponent({
       overflow: hidden;
       position: relative;
       @include common.flex-box(row, center, center);
+      color: white;
 
       &:before {
         content: '';
