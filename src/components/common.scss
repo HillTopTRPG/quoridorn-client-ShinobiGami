@@ -5,12 +5,12 @@ $menu-item-min-height: 32px;
 $menu-item-max-height: 64px;
 $menu-back-color: #f7f7f7;
 
-@mixin position-full-size($position: absolute) {
+@mixin position-full-size($position: absolute, $offset: 0) {
   position: $position;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
+  top: $offset;
+  left: $offset;
+  bottom: $offset;
+  right: $offset;
 }
 
 @mixin deep($selecter) {

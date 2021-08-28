@@ -1,14 +1,14 @@
 <template>
-  <div id="the-play">
+  <div id="the-play" :style="globalStyle">
     <modal-area />
     <flexible-data-layout :definition="layoutData" :barSetDelay="2200">
       <template #top-box></template>
       <template #simple-center>
-        <scene-status />
+        <scene-status-area />
         <character-status-area :character-list="characterList" />
       </template>
       <template #dramatic-scene>
-        <dramatic-scene :character-list="characterList" />
+        <dramatic-scene-area :character-list="characterList" />
       </template>
       <template #velocity-system>
         <velocity-column :characterList="characterList" />
@@ -23,23 +23,45 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue'
-import CharacterStore from '@/store/character'
-import { SlotUnionInfo } from '@/lib-components/flexible-data-layout.vue'
-import VelocityColumn from '@/components/the-play/part/velocity-column.vue'
-import CharacterStatusArea from '@/components/the-play/part/character-status-area.vue'
-import SceneStatus from '@/components/the-play/part/scene-status.vue'
-import ModalArea from '@/components/the-play/part/modal-area.vue'
-import DramaticScene from '@/components/the-play/part/dramatic-scene.vue'
-import CharacterDetailView from '@/components/the-play/part/character-detail-view.vue'
+import { computed, defineComponent, reactive, watch } from 'vue'
+import CharacterStore from '@/feature/character/character'
+import UserSettingStore from '@/feature/user-setting/user-setting'
+import { SlotUnionInfo } from '@/core/flexible-data-layout.vue'
+import VelocityColumn from '@/components/the-play/velocity-column.vue'
+import CharacterStatusArea from '@/components/the-play/area/character-status-area.vue'
+import ModalArea from '@/components/the-play/modal-area.vue'
+import CharacterDetailView from '@/components/the-play/character-detail-view.vue'
+import DramaticSceneArea from '@/components/the-play/area/dramatic-scene-area.vue'
+import SceneStatusArea from '@/components/the-play/area/scene-status-area.vue'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const layoutData = require('./the-play.yaml')
 
 export default defineComponent({
-  components: { CharacterDetailView, DramaticScene, ModalArea, SceneStatus, CharacterStatusArea, VelocityColumn },
+  components: { SceneStatusArea, DramaticSceneArea, CharacterDetailView, ModalArea, CharacterStatusArea, VelocityColumn },
   setup() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const globalStyle = reactive<any>({
+      '--accent1-color': 'rgba(255, 0, 0, 1)',
+      '--accent2-color': 'rgba(0, 0, 255, 1)',
+      '--font-color': 'rgba(0, 0, 0, 1)'
+    })
     const reactiveLayout = reactive<SlotUnionInfo>(layoutData)
     const characterStore = CharacterStore.injector()
+    const userSettingStore = UserSettingStore.injector()
+
+    watch(() => userSettingStore.userSetting, () => {
+      console.log('change global css')
+      const a = userSettingStore.userSetting
+      globalStyle['--accent1-color'] = a?.accent1Color || globalStyle['--accent1-color']
+      globalStyle['--accent2-color'] = a?.accent2Color || globalStyle['--accent2-color']
+      globalStyle['--font-color'] = a?.fontColor || globalStyle['--font-color']
+    }, { deep: true })
+    // (async () => {
+    //   const a = await userSettingStore.getUserSetting()
+    //   globalStyle['--accent1-color'] = a.data?.accent1Color
+    //   globalStyle['--accent2-color'] = a.data?.accent2Color
+    //   globalStyle['--font-color'] = a.data?.fontColor
+    // })()
 
     // const list = reactive<Character[]>([
     //   { name: '藤崎 健吾', type: 'character', pcNo: 1, plot: 3, color: 'red', isFumble: false, isActed: false },
@@ -55,11 +77,9 @@ export default defineComponent({
     //   }
     // }
 
-    characterStore.requestData()
-
     return {
-      // addCharacter,
-      characterList: characterStore.characterList,
+      globalStyle,
+      characterList: computed(() => characterStore.characterList),
       layoutData: reactiveLayout
     }
   },

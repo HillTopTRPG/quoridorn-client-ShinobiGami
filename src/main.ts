@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import LanguageManager from '@/utility/LanguageManager'
-import libComponentPlugin from '@/lib-components'
+import LanguageManager from '@/core/utility/LanguageManager'
+import libComponentPlugin from '@/core'
 import Vue3TouchEvents from 'vue3-touch-events'
 
 (async () => {

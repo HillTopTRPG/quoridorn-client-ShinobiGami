@@ -1,23 +1,27 @@
 <template>
-  <quoridorn-login-wrapper>
-    <global-data-provider>
-      <the-play />
-    </global-data-provider>
-  </quoridorn-login-wrapper>
+  <quoridorn-core :modules="modules">
+    <the-play />
+  </quoridorn-core>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import QuoridornCore from '@/core/quoridorn-core.vue'
 import ThePlay from '@/components/the-play/the-play.vue'
-import GlobalDataProvider from '@/components/GlobalDataProvider.vue'
-import QuoridornLoginWrapper from '@/lib-components/quoridorn-login-wrapper.vue'
+
+import CharacterStore from '@/feature/character/character'
+import UserSettingStore from '@/feature/user-setting/user-setting'
 
 export default defineComponent({
   name: 'App',
   components: {
-    QuoridornLoginWrapper,
-    GlobalDataProvider,
+    QuoridornCore,
     ThePlay
+  },
+  setup() {
+    return {
+      modules: [CharacterStore, UserSettingStore]
+    }
   }
 })
 </script>

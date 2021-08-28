@@ -1,0 +1,513 @@
+<template>
+  <table class="skill-table" :class="[viewType === 'comparison' ? 'ignore-input' : '', operationType]">
+    <caption v-if="viewType !== 'edit'">
+      <template v-if="viewType === 'comparison'">
+        <div>
+          <select v-model="otherCharaKey">
+            <option :value="null">なし</option>
+            <template v-for="c in characterList" :key="c.key">
+              <option
+                v-if="c.key !== characterKey && c.data && c.data.type === 'character'"
+                :value="c.key"
+              >{{ c.data.sheetInfo.characterName }}</option>
+            </template>
+          </select>
+        </div>
+      </template>
+      <template v-else>
+        <div class="operation-type-radio" @click.prevent="operationType = operationType === 'judge' ? 'input' : 'judge'">
+          <label :class="operationType === 'input' ? 'selected' : ''"><input type="radio" value="input" v-model="operationType">設定</label>
+          <label :class="operationType === 'judge' ? 'selected' : ''">判定<input type="radio" value="judge" v-model="operationType"></label>
+        </div>
+      </template>
+    </caption>
+    <thead v-if="skill">
+      <tr>
+        <template v-for="(s, col) in skillColumnList" :key="s[0]">
+          <th :class="`gap-${col}`">
+            <label>
+              <input
+                :disabled="viewType === 'comparison'"
+                type="checkbox"
+                :checked="skill?.spaceList.some(n => n === col)"
+                @change="onChangeGapHead($event, col)"
+              >
+              {{s[0]}}
+            </label>
+          </th>
+          <th :class="`skill-${col}`">
+            <label>
+              {{s[1]}}
+              <input
+                :disabled="viewType === 'comparison'"
+                type="checkbox"
+                :checked="skill?.damagedColList.some(n => n === col)"
+                @change="onChangeDamageHead($event, col)"
+              >
+            </label>
+          </th>
+        </template>
+        <th class="row-num" rowspan="2"></th>
+      </tr>
+    </thead>
+    <tbody v-if="skill">
+      <tr :class="`row-${row}`" v-for="(tList, row) in tokugiTable" :key="row">
+        <template v-for="(t, col) in tList" :key="t">
+          <td :class="[`gap-${col}`, skill?.spaceList.some(n => n === col) ? 'fill' : '']"></td>
+          <td :class="[
+            `skill-${col}`,
+            t === selectedSkill ? 'selected' : '',
+            skill?.learnedList.some(n => n.column === col && n.row === row)? 'learned' : '',
+            skill?.damagedList.some(d => d.name === t) ? 'damaged' : ''
+          ]">
+            <span
+              class="target-value"
+              v-if="targetValueList.some(tv => tv.name === t)"
+              :style="{ '--value': `'>=${targetValueList.find(tv => tv.name === t).targetValue}'` }"
+            ></span>
+            <label @click="onClickSkillName(t)">{{ t }}</label>
+          </td>
+        </template>
+        <td class="row-num">{{ row + 2 }}</td>
+      </tr>
+    </tbody>
+    <tfoot v-if="skill">
+      <tr>
+        <td class="out-row" colspan="13" :class="skill?.outRow ? 'fill' : ''">
+          <label><input :disabled="viewType === 'comparison'" type="checkbox" :checked="skill?.outRow" @change="onChangeOutRow($event)"></label>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+</template>
+
+<script lang="ts">
+import { defineComponent, watch, ref, reactive, PropType } from 'vue'
+import { tokugiTable } from '@/core/utility/shinobigami'
+import { listDelete } from '@/core/utility/PrimaryDataUtility'
+import { HtmlEvent } from '@/core/utility/typescript'
+import { SaikoroFictionTokugi } from '@/core/utility/SaikoroFiction'
+import CharacterStore, { Character } from '@/feature/character/character'
+import { makeComputedObject } from '@/core/utility/vue3'
+
+function getRowCol(name: string): { r: number, c: number } {
+  let r = -1
+  let c = -1
+  tokugiTable.forEach((rl, rIdx) => {
+    const cIdx = rl.findIndex(n => n === name)
+    if (cIdx >= 0) {
+      r = rIdx
+      c = cIdx
+    }
+  })
+  return { r, c }
+}
+
+function calcTargetValue(name: string, tokugi: SaikoroFictionTokugi): {
+  r: number;
+  c: number;
+  name: string;
+  targetValue: number;
+}[] {
+  const { r, c } = getRowCol(name)
+  if (r === -1 || c === -1) return []
+  return tokugi.learnedList
+    .filter(
+      t =>
+        (!tokugi.isUseColDamage ||
+          !tokugi.damagedColList.some(c => c === t.column)) &&
+        (!tokugi.isUseSingleDamage ||
+          !tokugi.damagedList.some(
+            d => d.row === t.row && d.column === t.column
+          ))
+    )
+    .map(t => {
+      const learnedTokugi = tokugiTable[t.row][t.column]
+      const calcHorizontalMove = (): number => {
+        return [...Array(Math.abs(t.column - c))].reduce(
+          (accumulator, currentValue_, idx) => {
+            const currentColumn = Math.min(t.column, c) + idx
+            const targetGapNum = currentColumn === 5 ? 0 : currentColumn + 1
+            const isContain = tokugi.spaceList.some(s => s === targetGapNum)
+            return accumulator + (isContain ? 1 : 2)
+          },
+          0
+        )
+      }
+      let cMove = calcHorizontalMove()
+      // 一番左のギャップが埋まっていたら、左右が繋がっているものとして扱う
+      if (tokugi.spaceList.some(s => s === 0)) {
+        const cMoveRight: number = [...Array(6 - Math.abs(t.column - c))].reduce(
+          (accumulator, currentValue_, idx) => {
+            let currentColumn = Math.max(t.column, c) + idx
+            if (currentColumn >= 6) currentColumn -= 6
+            const targetGapNum = currentColumn === 5 ? 0 : currentColumn + 1
+            const isContain = tokugi.spaceList.some(s => s === targetGapNum)
+            return accumulator + (isContain ? 1 : 2)
+          },
+          0
+        )
+        cMove = Math.min(cMove, cMoveRight)
+      }
+      let rMove = Math.abs(t.row - r)
+      if (tokugi.outRow) {
+        rMove = Math.min(rMove, Math.min(t.row, r) + 11 - Math.max(t.row, r))
+      }
+
+      return {
+        r: t.row,
+        c: t.column,
+        name: learnedTokugi,
+        targetValue: rMove + cMove + 5
+      }
+    })
+    .sort((v1, v2) => {
+      if (v1.targetValue < v2.targetValue) return -1
+      return v2.targetValue < v1.targetValue ? 1 : 0
+    })
+}
+
+export default defineComponent({
+  name: 'skill-table',
+  props: {
+    viewType: {
+      type: String as PropType<'normal' | 'comparison' | 'edit'>,
+      require: true
+    },
+    character: {
+      type: Object as PropType<Character>,
+      required: true
+    },
+    characterKey: {
+      type: String,
+      default: null
+    },
+    targetSkill: {
+      type: String,
+      default: null
+    }
+  },
+  setup(props, { emit }) {
+    // 特技表
+    const skill = ref<SaikoroFictionTokugi | null>(null)
+
+    // 達成値
+    const targetValueList = reactive<{ name: string; targetValue: number; }[]>([])
+    const onChangeSelectedSkill = (name: string | null): void => {
+      if (!name || !skill.value) {
+        targetValueList.splice(0, targetValueList.length)
+        return
+      }
+      const list = calcTargetValue(name, skill.value)
+      targetValueList.splice(0, targetValueList.length, ...list.map(o => ({ name: o.name, targetValue: o.targetValue })))
+    }
+
+    // 外部の変更を取り込む
+    const characterStore = CharacterStore.injector()
+    const otherCharaKey = ref<string | null>(null)
+    watch(
+      props.viewType === 'comparison'
+        ? [() => props.character?.sheetInfo.tokugi, () => characterStore.characterList, otherCharaKey]
+        : () => props.character?.sheetInfo.tokugi,
+      () => {
+        skill.value = props.viewType === 'comparison'
+          ? characterStore.characterList.find(c => c.key === otherCharaKey.value)?.data?.sheetInfo.tokugi || null
+          : props.character?.sheetInfo.tokugi || null
+        if (props.viewType === 'normal') onChangeSelectedSkill(props.targetSkill)
+      },
+      { immediate: true, deep: true }
+    )
+
+    // 選択済み特技に関するpropsと内部変数とのバインディング
+    const selectedSkill = ref<string | null>(null)
+    watch(selectedSkill, () => {
+      onChangeSelectedSkill(selectedSkill.value)
+      emit('update:targetSkill', selectedSkill.value)
+    })
+    watch(() => props.targetSkill, () => {
+      selectedSkill.value = props.targetSkill
+    }, { immediate: true })
+
+    const onChangeGapHead = (e: HtmlEvent<HTMLInputElement>, col: number): void => {
+      if (!skill.value) return
+      const list = skill.value.spaceList
+      e.target.checked ? list.push(col) : listDelete(list, d => d === col)
+    }
+    const onChangeDamageHead = (e: HtmlEvent<HTMLInputElement>, col: number): void => {
+      if (!skill.value) return
+      const damagedColList = skill.value.damagedColList
+      const damageList = skill.value.damagedList
+      if (e.target.checked) {
+        damagedColList.push(col)
+        damageList.push(...tokugiTable.map((row, ind) => ({
+          name: row[col],
+          row: ind,
+          column: col
+        })))
+      } else {
+        listDelete(damagedColList, d => d === col)
+        listDelete(damageList, d => d.column === col)
+      }
+    }
+
+    // 設定・判定
+    const operationType = ref<'input' | 'judge'>(props.viewType === 'edit' ? 'input' : 'judge')
+    watch(operationType, () => {
+      if (operationType.value === 'input') {
+        selectedSkill.value = null
+      }
+    })
+    const onClickSkillName = (name: string): void => {
+      if (!skill.value) return
+      const { r, c } = getRowCol(name)
+      if (r === -1 || c === -1) return
+      if (operationType.value === 'input') {
+        const list = skill.value.learnedList
+        const index = list.findIndex(s => s.name === name)
+        index < 0 ? list.push({ name, row: r, column: c }) : list.splice(index, 1)
+      } else {
+        selectedSkill.value = selectedSkill.value === name ? null : name
+      }
+    }
+
+    const onChangeOutRow = (e: HtmlEvent<HTMLInputElement>) => {
+      if (skill.value) {
+        skill.value.outRow = e.target.checked
+      }
+    }
+
+    return {
+      otherCharaKey,
+      targetValueList,
+      selectedSkill,
+      skill,
+      operationType,
+      ...makeComputedObject(characterStore),
+      skillColumnList: [['　', '器術'], ['A', '体術'], ['B', '忍術'], ['C', '謀術'], ['D', '戦術'], ['E', '妖術']],
+      tokugiTable,
+      onChangeGapHead,
+      onChangeDamageHead,
+      onClickSkillName,
+      onChangeOutRow
+    }
+  }
+})
+</script>
+
+<style scoped lang="scss">
+@use "../common";
+
+table.skill-table {
+  font-size: 10px;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border-right: 1px solid rgb(0, 0, 0);
+  border-top: 1px solid rgb(0, 0, 0);
+  table-layout: fixed;
+
+  &.input td[class^="skill-"] {
+    background-color: rgba(200, 255, 255, 0.7);
+  }
+
+  &.ignore-input {
+    caption label {
+      cursor: default;
+    }
+    thead label {
+      cursor: default;
+    }
+    tfoot label {
+      cursor: default;
+    }
+  }
+
+  label {
+    cursor: pointer;
+  }
+
+  caption {
+    text-align: left;
+    div {
+      @include common.flex-box(row, flex-start, center, wrap);
+      height: 2em;
+
+      &.operation-type-radio {
+        @include common.flex-box(row, flex-start, stretch, wrap);
+
+        label {
+          padding: 0 0.2rem;
+          border: 1px solid black;
+          box-sizing: border-box;
+          user-select: none;
+
+          &:first-child {
+            border-radius: 5px 0 0 0;
+          }
+
+          &:last-child {
+            border-radius: 0 5px 0 0;
+          }
+
+          &.selected {
+            background-color: black;
+            color: white;
+          }
+        }
+      }
+    }
+    label {
+      @include common.flex-box(row, flex-start, center);
+    }
+  }
+
+  input {
+    padding: 0;
+    margin: 0;
+    cursor: inherit;
+  }
+
+  td, th {
+    position: relative;
+    text-align: center;
+    white-space: nowrap;
+    border-style: solid;
+    border-width: 0 0 1px 1px;
+    border-color: black;
+    padding: 0;
+    margin: 0;
+    background-color: rgba(255, 255, 255, 0.7);
+
+    > * {
+      vertical-align: middle;
+    }
+  }
+  @mixin fill-cell {
+    background-color: black !important;
+    color: white !important;
+  }
+  @mixin set-width($width) {
+    width: $width;
+    min-width: $width;
+    max-width: $width;
+  }
+  @mixin set-label-css($direction, $height, $horizontal: center) {
+    > label {
+      @include common.flex-box($direction, $horizontal, center);
+      height: $height;
+    }
+  }
+
+  thead {
+    th { @include fill-cell; }
+    *[class^="gap-"] { @include set-label-css(column, 2rem); }
+    *[class^="skill-"] {
+      @include set-label-css(row, 2rem);
+
+      input[type='checkbox'] {
+        margin-left: 3px;
+
+        &:checked {
+          outline: var(--accent1-color) solid 1px;
+          outline-offset: 1px;
+        }
+      }
+    }
+  }
+
+  tbody {
+    *[class^="gap-"] {
+      @include set-label-css(column, 2em);
+    }
+    *[class^="skill-"] { @include set-label-css(row, 2em); }
+  }
+
+  .row-num {
+    @include fill-cell;
+    @include set-width(1.4em);
+  }
+
+  .out-row {
+    @include set-label-css(row, 2em, flex-start);
+    width: 100%;
+  }
+
+  .target-value {
+    @include common.flex-box(row, center, center);
+    z-index: 3;
+    position: absolute;
+    color: black;
+    right: 0;
+    transform: translateX(80%);
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    background-color: yellow;
+    border: solid gray 1px;
+    border-radius: 5px;
+    padding: 5px;
+    overflow: visible;
+    cursor: pointer;
+
+    &:before {
+      content: var(--value);
+      display: block;
+    }
+
+    &:after {
+      content: '';
+      background-color: yellow;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 10px;
+      height: 10px;
+      margin: auto;
+      transform: translateX(-5px) rotate(45deg);
+      transform-origin: center center;
+      z-index: 2;
+    }
+  }
+
+  .learned,
+  .fill {
+    @include fill-cell;
+  }
+
+  *[class^="gap-"] {
+    @include set-width(1.4em);
+  }
+
+  *[class^="skill-"] {
+    @include set-width(5.2em);
+
+    &.selected:after {
+      content: '';
+      @include common.position-full-size(absolute, -3px);
+      padding: 2px;
+      border: 2px var(--accent1-color) solid;
+      box-sizing: content-box;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    &.damaged.learned {
+      &:before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        width: 5em;
+        height: 2px;
+        background-color: var(--accent1-color);
+        transform-origin: center center;
+        pointer-events: none;
+        transform: rotate(19deg);
+      }
+    }
+  }
+}
+</style>
