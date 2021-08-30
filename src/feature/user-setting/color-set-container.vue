@@ -35,7 +35,9 @@ export default defineComponent({
       userName: '',
       fontColor: '#000',
       skillTableFontSize: 11,
-      ninjaArtsTableFontSize: 11
+      ninjaArtsTableFontSize: 11,
+      backgroundTableFontSize: 11,
+      specialArtsTableFontSize: 11
     }))
 
     const selectColorSetting = (c: UserSetting) => {

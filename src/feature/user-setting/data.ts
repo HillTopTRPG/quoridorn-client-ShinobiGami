@@ -11,6 +11,8 @@ export type UserSetting = {
   accent2Color: string;
   skillTableFontSize: number;
   ninjaArtsTableFontSize: number;
+  backgroundTableFontSize: number;
+  specialArtsTableFontSize: number;
 }
 
 type Store = {
@@ -39,7 +41,9 @@ export default makeStore<Store>('user-setting-store', () => {
       'accent1Color',
       'accent2Color',
       'skillTableFontSize',
-      'ninjaArtsTableFontSize'
+      'ninjaArtsTableFontSize',
+      'backgroundTableFontSize',
+      'specialArtsTableFontSize'
     ]
   )
 
@@ -61,7 +65,9 @@ export default makeStore<Store>('user-setting-store', () => {
       accent2Color: 'rgba(0, 111, 255, 1)',
       fontColor: '#3E2723',
       skillTableFontSize: 11,
-      ninjaArtsTableFontSize: 11
+      ninjaArtsTableFontSize: 11,
+      backgroundTableFontSize: 11,
+      specialArtsTableFontSize: 11
     })
     let intervalId: number | null = null
     return new Promise((resolve) => {

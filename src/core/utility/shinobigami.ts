@@ -11,6 +11,13 @@ type Haikei = {
   effect: string;
 };
 
+type SpecialArts = {
+  name: string;
+  skill: string;
+  effect: string;
+  direction: string;
+}
+
 export type Ninpou = {
   secret: boolean;
   name: string;
@@ -48,6 +55,7 @@ export type Shinobigami = {
     pcno: string;
   };
   backgroundList: Haikei[]; // 背景
+  specialArtsList: SpecialArts[]; // 奥義
   tokugi: SaikoroFictionTokugi; // 特技
 };
 
@@ -186,7 +194,8 @@ export class ShinobigamiHelper extends TrpgSystemHelper<Shinobigami> {
         true,
         false,
         false
-      )
+      ),
+      specialArtsList: []
     }
   }
 }

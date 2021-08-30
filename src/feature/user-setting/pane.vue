@@ -8,6 +8,14 @@
       <span>忍法一覧のフォントサイズ</span>
       <input type="number" v-model="userSetting.ninjaArtsTableFontSize" min="10" step="1">
     </label>
+    <label>
+      <span>背景一覧のフォントサイズ</span>
+      <input type="number" v-model="userSetting.backgroundTableFontSize" min="10" step="1">
+    </label>
+    <label>
+      <span>奥義一覧のフォントサイズ</span>
+      <input type="number" v-model="userSetting.specialArtsTableFontSize" min="10" step="1">
+    </label>
 
     <color-set-container />
 

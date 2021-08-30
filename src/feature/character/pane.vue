@@ -1,25 +1,13 @@
 <template>
-  <label class="url"><span>キャラクターシート倉庫URL</span><input type="text" v-model="data.sheetInfo.url"></label>
-  <character-basic-info :character="data" mode="edit" />
-  <skill-table :character="data" mode="edit" />
-  <ninja-arts-table :character="data" mode="edit" />
-  <table class="background">
-    <tr>
-      <th class="name">名称</th>
-      <th class="type">種別</th>
-      <th class="point">功績点</th>
-      <th class="effect">効果</th>
-    </tr>
-    <tr v-for="(bg, ind) in data.sheetInfo.backgroundList" :key="ind">
-      <td class="name">{{bg.name}}</td>
-      <td class="type">{{bg.type}}</td>
-      <td class="point">{{bg.point}}</td>
-      <td class="effect">{{bg.effect}}</td>
-    </tr>
-  </table>
+  <label class="url"><span>キャラクターシート倉庫URL</span><input type="text" v-model="character.sheetInfo.url"></label>
+  <character-basic-info :character="character" mode="edit" />
+  <skill-table :character="character" mode="edit" />
+  <ninja-arts-table :character="character" mode="edit" />
+  <background-table :character="character" />
+  <special-arts-table :character="character" />
   <label class="color">
     <span>チャット文字色</span>
-    <font-color-select v-model="data.color" />
+    <font-color-select v-model="character.color" />
   </label>
   <button @click="insertCharacter()">Add</button>
 </template>
@@ -34,11 +22,15 @@ import NinjaArtsTable from '@/components/shinobi-gami/ninja-arts-table.vue'
 import CharacterBasicInfo from '@/components/shinobi-gami/character-basic-info.vue'
 import { convertNumberNull } from '@/core/utility/PrimaryDataUtility'
 import FontColorSelect from '@/components/font-color-select.vue'
+import BackgroundTable from '@/components/shinobi-gami/background-table.vue'
+import { removeFilter } from '@/core/utility/typescript'
+import SpecialArtsTable from '@/components/shinobi-gami/special-arts-table.vue'
 
 export default defineComponent({
   name: 'character-pane',
-  components: { FontColorSelect, CharacterBasicInfo, NinjaArtsTable, SkillTable },
-  setup() {
+  emits: ['close'],
+  components: { SpecialArtsTable, BackgroundTable, FontColorSelect, CharacterBasicInfo, NinjaArtsTable, SkillTable },
+  setup(_, { emit }) {
     const userSettingStore = UserSettingStore.injector()
     const userSetting = computed(() => userSettingStore.userSetting)
 
@@ -54,7 +46,7 @@ export default defineComponent({
       })
     pcNo++
 
-    const data = reactive<Character>({
+    const character = reactive<Character>({
       pcNo,
       isActed: false,
       plot: -2,
@@ -96,14 +88,15 @@ export default defineComponent({
           isUseColDamage: false,
           isUseSingleDamage: false,
           isOutputSingleDamage: false
-        }
+        },
+        specialArtsList: []
       }
     })
 
-    watch(() => data.sheetInfo.url, async () => {
-      console.log(data.sheetInfo.url)
-      if (!data.sheetInfo.url) return
-      const helper = new ShinobigamiHelper(data.sheetInfo.url)
+    watch(() => character.sheetInfo.url, async () => {
+      console.log(character.sheetInfo.url)
+      if (!character.sheetInfo.url) return
+      const helper = new ShinobigamiHelper(character.sheetInfo.url)
       if (!await helper.isThis()) {
         console.log('is not this')
         return
@@ -114,24 +107,27 @@ export default defineComponent({
       if (!rd) return
 
       const pcNoRaw = convertNumberNull(rd.scenario.pcno.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0)))
-      if (pcNoRaw !== null) data.pcNo = pcNoRaw
-      data.sheetInfo = rd
+      if (pcNoRaw !== null) character.pcNo = pcNoRaw
+      character.sheetInfo = rd
     })
 
     const insertCharacter = () => {
-      console.log('insert')
-      console.log(data)
-      state.insertData(data)
+      // eslint-disable-next-line no-irregular-whitespace
+      const deleteSpace = (name: string) => name.replaceAll(/ 　/g, '')
+      removeFilter(character.sheetInfo.ninpouList, n => !deleteSpace(n.name).length)
+      removeFilter(character.sheetInfo.backgroundList, n => !deleteSpace(n.name).length)
+      state.insertData(character)
+      emit('close')
     }
 
     return {
       userSetting,
-      data,
+      character,
       tokugiTable: tokugiTable,
       skillColumnList: ['器術', '体術', '忍術', '謀術', '戦術', '妖術'],
       insertCharacter,
       selectColor(color: string) {
-        data.color = color
+        character.color = color
       }
     }
   }
@@ -149,35 +145,5 @@ export default defineComponent({
 
 label.color {
   @include common.flex-box(column, flex-start, flex-start);
-}
-
-table {
-  align-self: flex-start;
-
-  &.background {
-    font-size: 50%;
-    border-collapse: collapse;
-    border-spacing: 10px 100px;
-    border: 1px solid red;
-
-    th {
-      border: 1px solid green;
-    }
-    td {
-      border: 1px solid blue;
-    }
-    .name {
-      white-space: nowrap;
-    }
-    .type {
-      white-space: nowrap;
-    }
-    .point {
-      white-space: nowrap;
-    }
-    .effect {
-      text-align: left;
-    }
-  }
 }
 </style>

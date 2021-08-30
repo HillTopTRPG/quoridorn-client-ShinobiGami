@@ -194,6 +194,10 @@ table.ninja-arts {
     color: white;
   }
 
+  td {
+    height: 1.9em;
+  }
+
   tbody tr {
     cursor: pointer;
   }
@@ -229,13 +233,17 @@ table.ninja-arts {
     width: 2em;
   }
 
+  td.name,
+  td.effect {
+    text-align: left;
+  }
+
   &.edit .name {
     width: 10em;
   }
   .name {
     white-space: nowrap;
     width: 3em;
-    text-align: left;
   }
 
   .type {
@@ -262,7 +270,6 @@ table.ninja-arts {
   }
 
   .effect {
-    text-align: left;
     white-space: break-spaces;
     min-width: 15em;
 

@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, watch, ref } from 'vue'
+import { computed, defineComponent, reactive, watch } from 'vue'
 import CharacterStore from '@/feature/character/data'
 import UserSettingStore from '@/feature/user-setting/data'
 import { SlotUnionInfo } from '@/core/flexible-data-layout.vue'
@@ -41,17 +41,17 @@ export default defineComponent({
   setup() {
     const userSettingStore = UserSettingStore.injector()
 
-    const diffMs = ref(0)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const globalStyle = reactive<any>({})
     watch(() => userSettingStore.userSetting, () => {
       const a = userSettingStore.userSetting
-      console.log(diffMs.value)
       globalStyle['--accent1-color'] = a?.accent1Color || globalStyle['--accent1-color']
       globalStyle['--accent2-color'] = a?.accent2Color || globalStyle['--accent2-color']
       globalStyle['--font-color'] = a?.fontColor || globalStyle['--font-color']
       globalStyle['--skill-table-font-size'] = a?.skillTableFontSize ? a?.skillTableFontSize + 'px' : '' || globalStyle['--skill-table-font-size']
       globalStyle['--ninja-arts-table-font-size'] = a?.ninjaArtsTableFontSize ? a?.ninjaArtsTableFontSize + 'px' : '' || globalStyle['--ninja-arts-table-font-size']
+      globalStyle['--background-table-font-size'] = a?.backgroundTableFontSize ? a?.backgroundTableFontSize + 'px' : '' || globalStyle['--background-table-font-size']
+      globalStyle['--special-arts-table-font-size'] = a?.specialArtsTableFontSize ? a?.specialArtsTableFontSize + 'px' : '' || globalStyle['--special-arts-table-font-size']
     }, { deep: true, immediate: true })
 
     const reactiveLayout = reactive<SlotUnionInfo>(layoutData)
@@ -60,8 +60,7 @@ export default defineComponent({
     return {
       globalStyle,
       characterList: computed(() => characterStore.characterList),
-      layoutData: reactiveLayout,
-      diffMs
+      layoutData: reactiveLayout
     }
   },
   name: 'the-play'
