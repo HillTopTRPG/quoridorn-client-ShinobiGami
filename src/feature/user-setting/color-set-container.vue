@@ -11,15 +11,15 @@
 
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
-import UserSettingStore, { UserSetting } from '@/feature/user-setting/user-setting'
-import ColorTest from '@/feature/user-setting/component/color-test.vue'
+import Store, { UserSetting } from '@/feature/user-setting/data'
+import ColorTest from '@/feature/user-setting/color-test.vue'
 
 export default defineComponent({
   name: 'color-set-container',
   components: { ColorTest },
   setup() {
-    const userSettingStore = UserSettingStore.injector()
-    const userSetting = computed(() => userSettingStore.userSetting)
+    const state = Store.injector()
+    const userSetting = computed(() => state.userSetting)
 
     const userSettingList: UserSetting[] = [
       {
@@ -30,7 +30,13 @@ export default defineComponent({
         accent1Color: 'rgba(0, 111, 255, 1)',
         accent2Color: 'rgba(0, 255, 0, 1)'
       }
-    ].map((u): UserSetting => ({ ...u, userName: '', fontColor: '#000' }))
+    ].map((u): UserSetting => ({
+      ...u,
+      userName: '',
+      fontColor: '#000',
+      skillTableFontSize: 11,
+      ninjaArtsTableFontSize: 11
+    }))
 
     const selectColorSetting = (c: UserSetting) => {
       if (userSetting.value) {
@@ -49,7 +55,7 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-@use "../../../components/common";
+@use "../../components/common";
 
 .color-set-container {
   @include common.flex-box(row, flex-start, flex-start);

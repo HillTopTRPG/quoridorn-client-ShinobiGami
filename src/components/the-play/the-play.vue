@@ -1,5 +1,5 @@
 <template>
-  <div id="the-play" :style="globalStyle">
+  <div id="the-play" :style="globalStyle" v-if="ready">
     <modal-area />
     <flexible-data-layout :definition="layoutData" :barSetDelay="2200">
       <template #top-box></template>
@@ -23,9 +23,10 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, watch } from 'vue'
-import CharacterStore from '@/feature/character/character'
-import UserSettingStore from '@/feature/user-setting/user-setting'
+import { computed, defineComponent, reactive, watch, ref } from 'vue'
+import CharacterStore from '@/feature/character/data'
+import UserSettingStore from '@/feature/user-setting/data'
+import UserStore from '@/core/data/user'
 import { SlotUnionInfo } from '@/core/flexible-data-layout.vue'
 import VelocityColumn from '@/components/the-play/velocity-column.vue'
 import CharacterStatusArea from '@/components/the-play/area/character-status-area.vue'
@@ -39,48 +40,48 @@ const layoutData = require('./the-play.yaml')
 export default defineComponent({
   components: { SceneStatusArea, DramaticSceneArea, CharacterDetailView, ModalArea, CharacterStatusArea, VelocityColumn },
   setup() {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const globalStyle = reactive<any>({
-      '--accent1-color': 'rgba(255, 0, 0, 1)',
-      '--accent2-color': 'rgba(0, 0, 255, 1)',
-      '--font-color': 'rgba(0, 0, 0, 1)'
-    })
-    const reactiveLayout = reactive<SlotUnionInfo>(layoutData)
-    const characterStore = CharacterStore.injector()
     const userSettingStore = UserSettingStore.injector()
+    const userStore = UserStore.injector()
 
+    const diffMs = ref(0)
+    const ready = ref(false)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const globalStyle = reactive<any>({})
     watch(() => userSettingStore.userSetting, () => {
-      console.log('change global css')
       const a = userSettingStore.userSetting
+      console.log(diffMs.value)
       globalStyle['--accent1-color'] = a?.accent1Color || globalStyle['--accent1-color']
       globalStyle['--accent2-color'] = a?.accent2Color || globalStyle['--accent2-color']
       globalStyle['--font-color'] = a?.fontColor || globalStyle['--font-color']
-    }, { deep: true })
-    // (async () => {
-    //   const a = await userSettingStore.getUserSetting()
-    //   globalStyle['--accent1-color'] = a.data?.accent1Color
-    //   globalStyle['--accent2-color'] = a.data?.accent2Color
-    //   globalStyle['--font-color'] = a.data?.fontColor
-    // })()
+      globalStyle['--skill-table-font-size'] = a?.skillTableFontSize ? a?.skillTableFontSize + 'px' : '' || globalStyle['--skill-table-font-size']
+      globalStyle['--ninja-arts-table-font-size'] = a?.ninjaArtsTableFontSize ? a?.ninjaArtsTableFontSize + 'px' : '' || globalStyle['--ninja-arts-table-font-size']
+    }, { deep: true, immediate: true })
 
-    // const list = reactive<Character[]>([
-    //   { name: '藤崎 健吾', type: 'character', pcNo: 1, plot: 3, color: 'red', isFumble: false, isActed: false },
-    //   { name: '篠原 亮司', type: 'character', pcNo: 2, plot: -2, color: 'green', isFumble: false, isActed: true },
-    //   { name: '風咸 咲子', type: 'character', pcNo: 3, plot: 0, color: 'pink', isFumble: false, isActed: true },
-    //   { name: '黒岩 健斗', type: 'character', pcNo: 4, plot: 3, color: 'silver', isFumble: false, isActed: true },
-    //   { name: '飯宮 薫', type: 'character', pcNo: 5, plot: 3, color: 'olive', isFumble: false, isActed: true }
-    // ])
-    // const addCharacter = () => {
-    //   const item = list.pop()
-    //   if (item) {
-    //     characterStore.insertData(item)
-    //   }
-    // }
+    const reactiveLayout = reactive<SlotUnionInfo>(layoutData)
+    const characterStore = CharacterStore.injector()
+    const diff = userStore.ms2 - userStore.ms1
+    console.log(diff)
+    globalStyle['--diff-ms'] = `${diff}ms`
+    // setTimeout(() => {
+    //   ready.value = true
+    // })
+    ready.value = true
+    // onMounted(() => {
+    //   console.log('@@2', Date.now() % 100000)
+    //   diffMs.value = (Date.now() % 100000) - userStore.ms
+    //   globalStyle['--diff-ms'] = `${diffMs.value}ms`
+    //
+    //   setTimeout(() => {
+    //     ready.value = true
+    //   })
+    // })
 
     return {
+      ready,
       globalStyle,
       characterList: computed(() => characterStore.characterList),
-      layoutData: reactiveLayout
+      layoutData: reactiveLayout,
+      diffMs
     }
   },
   name: 'the-play'
@@ -93,12 +94,15 @@ export default defineComponent({
 
 #the-play {
   @include common.position-full-size(fixed);
+  //animation-name: fade-in;
   animation-name: fadeInAnime;
   animation-fill-mode: backwards;
+  //animation-duration: calc(#{animations.$play-slide-animation-duration} - var(--diff-ms));
   animation-duration: animations.$play-slide-animation-duration;
   animation-iteration-count: 1;
   animation-timing-function: linear;
-  animation-delay: animations.$play-slide-animation-delay;
+  //animation-delay: 0s;
+  animation-delay: calc(#{animations.$play-slide-animation-delay} - 165ms - var(--diff-ms));
   animation-direction: normal;
 }
 
@@ -110,6 +114,10 @@ export default defineComponent({
   100% {
     transform: translateX(0);
   }
+}
+
+@include common.deep(".right-box") {
+  gap: 0.5rem;
 }
 
 @include common.deep(".top-box") {

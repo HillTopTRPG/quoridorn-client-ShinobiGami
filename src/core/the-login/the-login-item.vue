@@ -70,10 +70,10 @@ import UserStore, { UserType } from '@/core/data/user'
 import { useI18n } from 'vue-i18n'
 import { makeComputedObject } from '@/core/utility/vue3'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const layoutData = require('./the-rooms-item.yaml')
+const layoutData = require('./the-login-item.yaml')
 
 export default defineComponent({
-  name: 'the-rooms-item',
+  name: 'the-login-item',
   emits: [],
   props: {
     r: {

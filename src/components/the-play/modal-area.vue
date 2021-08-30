@@ -4,7 +4,12 @@
     <span class="hr"></span>
     <span class="hr"></span>
   </span>
-  <div class="modal-area" :class="[`item-${menuItemList.length}`, isMenuOpen ? 'menu' : '']" @click="onClickMenuButton(false)" v-if="isMenuOpen || rightPaneType">
+  <span class="right-pane-btn" @click="onClickRightPaneButton()" v-show="rightPaneTaskList.length" :class="isRightPaneOpen ? 'closed' : ''">
+    <span class="hr"></span>
+    <span class="hr"></span>
+    <span class="hr"></span>
+  </span>
+  <div class="modal-area" :class="[`item-${menuItemList.length}`, isMenuOpen ? 'menu' : '']" @click="onClickMenuButton(false)" v-if="isMenuOpen || isRightPaneOpen">
     <transition name="drawer">
       <div class="drawer" @click.stop v-show="isMenuOpen">
           <span
@@ -16,13 +21,15 @@
       </div>
     </transition>
     <transition name="right-pane">
-      <div class="right-pane" @click.stop  :class="rightPaneType" v-show="rightPaneType">
-        <button @click="rightPaneType = ''">閉じる</button>
-        <div class="container">
-          <ope-user-setting />
-        </div>
-        <div class="container">
-          <ope-character />
+      <div class="right-pane" @click.stop v-show="isRightPaneOpen">
+        <div class="container" v-for="t in rightPaneTaskList" :key="t.taskKey" :id="t.taskKey" :class="activeTaskList.some(lt => lt === t.taskKey) ? 'active' : ''">
+          <div class="task-bar" @click="currentTask = t.taskKey">
+            <span>{{ t.type }}</span>
+            <button @click.stop="onTask(t.taskKey, 'open')" v-if="!activeTaskList.some(lt => lt === t.taskKey)">Open</button>
+            <button @click.stop="onTask(t.taskKey, 'hide')" v-if="activeTaskList.some(lt => lt === t.taskKey)">Hide</button>
+            <button @click.stop="onTask(t.taskKey, 'close')">Close</button>
+          </div>
+          <component :is="`${t.type}-pane`" @close="onTask(t.taskKey, 'close')"></component>
         </div>
       </div>
     </transition>
@@ -30,53 +37,120 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from 'vue'
+import { defineComponent, reactive, ref, watch } from 'vue'
+import { v4 as uuidV4 } from 'uuid'
 import UserStore from '@/core/data/user'
-import OpeCharacter from '@/feature/character/component/ope-character.vue'
-import OpeUserSetting from '@/feature/user-setting/component/ope-user-setting.vue'
 
 type MenuItem = {
   label: string;
   type: string;
+  isUnique: boolean;
+}
+
+type RightPaneTask = {
+  type: string;
+  taskKey: string;
 }
 
 export default defineComponent({
   name: 'modal-area',
-  components: { OpeUserSetting, OpeCharacter },
   setup() {
     const userStore = UserStore.injector()
     const menuItemList = reactive<MenuItem[]>([])
     const me = userStore.userList.find(u => u.key === userStore.userLoginResponse?.userKey)
     const userType = me?.type || 'pl'
-    menuItemList.push({ label: 'ローカル設定', type: 'local' })
-    menuItemList.push({ label: 'ユーザー設定', type: 'user' })
-    menuItemList.push({ label: 'キャラクター', type: 'character' })
+    menuItemList.push({ label: 'ローカル設定', type: 'local-setting', isUnique: true })
+    menuItemList.push({ label: 'ユーザー設定', type: 'user-setting', isUnique: true })
+    menuItemList.push({ label: 'キャラクター', type: 'character', isUnique: false })
     if (userType === 'gm') {
-      menuItemList.push({ label: 'シナリオ', type: 'scenario' })
-      menuItemList.push({ label: 'シーン', type: 'scene' })
-      menuItemList.push({ label: '共有メモ', type: 'memo' })
-      menuItemList.push({ label: 'カットイン', type: 'cutin' })
-      menuItemList.push({ label: 'タグ', type: 'tag' })
-      menuItemList.push({ label: '戦場表', type: 'bf' })
-      menuItemList.push({ label: 'エニグマ', type: 'enigma' })
-      menuItemList.push({ label: 'ペルソナ', type: 'persona' })
+      menuItemList.push({ label: 'シナリオ', type: 'scenario', isUnique: false })
+      menuItemList.push({ label: 'シーン', type: 'scene', isUnique: false })
+      menuItemList.push({ label: '共有メモ', type: 'memo', isUnique: false })
+      menuItemList.push({ label: 'カットイン', type: 'cut-in', isUnique: false })
+      menuItemList.push({ label: 'タグ', type: 'tag', isUnique: false })
+      menuItemList.push({ label: '戦場表', type: 'battle-field', isUnique: false })
+      menuItemList.push({ label: 'エニグマ', type: 'enigma', isUnique: false })
+      menuItemList.push({ label: 'ペルソナ', type: 'persona', isUnique: false })
     }
 
-    const rightPaneTaskList = ref<string[]>([])
+    const rightPaneTaskList = ref<RightPaneTask[]>([])
+    const activeTaskList = ref<string[]>([])
+    const currentTask = ref<string | null>(null)
 
-    const rightPaneType = ref('')
+    watch(currentTask, () => {
+      setTimeout(() => {
+        if (!currentTask.value) return
+        document.getElementById(currentTask.value)?.scrollIntoView(true)
+      })
+    })
+
+    const isRightPaneOpen = ref(false)
     const onClickMenuItem = (type: string) => {
-      rightPaneType.value = type
+      isRightPaneOpen.value = true
       isMenuOpen.value = false
-      rightPaneTaskList.value.splice(0, 0, type)
+      if (menuItemList.find(m => m.type === type)?.isUnique) {
+        const task = rightPaneTaskList.value.find(t => t.type === type)
+        if (task) {
+          currentTask.value = task.taskKey
+          activeTaskList.value.splice(0, activeTaskList.value.length, task.taskKey)
+          return
+        }
+      }
+      const taskKey = uuidV4()
+      rightPaneTaskList.value.splice(0, 0, { type, taskKey })
+      activeTaskList.value.splice(0, activeTaskList.value.length, taskKey)
+      currentTask.value = taskKey
+    }
+
+    const onClickRightPaneButton = () => {
+      isRightPaneOpen.value = !isRightPaneOpen.value
+    }
+
+    const onTask = (taskKey: string, type: 'open' | 'hide' | 'close') => {
+      if (type === 'open') {
+        activeTaskList.value.push(taskKey)
+      }
+      if (type === 'hide') {
+        const index = activeTaskList.value.findIndex(t => t === taskKey)
+        if (index < 0) return
+        activeTaskList.value.splice(index, 1)
+      }
+      if (type === 'close') {
+        const index1 = rightPaneTaskList.value.findIndex(t => t.taskKey === taskKey)
+        const index2 = activeTaskList.value.findIndex(t => t === taskKey)
+        if (index1 < 0) return
+        rightPaneTaskList.value.splice(index1, 1)
+        if (index2 > -1) {
+          activeTaskList.value.splice(index2, 1)
+        }
+        if (rightPaneTaskList.value.length > index1) {
+          currentTask.value = rightPaneTaskList.value[index1].taskKey
+          if (index2 > -1) {
+            if (activeTaskList.value.findIndex(t => t === currentTask.value) < 0) {
+              activeTaskList.value.push(currentTask.value)
+            }
+          }
+        } else if (rightPaneTaskList.value.length && rightPaneTaskList.value.length === index1) {
+          currentTask.value = rightPaneTaskList.value[index1 - 1].taskKey
+          if (index2 > -1) {
+            if (activeTaskList.value.findIndex(t => t === currentTask.value) < 0) {
+              activeTaskList.value.push(currentTask.value)
+            }
+          }
+        } else {
+          currentTask.value = null
+        }
+        if (!rightPaneTaskList.value.length) {
+          isRightPaneOpen.value = false
+        }
+      }
     }
 
     const isMenuOpen = ref(false)
     const onClickMenuButton = (force?: boolean) => {
       if (force === false) {
-        rightPaneType.value = ''
+        isRightPaneOpen.value = false
         isMenuOpen.value = false
-        rightPaneTaskList.value.splice(0, rightPaneTaskList.value.length)
         return
       }
       isMenuOpen.value = !isMenuOpen.value
@@ -84,11 +158,15 @@ export default defineComponent({
 
     return {
       menuItemList,
+      activeTaskList,
       isMenuOpen,
       onClickMenuButton,
+      onTask,
+      currentTask,
       rightPaneTaskList,
       onClickMenuItem,
-      rightPaneType
+      onClickRightPaneButton,
+      isRightPaneOpen
     }
   }
 })
@@ -105,6 +183,57 @@ export default defineComponent({
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 10;
+  cursor: pointer;
+
+  .hr {
+    display: block;
+    margin: 0;
+    border: none;
+    width: 50%;
+    height: 4px;
+    background: #000;
+    transform-origin: 0 50%;
+    position: absolute;
+    top: 12px;
+    left: 25%;
+    transition: 0.3s;
+
+    &:nth-of-type(2) {
+      top: 22px;
+    }
+    &:nth-of-type(3) {
+      top: 32px;
+    }
+  }
+
+  &.closed .hr {
+    left: 30%;
+
+    &:nth-of-type(1) {
+      transform: rotate(45deg);
+      width: 58%;
+    }
+
+    &:nth-of-type(2) {
+      opacity: 0;
+    }
+
+    &:nth-of-type(3) {
+      top: 32px;
+      transform: rotate(-45deg);
+      width: 58%;
+    }
+  }
+}
+
+.right-pane-btn {
+  display: block;
+  width: common.$header-height;
+  height: common.$header-height;
+  position: fixed;
+  top: 0;
+  right: 0;
   z-index: 10;
   cursor: pointer;
 
@@ -279,6 +408,34 @@ export default defineComponent({
     .container {
       @include common.flex-box(row, flex-start, flex-start, wrap);
       gap: 0.5rem;
+      padding-top: 2em;
+      position: relative;
+      border-bottom: 1px solid gray;
+
+      &:not(.active) > :not(:first-child) {
+        display: none;
+      }
+
+      .task-bar {
+        @include common.flex-box(row, space-between, center);
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2em;
+        background-color: lightblue;
+        padding: 0 0.5em;
+        gap: 0.5em;
+        overflow: hidden;
+
+        >:first-child {
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          text-align: left;
+          flex: 1;
+        }
+      }
     }
   }
 }

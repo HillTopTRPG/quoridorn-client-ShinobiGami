@@ -9,6 +9,8 @@ export type UserSetting = {
   fontColor: string;
   accent1Color: string;
   accent2Color: string;
+  skillTableFontSize: number;
+  ninjaArtsTableFontSize: number;
 }
 
 type Store = {
@@ -20,7 +22,7 @@ type Store = {
   requestData: () => Promise<void>;
 }
 
-export default makeStore<Store>('userSettingStore', () => {
+export default makeStore<Store>('user-setting-store', () => {
   const state = reactive<StoreUpdateProperties<Store, 'userSetting'>>({
     ready: false,
     userSettingList: []
@@ -35,7 +37,9 @@ export default makeStore<Store>('userSettingStore', () => {
       'userName',
       'fontColor',
       'accent1Color',
-      'accent2Color'
+      'accent2Color',
+      'skillTableFontSize',
+      'ninjaArtsTableFontSize'
     ]
   )
 
@@ -55,7 +59,9 @@ export default makeStore<Store>('userSettingStore', () => {
       userName: user.name,
       accent1Color: 'rgba(255, 40, 0, 1)',
       accent2Color: 'rgba(0, 111, 255, 1)',
-      fontColor: 'rgba(0, 0, 0, 1)'
+      fontColor: '#3E2723',
+      skillTableFontSize: 11,
+      ninjaArtsTableFontSize: 11
     })
     let intervalId: number | null = null
     return new Promise((resolve) => {

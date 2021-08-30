@@ -11,7 +11,7 @@ type Haikei = {
   effect: string;
 };
 
-type Ninpou = {
+export type Ninpou = {
   secret: boolean;
   name: string;
   type: string;
@@ -27,6 +27,7 @@ export type Shinobigami = {
   playerName: string;
   characterName: string;
   characterNameKana: string;
+  regulation: string;
   foe: string;
   exp: string;
   memo: string;
@@ -142,6 +143,7 @@ export class ShinobigamiHelper extends TrpgSystemHelper<Shinobigami> {
       playerName: textFilter(json.base.player),
       characterName: textFilter(json.base.name),
       characterNameKana: textFilter(json.base.nameKana),
+      regulation: textFilter(json.base.regulation),
       foe: textFilter(json.base.foe),
       exp: textFilter(json.base.exp),
       memo: textFilter(json.base.memo),

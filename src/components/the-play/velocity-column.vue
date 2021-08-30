@@ -10,7 +10,7 @@
         <transition name="character-fade">
           <div
             class="character"
-            :style="{ backgroundColor: c.data.color }"
+            :style="{ '--color': c.data.color }"
             v-if="c.data && c.data.plot === ind && !c.data.isFumble"
           ><span>{{ c.data.sheetInfo.characterName }}</span></div>
         </transition>
@@ -33,7 +33,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType, reactive } from 'vue'
-import { Character } from '@/feature/character/character'
+import { Character } from '@/feature/character/data'
 import { StoreData } from '@/core/utility/FileUtility'
 
 type VelocityColumn = { k: string; a: string; e: string }
@@ -89,6 +89,8 @@ export default defineComponent({
     position: relative;
     margin: 3px 3px 0 3px;
     @include common.flex-box(row, center, center);
+    background-color: var(--color);
+    color: white;
 
     &:last-child {
       margin-bottom: 3px;

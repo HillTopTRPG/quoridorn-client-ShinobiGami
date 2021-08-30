@@ -24,7 +24,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { Character } from '@/feature/character/character'
+import { Character } from '@/feature/character/data'
 import { StoreData } from '@/core/utility/FileUtility'
 import PlotSelect from '@/components/the-play/select/plot-select.vue'
 

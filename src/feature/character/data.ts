@@ -16,11 +16,11 @@ export type Character = {
 type Store = {
   ready: boolean,
   characterList: StoreData<Character>[];
-  insertData: (...c: Character[]) => Promise<void>;
   requestData: () => Promise<void>;
+  insertData: (...c: Character[]) => Promise<void>;
 }
 
-export default makeStore<Store>('characterStore', () => {
+export default makeStore<Store>('character-store', () => {
   const state = reactive<StoreUpdateProperties<Store, never>>({
     ready: false,
     characterList: []

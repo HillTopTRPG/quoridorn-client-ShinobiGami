@@ -19,28 +19,6 @@ $poyooon-count: 3;
   flex-wrap: $wrap;
 }
 
-.fuwafuwa {
-  animation: fuwafuwa 3s infinite .8s ease-in-out alternate;
-  background: url("https://quoridorn.com/img/mascot/normal/mascot_normal.png") no-repeat center center / 60px auto;
-  display: inline-block;
-  transition: 1.5s ease-in-out;
-  width: 70px;
-  height: 70px;
-  margin-top: 15px;
-}
-
-@keyframes fuwafuwa {
-  0% {
-    transform:translate(0, 0) rotate(-7deg);
-  }
-  50% {
-    transform:translate(0, -7px) rotate(0deg);
-  }
-  100% {
-    transform:translate(0, 0) rotate(7deg);
-  }
-}
-
 @keyframes fade-in {
   0% {
     opacity: 0;

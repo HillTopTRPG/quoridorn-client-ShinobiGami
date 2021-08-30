@@ -1,8 +1,8 @@
 <template>
   <img class="mascot-normal" v-if="isView" src="https://quoridorn.com/img/mascot/normal/mascot_normal.png" alt="">
   <img class="mascot-normal slide" v-if="isHideMascotView" src="https://quoridorn.com/img/mascot/normal/mascot_normal.png" alt="">
-  <transition name="the-rooms" leave-active-class="gaga">
-    <div id="the-rooms" :class="classObj" v-if="isView">
+  <transition name="the-login" leave-active-class="gaga">
+    <div id="the-login" :class="classObj" v-if="isView">
       <div v-show="!roomList.length">サーバー通信中</div>
       <flexible-data-layout :definition="layoutData" v-show="roomList.length">
         <template #title>
@@ -36,7 +36,7 @@
                 (filterType === 'exists' && r.detail)
               "
               >
-                <the-rooms-item :r="r"></the-rooms-item>
+                <the-login-item :r="r"></the-login-item>
               </li>
             </template>
             <li v-if="!roomList.length">部屋なし</li>
@@ -51,17 +51,17 @@
 import { defineComponent, ref, watch } from 'vue'
 import RoomStore from '@/core/data/room'
 import UserStore from '@/core/data/user'
-import TheRoomsItem from '@/core/the-rooms/the-rooms-item.vue'
+import TheLoginItem from '@/core/the-login/the-login-item.vue'
 import { pick } from '@/core/utility/typescript'
 import { makeComputedObject } from '@/core/utility/vue3'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const layoutData = require('./the-rooms.yaml')
+const layoutData = require('./the-login.yaml')
 
 type FilterMode = 'none' | 'empty' | 'exists'
 
 export default defineComponent({
-  name: 'the-rooms',
-  components: { TheRoomsItem },
+  name: 'the-login',
+  components: { TheLoginItem },
   emits: ['loggedIn'],
   setup() {
     const isView = ref(false)
@@ -80,6 +80,8 @@ export default defineComponent({
       isView.value = !userStore.userLoginResponse
       if (!isView.value) {
         isHideMascotView.value = true
+        console.log('###', Date.now() % 100000)
+        userStore.setMs1(Date.now())
         setTimeout(() => {
           isHideMascotView.value = false
         }, 2100)
@@ -139,7 +141,7 @@ export default defineComponent({
   @include common.position-full-size(fixed);
 }
 
-#the-rooms {
+#the-login {
   @include common.position-full-size(fixed);
   z-index: 1;
   overflow-y: scroll;
@@ -151,7 +153,7 @@ export default defineComponent({
   border-left: 2px solid black;
 }
 
-#the-rooms.gaga {
+#the-login.gaga {
   overflow-y: hidden;
   padding-right: 17px;
   transform: translateX(-100vw);

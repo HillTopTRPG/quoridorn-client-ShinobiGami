@@ -600,7 +600,7 @@ scene-list-window:
   window-title: Scenes
 
 edit-scene-window:
-  window-title: Scene settings
+  window-title: Memo settings
   label:
     sub: Subordinate
     grid-size: Size (pixel)

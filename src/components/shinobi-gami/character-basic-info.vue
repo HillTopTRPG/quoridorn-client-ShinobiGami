@@ -1,47 +1,47 @@
 <template>
   <table class="character-basic-info">
     <tr>
-      <th><label for="cbi-player-name">プレイヤー</label></th>
+      <th><label :for="`cbi-player-name-${elmId}`">プレイヤー</label></th>
       <td colspan="3">
         <span>
-          <template>{{ character.sheetInfo.playerName }}</template>
-          <input id="cbi-player-name" type="text" v-model="characterRef.sheetInfo.playerName">
+          <template v-if="mode === 'view'">{{ character.sheetInfo.playerName }}</template>
+          <input v-else :id="`cbi-player-name-${elmId}`" type="text" v-model="characterRef.sheetInfo.playerName">
         </span>
       </td>
     </tr>
     <tr>
-      <th><label for="cbi-character-name">名前</label></th>
+      <th><label :for="`cbi-character-name-${elmId}`">名前</label></th>
       <td colspan="3">
         <span>
-          <template>{{ characterRef.sheetInfo.characterName }}</template>
-          <input id="cbi-character-name" type="text" v-model="characterRef.sheetInfo.characterName">
+          <template v-if="mode === 'view'">{{ characterRef.sheetInfo.characterName }}</template>
+          <input v-else :id="`cbi-character-name-${elmId}`" type="text" v-model="characterRef.sheetInfo.characterName">
         </span>
       </td>
     </tr>
     <tr>
-      <th><label for="cbi-character-name-kana">カナ</label></th>
+      <th><label :for="`cbi-character-name-kana-${elmId}`">カナ</label></th>
       <td colspan="3">
         <span>
-          <template>{{ characterRef.sheetInfo.characterNameKana }}</template>
-          <input id="cbi-character-name-kana" type="text" v-model="characterRef.sheetInfo.characterNameKana">
+          <template v-if="mode === 'view'">{{ characterRef.sheetInfo.characterNameKana }}</template>
+          <input v-else :id="`cbi-character-name-kana-${elmId}`" type="text" v-model="characterRef.sheetInfo.characterNameKana">
         </span>
       </td>
     </tr>
     <tr>
-      <th><label for="cbi-regulation">ﾚｷﾞｭﾚｰｼｮﾝ</label></th>
+      <th><label :for="`cbi-regulation-${elmId}`">ﾚｷﾞｭﾚｰｼｮﾝ</label></th>
       <td colspan="3">
         <span>
-          <template>{{ characterRef.sheetInfo }}</template>
-          <input id="cbi-regulation" type="text" v-model="characterRef.sheetInfo.characterNameKana">
+          <template v-if="mode === 'view'">{{ characterRef.sheetInfo.regulation }}</template>
+          <input v-else :id="`cbi-regulation-${elmId}`" type="text" v-model="characterRef.sheetInfo.regulation">
         </span>
       </td>
     </tr>
     <tr>
-      <th><label for="cbi-upper-style">上位流派</label></th>
+      <th><label :for="`cbi-upper-style-${elmId}`">上位流派</label></th>
       <td class="c1">
         <span>
-          <template>{{ characterRef.sheetInfo.upperStyle }}</template>
-          <select id="cbi-upper-style" v-model="characterRef.sheetInfo.upperStyle">
+          <template v-if="mode === 'view'">{{ characterRef.sheetInfo.upperStyle }}</template>
+          <select v-else :id="`cbi-upper-style-${elmId}`" v-model="characterRef.sheetInfo.upperStyle">
             <option value=""></option>
             <option value="斜歯忍軍">斜歯忍軍</option>
             <option value="鞍馬神流">鞍馬神流</option>
@@ -52,77 +52,77 @@
           </select>
         </span>
       </td>
-      <th><label for="cbi-sub-style">流派</label></th>
+      <th><label :for="`cbi-sub-style-${elmId}`">流派</label></th>
       <td class="c2">
         <span>
-          <template>{{ characterRef.sheetInfo.subStyle }}</template>
-          <input id="cbi-sub-style" type="text" placeholder="（上位流派）" v-model="characterRef.sheetInfo.subStyle">
+          <template v-if="mode === 'view'">{{ characterRef.sheetInfo.subStyle }}</template>
+          <input v-else :id="`cbi-sub-style-${elmId}`" type="text" placeholder="（上位流派）" v-model="characterRef.sheetInfo.subStyle">
         </span>
       </td>
     </tr>
     <tr>
-      <th><label for="cbi-style-rule">流儀</label></th>
+      <th><label :for="`cbi-style-rule-${elmId}`">流儀</label></th>
       <td colspan="3">
         <span>
-          <template>{{ characterRef.sheetInfo.stylerule }}</template>
-          <input id="cbi-style-rule" type="text" v-model="characterRef.sheetInfo.stylerule">
+          <template v-if="mode === 'view'">{{ characterRef.sheetInfo.stylerule }}</template>
+          <input v-else :id="`cbi-style-rule-${elmId}`" type="text" v-model="characterRef.sheetInfo.stylerule">
         </span>
       </td>
     </tr>
     <tr>
-      <th><label for="cbi-foe">仇敵</label></th>
+      <th><label :for="`cbi-foe-${elmId}`">仇敵</label></th>
       <td colspan="3">
         <span>
-          <template>{{ characterRef.sheetInfo.foe }}</template>
-          <input id="cbi-foe" type="text" v-model="characterRef.sheetInfo.foe">
+          <template v-if="mode === 'view'">{{ characterRef.sheetInfo.foe }}</template>
+          <input v-else :id="`cbi-foe-${elmId}`" type="text" v-model="characterRef.sheetInfo.foe">
         </span>
       </td>
     </tr>
     <tr>
-      <th><label for="cbi-level">階級</label></th>
+      <th><label :for="`cbi-level-${elmId}`">階級</label></th>
       <td class="c1">
         <span>
-          <template>{{ characterRef.sheetInfo.level }}</template>
-          <input id="cbi-level" type="text" v-model="characterRef.sheetInfo.level">
+          <template v-if="mode === 'view'">{{ characterRef.sheetInfo.level }}</template>
+          <input v-else :id="`cbi-level-${elmId}`" type="text" v-model="characterRef.sheetInfo.level">
         </span>
       </td>
-      <th><label for="cbi-exp">功績</label></th>
+      <th><label :for="`cbi-exp-${elmId}`">功績</label></th>
       <td class="c2">
         <span>
-          <template>{{ characterRef.sheetInfo.exp }}</template>
-          <input id="cbi-exp" type="text" v-model="characterRef.sheetInfo.exp">
+          <template v-if="mode === 'view'">{{ characterRef.sheetInfo.exp }}</template>
+          <input v-else :id="`cbi-exp-${elmId}`" type="text" v-model="characterRef.sheetInfo.exp">
         </span>
       </td>
     </tr>
     <tr>
-      <th><label for="cbi-age">年齢</label></th>
+      <th><label :for="`cbi-age-${elmId}`">年齢</label></th>
       <td class="c1">
         <span>
-          <template>{{ characterRef.sheetInfo.age }}</template>
-          <input id="cbi-age" type="text" v-model="characterRef.sheetInfo.age">
+          <template v-if="mode === 'view'">{{ characterRef.sheetInfo.age }}</template>
+          <input v-else :id="`cbi-age-${elmId}`" type="text" v-model="characterRef.sheetInfo.age">
         </span>
       </td>
-      <th><label for="cbi-sex">性別</label></th>
+      <th><label :for="`cbi-sex-${elmId}`">性別</label></th>
       <td class="c2">
         <span>
-          <template>{{ characterRef.sheetInfo.sex }}</template>
-          <input id="cbi-sex" type="text" v-model="characterRef.sheetInfo.sex">
+          <template v-if="mode === 'view'">{{ characterRef.sheetInfo.sex }}</template>
+          <input v-else :id="`cbi-sex-${elmId}`" type="text" v-model="characterRef.sheetInfo.sex">
         </span>
       </td>
     </tr>
     <tr>
-      <th><label for="cbi-cover">表の顔</label></th>
+      <th><label :for="`cbi-cover-${elmId}`">表の顔</label></th>
       <td class="c1">
         <span>
-          <template>{{ characterRef.sheetInfo.cover }}</template>
-          <input id="cbi-cover" type="text" v-model="characterRef.sheetInfo.cover">
+          <template v-if="mode === 'view'">{{ characterRef.sheetInfo.cover }}</template>
+          <input v-else :id="`cbi-cover-${elmId}`" type="text" v-model="characterRef.sheetInfo.cover">
         </span>
       </td>
-      <th><label for="cbi-belief">信念</label></th>
+      <th><label :for="`cbi-belief-${elmId}`">信念</label></th>
       <td class="c2">
         <span>
-          <template>{{ characterRef.sheetInfo.belief }}</template>
-          <input id="cbi-belief" type="text" v-model="characterRef.sheetInfo.belief">
+          <template v-if="mode === 'view'">{{ characterRef.sheetInfo.belief }}</template>
+          <input v-else :id="`cbi-belief-${elmId}`" type="text" v-model="characterRef.sheetInfo.belief">
         </span>
       </td>
     </tr>
@@ -132,7 +132,8 @@
 <script lang="ts">
 import { defineComponent, PropType, reactive } from 'vue'
 import { UnwrapNestedRefs } from '@vue/reactivity'
-import { Character } from '@/feature/character/character'
+import { Character } from '@/feature/character/data'
+import { v4 as uuidV4 } from 'uuid'
 
 export default defineComponent({
   name: 'character-basic-info',
@@ -140,10 +141,16 @@ export default defineComponent({
     character: {
       type: Object as PropType<UnwrapNestedRefs<Character>>,
       required: true
+    },
+    mode: {
+      type: String as PropType<'edit' | 'view'>,
+      required: true
     }
   },
   setup(props) {
+    const elmId = uuidV4()
     return {
+      elmId,
       characterRef: reactive(props.character)
     }
   }

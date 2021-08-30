@@ -19,7 +19,6 @@ export function makeStore<T>(storeName: string, f: () => T): MadeStore<T> {
   const StoreInjectionKey: InjectionKey<ReturnType<() => T>> = Symbol(storeName)
   return {
     provider: () => {
-      console.log(`--Provide: ${storeName}`)
       provide(StoreInjectionKey, f())
     },
     injector: () => {
@@ -93,10 +92,8 @@ export function commonStoreDataProcess<T, U extends keyof T>(
   _socketStore?: ComputedObject<SocketStoreType>
 ): CommonStoreDataIf<T> {
   const socketStore = _socketStore || SocketStore.injector()
-  const ready = ref(false)
-  const { removeWatchKey } = IgnoreWatchUpdateKeyStore.injector()
+  const { removeWatchKey, setIgnoreWatchKey } = IgnoreWatchUpdateKeyStore.injector()
   watch(() => clone(dataList), (newList, oldList) => {
-    // if (removeWatchKey(n.key).length) return false
     const diffInfoList = getWatchDiffForDbUpdate(
       newList,
       oldList,
@@ -122,6 +119,7 @@ export function commonStoreDataProcess<T, U extends keyof T>(
     }
   }, { deep: true, immediate: false })
 
+  const ready = ref(false)
   socketStore.socketOn<StoreData<T>>('notify-update-data', (err, payload) => {
     if (err) {
       console.error(err)
@@ -134,6 +132,7 @@ export function commonStoreDataProcess<T, U extends keyof T>(
     }
     const index = dataList.findIndex(r => r.key === payload.key)
     if (index < 0) return
+    setIgnoreWatchKey(payload.key)
     dataList.splice(index, 1, payload)
   })
 
@@ -148,7 +147,6 @@ export function commonStoreDataProcess<T, U extends keyof T>(
       console.warn('notify-insert-dataを読み飛ばした！！！！！！')
     }
     const list = [payload]
-    console.log('notify-insert-data', list.length)
     list.forEach(upData => {
       const index = dataList.findIndex(r => r.key === upData.key)
       if (index > -1) {
@@ -176,8 +174,7 @@ export function commonStoreDataProcess<T, U extends keyof T>(
   return {
     requestData,
     insertData: async (...list): Promise<void> => {
-      console.log('addCharacterForTest')
-      const result = await socketStore.sendSocketServerRoundTripRequest<AddDirectRequest<T>, string[]>(
+      await socketStore.sendSocketServerRoundTripRequest<AddDirectRequest<T>, string[]>(
         'db-api-insert',
         {
           collectionSuffix: collectionName,
@@ -186,7 +183,6 @@ export function commonStoreDataProcess<T, U extends keyof T>(
           list: list.map(data => ({ data }))
         }
       )
-      console.log(result)
     }
   }
 }

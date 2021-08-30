@@ -1,5 +1,5 @@
 <template>
-<slot v-if="userLoginResponse !== null" />
+  <slot v-if="userLoginResponse !== null" />
 </template>
 
 <script lang="ts">

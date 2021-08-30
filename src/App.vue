@@ -1,33 +1,20 @@
 <template>
-  <quoridorn-core :modules="modules">
+  <quoridorn-core>
     <the-play />
   </quoridorn-core>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import QuoridornCore from '@/core/quoridorn-core.vue'
 import ThePlay from '@/components/the-play/the-play.vue'
-
-import CharacterStore from '@/feature/character/character'
-import UserSettingStore from '@/feature/user-setting/user-setting'
 
 export default defineComponent({
   name: 'App',
-  components: {
-    QuoridornCore,
-    ThePlay
-  },
-  setup() {
-    return {
-      modules: [CharacterStore, UserSettingStore]
-    }
-  }
+  components: { ThePlay }
 })
 </script>
 
 <style lang="scss">
-@use "./components/animations";
 body {
   margin: 0;
   padding: 0;

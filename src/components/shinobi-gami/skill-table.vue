@@ -1,10 +1,10 @@
 <template>
-  <table class="skill-table" :class="[viewType === 'comparison' ? 'ignore-input' : '', operationType]">
-    <caption v-if="viewType !== 'edit'">
-      <template v-if="viewType === 'comparison'">
+  <table class="skill-table" :class="[mode === 'comparison' ? 'ignore-input' : '', operationType]">
+    <caption v-if="mode !== 'edit'">
+      <template v-if="mode === 'comparison'">
         <div>
           <select v-model="otherCharaKey">
-            <option :value="null">なし</option>
+            <option :value="null">比較対象なし</option>
             <template v-for="c in characterList" :key="c.key">
               <option
                 v-if="c.key !== characterKey && c.data && c.data.type === 'character'"
@@ -27,7 +27,7 @@
           <th :class="`gap-${col}`">
             <label>
               <input
-                :disabled="viewType === 'comparison'"
+                :disabled="mode === 'comparison'"
                 type="checkbox"
                 :checked="skill?.spaceList.some(n => n === col)"
                 @change="onChangeGapHead($event, col)"
@@ -39,7 +39,7 @@
             <label>
               {{s[1]}}
               <input
-                :disabled="viewType === 'comparison'"
+                :disabled="mode === 'comparison'"
                 type="checkbox"
                 :checked="skill?.damagedColList.some(n => n === col)"
                 @change="onChangeDamageHead($event, col)"
@@ -54,12 +54,14 @@
       <tr :class="`row-${row}`" v-for="(tList, row) in tokugiTable" :key="row">
         <template v-for="(t, col) in tList" :key="t">
           <td :class="[`gap-${col}`, skill?.spaceList.some(n => n === col) ? 'fill' : '']"></td>
-          <td :class="[
-            `skill-${col}`,
-            t === selectedSkill ? 'selected' : '',
-            skill?.learnedList.some(n => n.column === col && n.row === row)? 'learned' : '',
-            skill?.damagedList.some(d => d.name === t) ? 'damaged' : ''
-          ]">
+          <td
+            :class="[
+              `skill-${col}`,
+              t === selectedSkill ? 'selected' : '',
+              skill?.learnedList.some(n => n.column === col && n.row === row)? 'learned' : '',
+              skill?.damagedList.some(d => d.name === t) ? 'damaged' : ''
+            ]"
+          >
             <span
               class="target-value"
               v-if="targetValueList.some(tv => tv.name === t)"
@@ -74,7 +76,7 @@
     <tfoot v-if="skill">
       <tr>
         <td class="out-row" colspan="13" :class="skill?.outRow ? 'fill' : ''">
-          <label><input :disabled="viewType === 'comparison'" type="checkbox" :checked="skill?.outRow" @change="onChangeOutRow($event)"></label>
+          <label><input :disabled="mode === 'comparison'" type="checkbox" :checked="skill?.outRow" @change="onChangeOutRow($event)"></label>
         </td>
       </tr>
     </tfoot>
@@ -87,7 +89,7 @@ import { tokugiTable } from '@/core/utility/shinobigami'
 import { listDelete } from '@/core/utility/PrimaryDataUtility'
 import { HtmlEvent } from '@/core/utility/typescript'
 import { SaikoroFictionTokugi } from '@/core/utility/SaikoroFiction'
-import CharacterStore, { Character } from '@/feature/character/character'
+import CharacterStore, { Character } from '@/feature/character/data'
 import { makeComputedObject } from '@/core/utility/vue3'
 
 function getRowCol(name: string): { r: number, c: number } {
@@ -170,7 +172,7 @@ function calcTargetValue(name: string, tokugi: SaikoroFictionTokugi): {
 export default defineComponent({
   name: 'skill-table',
   props: {
-    viewType: {
+    mode: {
       type: String as PropType<'normal' | 'comparison' | 'edit'>,
       require: true
     },
@@ -183,6 +185,10 @@ export default defineComponent({
       default: null
     },
     targetSkill: {
+      type: String,
+      default: null
+    },
+    otherCharacterKey: {
       type: String,
       default: null
     }
@@ -204,19 +210,22 @@ export default defineComponent({
 
     // 外部の変更を取り込む
     const characterStore = CharacterStore.injector()
-    const otherCharaKey = ref<string | null>(null)
+    const otherCharaKey = ref<string | null>(props.otherCharacterKey)
     watch(
-      props.viewType === 'comparison'
+      props.mode === 'comparison'
         ? [() => props.character?.sheetInfo.tokugi, () => characterStore.characterList, otherCharaKey]
         : () => props.character?.sheetInfo.tokugi,
       () => {
-        skill.value = props.viewType === 'comparison'
+        skill.value = props.mode === 'comparison'
           ? characterStore.characterList.find(c => c.key === otherCharaKey.value)?.data?.sheetInfo.tokugi || null
           : props.character?.sheetInfo.tokugi || null
-        if (props.viewType === 'normal') onChangeSelectedSkill(props.targetSkill)
+        if (props.mode === 'normal') onChangeSelectedSkill(props.targetSkill)
       },
       { immediate: true, deep: true }
     )
+    watch(otherCharaKey, () => {
+      emit('update:otherCharacterKey', otherCharaKey.value)
+    })
 
     // 選択済み特技に関するpropsと内部変数とのバインディング
     const selectedSkill = ref<string | null>(null)
@@ -251,7 +260,7 @@ export default defineComponent({
     }
 
     // 設定・判定
-    const operationType = ref<'input' | 'judge'>(props.viewType === 'edit' ? 'input' : 'judge')
+    const operationType = ref<'input' | 'judge'>(props.mode === 'edit' ? 'input' : 'judge')
     watch(operationType, () => {
       if (operationType.value === 'input') {
         selectedSkill.value = null
@@ -298,11 +307,11 @@ export default defineComponent({
 @use "../common";
 
 table.skill-table {
-  font-size: 10px;
+  font-size: var(--skill-table-font-size);
   border-collapse: collapse;
   border-spacing: 0;
-  border-right: 1px solid rgb(0, 0, 0);
-  border-top: 1px solid rgb(0, 0, 0);
+  border: 1px solid rgb(0, 0, 0);
+  //border-top: 1px solid rgb(0, 0, 0);
   table-layout: fixed;
 
   &.input td[class^="skill-"] {
@@ -340,6 +349,10 @@ table.skill-table {
           box-sizing: border-box;
           user-select: none;
 
+          input {
+            pointer-events: none;
+          }
+
           &:first-child {
             border-radius: 5px 0 0 0;
           }
@@ -370,8 +383,9 @@ table.skill-table {
     position: relative;
     text-align: center;
     white-space: nowrap;
+    box-sizing: border-box;
     border-style: solid;
-    border-width: 0 0 1px 1px;
+    border-width: 1px;
     border-color: black;
     padding: 0;
     margin: 0;
@@ -436,15 +450,14 @@ table.skill-table {
     z-index: 3;
     position: absolute;
     color: black;
-    right: 0;
-    transform: translateX(80%);
+    right: -1.5em;
     top: 0;
     bottom: 0;
     margin: auto;
     background-color: yellow;
     border: solid gray 1px;
     border-radius: 5px;
-    padding: 5px;
+    padding: 2px;
     overflow: visible;
     cursor: pointer;
 
@@ -460,12 +473,12 @@ table.skill-table {
       top: 0;
       bottom: 0;
       left: 0;
-      width: 10px;
-      height: 10px;
+      width: 1em;
+      height: 1em;
       margin: auto;
-      transform: translateX(-5px) rotate(45deg);
+      transform: translateX(-0.5em) rotate(45deg);
       transform-origin: center center;
-      z-index: 2;
+      z-index: -1;
     }
   }
 

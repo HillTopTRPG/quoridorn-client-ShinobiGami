@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { UserSetting } from '@/feature/user-setting/user-setting'
+import { UserSetting } from '@/feature/user-setting/data'
 
 export default defineComponent({
   name: 'color-test',
@@ -23,7 +23,7 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-@use "../../../components/common";
+@use "../../components/common";
 
 .color-test {
   width: 3em;

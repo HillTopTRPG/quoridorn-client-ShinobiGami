@@ -82,7 +82,7 @@ import {
   onBeforeUnmount,
   reactive
 } from 'vue'
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuidV4 } from 'uuid'
 import { refObj } from '@/core/utility/vue-util'
 import { TabInfo, UiSize, uiSize2css } from '@/core/flexible-data-layout.vue'
 import { PickPropTypeKeys } from '@/core/utility/typescript'
@@ -219,7 +219,7 @@ export default defineComponent({
     })
 
     return {
-      uiId: uuidv4(),
+      uiId: uuidV4(),
       root,
       beforePartTab,
       viewTabList,

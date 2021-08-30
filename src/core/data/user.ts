@@ -49,6 +49,10 @@ type Store = {
   selfUser: ClientUserData | null;
   selectedRoomNo: number,
   lastRoomLoginType: 'create' | 'login' | 'touch' | '',
+  ms1: number,
+  ms2: number,
+  setMs1: (ms: number) => void,
+  setMs2: (ms: number) => void,
   userLoginResponse: UserLoginResponse | null;
   createRoom: (roomNo: number, roomName: string, roomPassword: string) => Promise<void>;
   touchRoom: (roomNo: number) => Promise<void>;
@@ -61,6 +65,8 @@ export default makeStore<Store>('userStore', () => {
   const state = reactive<StoreUpdateProperties<Store, 'selfUser'>>({
     userList: [],
     selectedRoomNo: 0,
+    ms1: 0,
+    ms2: 0,
     lastRoomLoginType: '',
     userLoginResponse: null
   })
@@ -73,8 +79,6 @@ export default makeStore<Store>('userStore', () => {
       return
     }
     const index = state.userList.findIndex(r => r.name === payload.name)
-    console.log('notify-user-update')
-    console.log(payload)
     if (index < 0) {
       state.userList.push(payload)
     } else {
@@ -83,6 +87,12 @@ export default makeStore<Store>('userStore', () => {
   })
 
   return {
+    get ms1() {
+      return state.ms1
+    },
+    get ms2() {
+      return state.ms2
+    },
     get userList() {
       return state.userList
     },
@@ -153,6 +163,8 @@ export default makeStore<Store>('userStore', () => {
         password: userPassword
       }
       state.userLoginResponse = await socketStore.sendSocketServerRoundTripRequest<UserLoginRequest, UserLoginResponse>('room-api-login-user', crReq)
-    }
+    },
+    setMs1: (ms: number) => (state.ms1 = ms),
+    setMs2: (ms: number) => (state.ms2 = ms)
   }
 })
