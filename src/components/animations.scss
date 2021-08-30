@@ -1,5 +1,5 @@
-$play-slide-animation-duration: 1.8s;
-$play-slide-animation-delay: 0.3s;
+$play-slide-animation-duration: 2.1s;
+$play-slide-animation-delay: 0.5s;
 $poyooon-count: 3;
 
 @mixin anim($params) {
@@ -74,15 +74,6 @@ $offsetX: 5vmin;
   100% {
     transform: translate($offsetX, 0) rotate(0);
     opacity: 1;
-  }
-}
-
-@keyframes slide-out {
-  0% {
-    right: 0;
-  }
-  100% {
-    right: calc(100vw + #{$offsetX});
   }
 }
 

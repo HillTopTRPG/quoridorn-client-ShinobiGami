@@ -1,7 +1,7 @@
 <template>
-  <div id="the-play" :style="globalStyle" v-if="ready">
-    <modal-area />
-    <flexible-data-layout :definition="layoutData" :barSetDelay="2200">
+  <div id="the-play" :style="globalStyle">
+    <flexible-data-layout :definition="layoutData" :barSetDelay="2700">
+      <modal-area />
       <template #top-box></template>
       <template #simple-center>
         <scene-status-area />
@@ -26,7 +26,6 @@
 import { computed, defineComponent, reactive, watch, ref } from 'vue'
 import CharacterStore from '@/feature/character/data'
 import UserSettingStore from '@/feature/user-setting/data'
-import UserStore from '@/core/data/user'
 import { SlotUnionInfo } from '@/core/flexible-data-layout.vue'
 import VelocityColumn from '@/components/the-play/velocity-column.vue'
 import CharacterStatusArea from '@/components/the-play/area/character-status-area.vue'
@@ -41,10 +40,8 @@ export default defineComponent({
   components: { SceneStatusArea, DramaticSceneArea, CharacterDetailView, ModalArea, CharacterStatusArea, VelocityColumn },
   setup() {
     const userSettingStore = UserSettingStore.injector()
-    const userStore = UserStore.injector()
 
     const diffMs = ref(0)
-    const ready = ref(false)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const globalStyle = reactive<any>({})
     watch(() => userSettingStore.userSetting, () => {
@@ -59,25 +56,8 @@ export default defineComponent({
 
     const reactiveLayout = reactive<SlotUnionInfo>(layoutData)
     const characterStore = CharacterStore.injector()
-    const diff = userStore.ms2 - userStore.ms1
-    console.log(diff)
-    globalStyle['--diff-ms'] = `${diff}ms`
-    // setTimeout(() => {
-    //   ready.value = true
-    // })
-    ready.value = true
-    // onMounted(() => {
-    //   console.log('@@2', Date.now() % 100000)
-    //   diffMs.value = (Date.now() % 100000) - userStore.ms
-    //   globalStyle['--diff-ms'] = `${diffMs.value}ms`
-    //
-    //   setTimeout(() => {
-    //     ready.value = true
-    //   })
-    // })
 
     return {
-      ready,
       globalStyle,
       characterList: computed(() => characterStore.characterList),
       layoutData: reactiveLayout,
@@ -89,31 +69,15 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-@use "../animations";
 @use "../common";
 
 #the-play {
-  @include common.position-full-size(fixed);
-  //animation-name: fade-in;
-  animation-name: fadeInAnime;
-  animation-fill-mode: backwards;
-  //animation-duration: calc(#{animations.$play-slide-animation-duration} - var(--diff-ms));
-  animation-duration: animations.$play-slide-animation-duration;
-  animation-iteration-count: 1;
-  animation-timing-function: linear;
-  //animation-delay: 0s;
-  animation-delay: calc(#{animations.$play-slide-animation-delay} - 165ms - var(--diff-ms));
-  animation-direction: normal;
-}
-
-@keyframes fadeInAnime{
-  0% {
-    transform: translateX(100%);
-  }
-
-  100% {
-    transform: translateX(0);
-  }
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 100vw;
+  box-sizing: border-box;
 }
 
 @include common.deep(".right-box") {

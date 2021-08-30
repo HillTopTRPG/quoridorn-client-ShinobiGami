@@ -1,5 +1,6 @@
 <template>
   <div class="slot-input-form">
+    <slot />
     <suspense>
       <flexible-union-layout
         :definition="definition"

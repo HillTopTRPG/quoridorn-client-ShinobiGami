@@ -1,20 +1,25 @@
 <template>
-  <the-login />
-  <login-sync-provider>
+  <the-login :modules="modules">
     <slot />
-  </login-sync-provider>
+  </the-login>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, PropType } from 'vue'
 import RoomStore from '@/core/data/room'
 import UserStore from '@/core/data/user'
 import TheLogin from '@/core/the-login/the-login.vue'
-import LoginSyncProvider from '@/core/provider/LoginSyncProvider.vue'
+import { MadeStore } from '@/core/utility/vue3'
 
 export default defineComponent({
   name: 'LoginProvider',
-  components: { LoginSyncProvider, TheLogin },
+  components: { TheLogin },
+  props: {
+    modules: {
+      type: Array as PropType<MadeStore<{ ready: boolean }>[]>,
+      required: true
+    }
+  },
   setup() {
     RoomStore.provider()
     UserStore.provider()

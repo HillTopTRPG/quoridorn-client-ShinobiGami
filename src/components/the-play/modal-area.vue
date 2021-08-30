@@ -180,7 +180,7 @@ export default defineComponent({
   display: block;
   width: common.$header-height;
   height: common.$header-height;
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   z-index: 10;
@@ -231,7 +231,7 @@ export default defineComponent({
   display: block;
   width: common.$header-height;
   height: common.$header-height;
-  position: fixed;
+  position: absolute;
   top: 0;
   right: 0;
   z-index: 10;
