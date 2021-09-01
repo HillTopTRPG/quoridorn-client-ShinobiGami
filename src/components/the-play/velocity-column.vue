@@ -10,9 +10,9 @@
         <transition name="character-fade">
           <div
             class="character"
-            :style="{ '--color': c.data.color }"
+            :style="c.styleObj"
             v-if="c.data && c.data.plot === ind && !c.data.isFumble"
-          ><span>{{ c.data.sheetInfo.characterName }}</span></div>
+          ></div>
         </transition>
       </template>
       <span class="n">{{ ind }}</span>
@@ -22,9 +22,9 @@
         <transition name="character-fade">
           <div
             class="character"
-            :style="{ backgroundColor: c.data.color }"
+            :style="c.styleObj"
             v-if="c.data && c.data.plot === ind && c.data.isFumble"
-          ><span>{{ c.data.sheetInfo.characterName }}</span></div>
+          ></div>
         </transition>
       </template>
     </div>
@@ -32,9 +32,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, reactive } from 'vue'
-import { Character } from '@/feature/character/data'
-import { StoreData } from '@/core/utility/FileUtility'
+import { defineComponent, reactive } from 'vue'
+import CharacterStore from '@/feature/character/data'
 
 type VelocityColumn = { k: string; a: string; e: string }
 type Velocity = VelocityColumn[]
@@ -42,13 +41,8 @@ type Velocity = VelocityColumn[]
 export default defineComponent({
   name: 'velocity-column',
   emits: ['update:modelValue'],
-  props: {
-    characterList: {
-      type: Array as PropType<StoreData<Character>[]>,
-      required: true
-    }
-  },
   setup() {
+    const characterStore = CharacterStore.injector()
     const velocity = reactive<Velocity>([
       { k: '零', a: '静止した時間', e: 'Mundain' },
       { k: '壱', a: '幽霊歩き', e: 'Ghost Walk' },
@@ -60,7 +54,8 @@ export default defineComponent({
       { k: '死地', a: '超光速', e: 'F.T.L.' }
     ])
     return {
-      velocity
+      velocity,
+      characterList: characterStore.makeWrapCharacterList()
     }
   }
 })
@@ -89,8 +84,14 @@ export default defineComponent({
     position: relative;
     margin: 3px 3px 0 3px;
     @include common.flex-box(row, center, center);
-    background-color: var(--color);
-    color: white;
+    border-color: var(--color);
+    border-width: 3px;
+    border-style: solid;
+    box-sizing: border-box;
+    background-image: var(--chit-image);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: contain;
 
     &:last-child {
       margin-bottom: 3px;
@@ -100,11 +101,6 @@ export default defineComponent({
       content: '';
       display: block;
       padding-top: 100%;
-    }
-
-    span {
-      @include common.position-full-size();
-      @include common.flex-box(row, center, center);
     }
   }
 

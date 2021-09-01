@@ -27,7 +27,7 @@
         </div>
 
         <div class="part-wrap">
-          <skill-table-set :character="character.data" :character-key="character.key" v-model:other-character-key="otherCharacterKey" v-model:target-skill="targetSkill" />
+          <skill-table-set :character="character.data" @targetValue="value => onTargetValue(value)" :character-key="character.key" v-model:other-character-key="otherCharacterKey" v-model:target-skill="targetSkill" />
         </div>
         <div class="part-wrap">
           <ninja-arts-table :character="character.data" mode="normal" v-model:select-index="selectedNinjaArtsIndex" />
@@ -53,7 +53,8 @@ export default defineComponent({
       required: true
     }
   },
-  setup(props) {
+  emits: ['target-value'],
+  setup(props, { emit }) {
     const selectedNinjaArtsIndex = ref<number | null>(null)
     const targetSkill = ref<string | null>(null)
     const otherCharacterKey = ref<string | null>(null)
@@ -74,7 +75,11 @@ export default defineComponent({
     return {
       selectedNinjaArtsIndex,
       targetSkill,
-      otherCharacterKey
+      otherCharacterKey,
+      onTargetValue: (targetValue: number) => {
+        console.log(targetValue)
+        emit('target-value', targetValue)
+      }
     }
   }
 })

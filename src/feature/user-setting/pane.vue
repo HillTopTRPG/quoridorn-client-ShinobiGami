@@ -16,6 +16,10 @@
       <span>奥義一覧のフォントサイズ</span>
       <input type="number" v-model="userSetting.specialArtsTableFontSize" min="10" step="1">
     </label>
+    <label>
+      <span>忍具一覧のフォントサイズ</span>
+      <input type="number" v-model="userSetting.ninjaToolTableFontSize" min="10" step="1">
+    </label>
 
     <color-set-container />
 

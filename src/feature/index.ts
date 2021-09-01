@@ -8,6 +8,8 @@ import memo from '@/feature/memo'
 import persona from '@/feature/persona'
 import scenario from '@/feature/scenario'
 import scene from '@/feature/scene'
+import mediaList from '@/feature/media-list'
+import chatList from '@/feature/chat-list'
 import tag from '@/feature/tag'
 import userSetting from '@/feature/user-setting'
 import { installFeatures } from '@/core'
@@ -25,7 +27,9 @@ const Plugin = {
       scenario,
       scene,
       tag,
-      userSetting
+      userSetting,
+      mediaList,
+      chatList
     ]
     installFeatures(app, features)
   }

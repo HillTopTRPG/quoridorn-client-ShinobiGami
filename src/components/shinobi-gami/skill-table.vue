@@ -66,6 +66,7 @@
               class="target-value"
               v-if="targetValueList.some(tv => tv.name === t)"
               :style="{ '--value': `'>=${targetValueList.find(tv => tv.name === t).targetValue}'` }"
+              @click="onClickTargetValue(targetValueList.find(tv => tv.name === t).targetValue)"
             ></span>
             <label @click="onClickSkillName(t)">{{ t }}</label>
           </td>
@@ -193,6 +194,7 @@ export default defineComponent({
       default: null
     }
   },
+  emits: ['target-value', 'update:otherCharacterKey', 'update:targetSkill'],
   setup(props, { emit }) {
     // 特技表
     const skill = ref<SaikoroFictionTokugi | null>(null)
@@ -278,6 +280,10 @@ export default defineComponent({
         selectedSkill.value = selectedSkill.value === name ? null : name
       }
     }
+    const onClickTargetValue = (value: number) => {
+      console.log(value)
+      emit('target-value', value)
+    }
 
     const onChangeOutRow = (e: HtmlEvent<HTMLInputElement>) => {
       if (skill.value) {
@@ -297,7 +303,8 @@ export default defineComponent({
       onChangeGapHead,
       onChangeDamageHead,
       onClickSkillName,
-      onChangeOutRow
+      onChangeOutRow,
+      onClickTargetValue
     }
   }
 })

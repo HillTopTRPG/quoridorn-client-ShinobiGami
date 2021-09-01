@@ -3,24 +3,23 @@
     <transition name="character-fade">
       <div
         class="character"
-        :style="{ backgroundColor: c.data.color }"
+        :style="c.styleObj"
         v-if="c.data && c.data.plot === -1"
-      >{{ c.data.sheetInfo.characterName }}</div>
+      ></div>
     </transition>
   </template>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
-import { Character } from '@/feature/character/data'
-import { StoreData } from '@/core/utility/FileUtility'
+import { defineComponent } from 'vue'
+import CharacterStore from '@/feature/character/data'
 
 export default defineComponent({
   name: 'dramatic-scene-area',
-  props: {
-    characterList: {
-      type: Array as PropType<StoreData<Character>[]>,
-      required: true
+  setup() {
+    const characterStore = CharacterStore.injector()
+    return {
+      characterList: characterStore.makeWrapCharacterList()
     }
   }
 })
@@ -42,7 +41,14 @@ export default defineComponent({
   overflow: hidden;
   margin: 3px 0 3px 3px;
   @include common.flex-box(row, center, center);
-  color: white;
+  border-color: var(--color);
+  border-width: 3px;
+  border-style: solid;
+  box-sizing: border-box;
+  background-image: var(--chit-image);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
 
   &:last-child {
     margin-right: 3px;

@@ -1,20 +1,37 @@
 <template>
-  <label class="url"><span>キャラクターシート倉庫URL</span><input type="text" v-model="character.sheetInfo.url"></label>
+  <label class="url"><span>キャラクターシート倉庫URL</span><input type="text" v-model="character.sheetInfo.url" placeholder="https://character-sheets.appspot.com/shinobigami/edit.html?key="></label>
   <character-basic-info :character="character" mode="edit" />
   <skill-table :character="character" mode="edit" />
   <ninja-arts-table :character="character" mode="edit" />
   <background-table :character="character" />
   <special-arts-table :character="character" />
+  <ninja-tool-table :character="character" />
   <label class="color">
     <span>チャット文字色</span>
     <font-color-select v-model="character.color" />
   </label>
+  <div class="chit-image-box">
+    <template v-for="(n, ind) in chitImageList" :key="n.key">
+      <label>
+        コマ画像{{ ind + 1 }}
+        <image-input :image-info="n" type="chit" @update="value => onUpdateImage('chit', n.key, value)" />
+      </label>
+    </template>
+  </div>
+  <div class="stand-image-box">
+    <template v-for="(n, ind) in standImageList" :key="n.key">
+      <label>
+        立ち絵画像{{ ind + 1 }}
+        <image-input :image-info="n" type="stand" @update="value => onUpdateImage('stand', n.key, value)" />
+      </label>
+    </template>
+  </div>
   <button @click="insertCharacter()">Add</button>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, watch } from 'vue'
-import Store, { Character } from './data'
+import { computed, defineComponent, reactive, ref, watch } from 'vue'
+import Store, { Character, ImageInfo } from './data'
 import UserSettingStore from '@/feature/user-setting/data'
 import { ShinobigamiHelper, tokugiTable } from '@/core/utility/shinobigami'
 import SkillTable from '@/components/shinobi-gami/skill-table.vue'
@@ -25,11 +42,14 @@ import FontColorSelect from '@/components/font-color-select.vue'
 import BackgroundTable from '@/components/shinobi-gami/background-table.vue'
 import { removeFilter } from '@/core/utility/typescript'
 import SpecialArtsTable from '@/components/shinobi-gami/special-arts-table.vue'
+import NinjaToolTable from '@/components/shinobi-gami/ninja-tool-table.vue'
+import ImageInput from '@/feature/character/image-input.vue'
+import { v4 as uuidV4 } from 'uuid'
 
 export default defineComponent({
   name: 'character-pane',
   emits: ['close'],
-  components: { SpecialArtsTable, BackgroundTable, FontColorSelect, CharacterBasicInfo, NinjaArtsTable, SkillTable },
+  components: { ImageInput, NinjaToolTable, SpecialArtsTable, BackgroundTable, FontColorSelect, CharacterBasicInfo, NinjaArtsTable, SkillTable },
   setup(_, { emit }) {
     const userSettingStore = UserSettingStore.injector()
     const userSetting = computed(() => userSettingStore.userSetting)
@@ -54,7 +74,7 @@ export default defineComponent({
       isFumble: false,
       color: '#3E2723',
       sheetInfo: {
-        url: 'https://character-sheets.appspot.com/shinobigami/edit.html?key=',
+        url: '',
         playerName: '',
         characterName: '',
         characterNameKana: '',
@@ -89,8 +109,13 @@ export default defineComponent({
           isUseSingleDamage: false,
           isOutputSingleDamage: false
         },
-        specialArtsList: []
-      }
+        specialArtsList: [],
+        ninjaToolList: []
+      },
+      chitImageList: [],
+      standImageList: [],
+      currentChitImage: -1,
+      currentStandImage: -1
     })
 
     watch(() => character.sheetInfo.url, async () => {
@@ -111,17 +136,48 @@ export default defineComponent({
       character.sheetInfo = rd
     })
 
+    const chitImageList = ref<ImageInfo[]>([{ key: uuidV4(), name: '', base64: '' }])
+    const standImageList = ref<ImageInfo[]>([{ key: uuidV4(), name: '', base64: '' }])
+
+    const onUpdateImage = (type: 'chit' | 'stand', key: string, value: ImageInfo) => {
+      const list: ImageInfo[] = type === 'chit' ? chitImageList.value : standImageList.value
+      const index = list.findIndex(ci => ci.key === key)
+      if (index > -1) {
+        list[index].name = value.name
+        list[index].base64 = value.base64
+      }
+      console.log(value.name)
+      if (list[list.length - 1].name) {
+        list.push({ key: uuidV4(), name: '', base64: '' })
+      }
+      if (!value.name && index > -1) {
+        list.splice(index, 1)
+      }
+    }
+
     const insertCharacter = () => {
       // eslint-disable-next-line no-irregular-whitespace
       const deleteSpace = (name: string) => name.replaceAll(/ 　/g, '')
       removeFilter(character.sheetInfo.ninpouList, n => !deleteSpace(n.name).length)
       removeFilter(character.sheetInfo.backgroundList, n => !deleteSpace(n.name).length)
-      state.insertData(character)
+      character.chitImageList.splice(0, character.chitImageList.length, ...chitImageList.value.filter(ci => !!ci.name).map(i => i.key))
+      character.standImageList.splice(0, character.standImageList.length, ...standImageList.value.filter(ci => !!ci.name).map(i => i.key))
+      if (character.currentChitImage < 0 && character.chitImageList.length) character.currentChitImage = 0
+      if (character.currentStandImage < 0 && character.standImageList.length) character.currentStandImage = 0
+      const infoList = chitImageList.value.concat(standImageList.value).filter(ci => !!ci.name).map((ci): ImageInfo => ({
+        base64: ci.base64,
+        key: ci.key,
+        name: ci.name
+      }))
+      state.insertData([character], infoList)
       emit('close')
     }
 
     return {
       userSetting,
+      chitImageList,
+      standImageList,
+      onUpdateImage,
       character,
       tokugiTable: tokugiTable,
       skillColumnList: ['器術', '体術', '忍術', '謀術', '戦術', '妖術'],
@@ -145,5 +201,15 @@ export default defineComponent({
 
 label.color {
   @include common.flex-box(column, flex-start, flex-start);
+}
+
+.chit-image-box,
+.stand-image-box {
+  width: 100%;
+  @include common.flex-box(row, flex-start, stretch, wrap);
+
+  label {
+    @include common.flex-box(column, flex-start, stretch);
+  }
 }
 </style>

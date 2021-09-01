@@ -13,6 +13,7 @@ export type UserSetting = {
   ninjaArtsTableFontSize: number;
   backgroundTableFontSize: number;
   specialArtsTableFontSize: number;
+  ninjaToolTableFontSize: number;
 }
 
 type Store = {
@@ -43,7 +44,8 @@ export default makeStore<Store>('user-setting-store', () => {
       'skillTableFontSize',
       'ninjaArtsTableFontSize',
       'backgroundTableFontSize',
-      'specialArtsTableFontSize'
+      'specialArtsTableFontSize',
+      'ninjaToolTableFontSize'
     ]
   )
 
@@ -67,7 +69,8 @@ export default makeStore<Store>('user-setting-store', () => {
       skillTableFontSize: 11,
       ninjaArtsTableFontSize: 11,
       backgroundTableFontSize: 11,
-      specialArtsTableFontSize: 11
+      specialArtsTableFontSize: 11,
+      ninjaToolTableFontSize: 11
     })
     let intervalId: number | null = null
     return new Promise((resolve) => {

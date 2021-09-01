@@ -15,7 +15,7 @@ export default defineComponent({
   name: 'color-test',
   props: {
     userSetting: {
-      type: Object as PropType<UserSetting>,
+      type: Object as PropType<Pick<UserSetting, 'accent1Color' | 'accent2Color'>>,
       required: true
     }
   }

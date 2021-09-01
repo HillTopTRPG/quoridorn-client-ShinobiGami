@@ -2,20 +2,34 @@
   <div id="the-play" :style="globalStyle">
     <flexible-data-layout :definition="layoutData" :barSetDelay="2700">
       <modal-area />
+      <special-input-area
+        :info="specialInputInfo"
+        @close="specialInputInfo.cmdType = 'normal'"
+        @submit="value => onDiceCommand(value)"
+        v-show="specialInputInfo.cmdType !== 'normal'"
+      />
+      <template #left-box>
+        <div class="chat" v-for="c in chatList" :key="c.key" :style="getChatStyle(c)"><span class="dice-roll-scf" v-if="c.data?.type === 'dice-roll-scf'">{{ c.data?.diceRollResult }}</span><span class="from-label">{{ getFromLabel(c) }}</span>{{ c.data?.raw }}</div>
+        <div class="chat-bottom" ref="chatBottomElm"></div>
+      </template>
+      <template #bottom-box>
+        <textarea class="chat-input" @keypress.enter="onEnter($event)" v-model="chatInput"></textarea>
+        <button @click="onChangeMode('SG')">SGコマンド</button>
+      </template>
       <template #top-box></template>
       <template #simple-center>
         <scene-status-area />
-        <character-status-area :character-list="characterList" />
+        <character-status-area />
       </template>
       <template #dramatic-scene>
-        <dramatic-scene-area :character-list="characterList" />
+        <dramatic-scene-area />
       </template>
       <template #velocity-system>
-        <velocity-column :characterList="characterList" />
+        <velocity-column />
       </template>
       <template #right-box>
         <template v-for="c in characterList" :key="c.key">
-          <character-detail-view :character="c" />
+          <character-detail-view :character="c" @targetValue="value => onTargetValue(value, c)" />
         </template>
       </template>
     </flexible-data-layout>
@@ -23,9 +37,11 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, watch } from 'vue'
-import CharacterStore from '@/feature/character/data'
+import { computed, defineComponent, reactive, ref, watch } from 'vue'
+import CharacterStore, { Character } from '@/feature/character/data'
+import ChatListStore, { BcdiceDiceRollResult, ChatStore } from '@/feature/chat-list/data'
 import UserSettingStore from '@/feature/user-setting/data'
+import UserStore from '@/core/data/user'
 import { SlotUnionInfo } from '@/core/flexible-data-layout.vue'
 import VelocityColumn from '@/components/the-play/velocity-column.vue'
 import CharacterStatusArea from '@/components/the-play/area/character-status-area.vue'
@@ -33,13 +49,29 @@ import ModalArea from '@/components/the-play/modal-area.vue'
 import CharacterDetailView from '@/components/the-play/character-detail-view.vue'
 import DramaticSceneArea from '@/components/the-play/area/dramatic-scene-area.vue'
 import SceneStatusArea from '@/components/the-play/area/scene-status-area.vue'
+import SpecialInputArea, { SpecialInputInfo, SpecialInputResult } from '@/components/the-play/special-input-area.vue'
+import { StoreData } from '@/core/utility/FileUtility'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const layoutData = require('./the-play.yaml')
 
 export default defineComponent({
-  components: { SceneStatusArea, DramaticSceneArea, CharacterDetailView, ModalArea, CharacterStatusArea, VelocityColumn },
+  components: { SpecialInputArea, SceneStatusArea, DramaticSceneArea, CharacterDetailView, ModalArea, CharacterStatusArea, VelocityColumn },
   setup() {
+    const chatBottomElm = ref<HTMLElement | null>(null)
     const userSettingStore = UserSettingStore.injector()
+    const chatListStore = ChatListStore.injector()
+    const userStore = UserStore.injector()
+    const characterStore = CharacterStore.injector()
+    const specialInputInfo = reactive<SpecialInputInfo>({
+      cmdType: 'normal',
+      owner: null,
+      ownerType: 'user',
+      special: 12,
+      target: 5,
+      fumble: 2,
+      dice: 2,
+      inputFlg: true
+    })
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const globalStyle = reactive<any>({})
@@ -52,15 +84,174 @@ export default defineComponent({
       globalStyle['--ninja-arts-table-font-size'] = a?.ninjaArtsTableFontSize ? a?.ninjaArtsTableFontSize + 'px' : '' || globalStyle['--ninja-arts-table-font-size']
       globalStyle['--background-table-font-size'] = a?.backgroundTableFontSize ? a?.backgroundTableFontSize + 'px' : '' || globalStyle['--background-table-font-size']
       globalStyle['--special-arts-table-font-size'] = a?.specialArtsTableFontSize ? a?.specialArtsTableFontSize + 'px' : '' || globalStyle['--special-arts-table-font-size']
+      globalStyle['--ninja-tool-table-font-size'] = a?.ninjaToolTableFontSize ? a?.ninjaToolTableFontSize + 'px' : '' || globalStyle['--ninja-tool-table-font-size']
     }, { deep: true, immediate: true })
 
     const reactiveLayout = reactive<SlotUnionInfo>(layoutData)
-    const characterStore = CharacterStore.injector()
+
+    const chatInput = ref('')
+
+    const diceRollAndChat = async (cmd: string): Promise<{ insertChat: () => Promise<void>; bcdiceResult: BcdiceDiceRollResult | null }> => {
+      let bcdiceResult: BcdiceDiceRollResult
+      try {
+        bcdiceResult = await chatListStore.diceRoll(cmd)
+      } catch (_) {
+        return {
+          bcdiceResult: null,
+          insertChat: async () => { /**/ }
+        }
+      }
+      if (!bcdiceResult.text) {
+        return {
+          bcdiceResult: null,
+          insertChat: async () => { /**/ }
+        }
+      }
+      let diceResult = ''
+      if (bcdiceResult.critical) diceResult = 'スペシャル'
+      else if (bcdiceResult.success) diceResult = '成功'
+      if (bcdiceResult.fumble) diceResult = 'ファンブル'
+      else if (bcdiceResult.failure) diceResult = '失敗'
+      console.log(JSON.stringify(bcdiceResult, null, '  '))
+      return {
+        bcdiceResult,
+        insertChat: async () => {
+          let raw = bcdiceResult.text || ''
+          const index1 = raw.indexOf('→')
+          if (index1 > -1) {
+            const index2 = raw.indexOf('→', index1 + 1)
+            if (index2 > -1) {
+              raw = raw.substring(index1 + 1, index2).trim()
+            }
+          }
+          console.log(bcdiceResult.text)
+          console.log(raw)
+          await chatListStore.insertData({
+            raw,
+            tag: [''],
+            tab: '',
+            type: diceResult ? 'dice-roll-scf' : 'dice-roll',
+            from: diceResult ? '' : 'system',
+            diceRollResult: diceResult || null
+          })
+        }
+      }
+    }
+
+    const onEnter = async () => {
+      await chatListStore.insertData({
+        raw: chatInput.value,
+        tag: [''],
+        tab: '',
+        type: 'user',
+        from: userStore.selfUser?.name || '',
+        diceRollResult: null
+      })
+      const { bcdiceResult, insertChat } = await diceRollAndChat(chatInput.value)
+      if (bcdiceResult) {
+        await insertChat()
+      }
+      chatInput.value = ''
+    }
+
+    const onChangeMode = (m: 'normal' | 'SG' | 'D6' | 'D6>=?') => {
+      specialInputInfo.cmdType = m
+      specialInputInfo.inputFlg = true
+    }
+
+    const onDiceCommand = async (result: SpecialInputResult) => {
+      await chatListStore.insertData({
+        raw: result.command,
+        tag: [''],
+        tab: '',
+        type: result.ownerType,
+        from: result.owner || userStore.selfUser?.name || '',
+        diceRollResult: null
+      })
+      const { bcdiceResult, insertChat } = await diceRollAndChat(result.command)
+      if (bcdiceResult) {
+        await insertChat()
+      }
+    }
+
+    const onTargetValue = (targetValue: number, character: StoreData<Character>) => {
+      console.log(targetValue, character.data?.sheetInfo.characterName)
+      specialInputInfo.target = targetValue
+      specialInputInfo.ownerType = 'character'
+      specialInputInfo.owner = character.key
+      specialInputInfo.fumble = 2
+      const plot = character.data?.plot || 0
+      if (plot > 2 && plot <= 7) {
+        specialInputInfo.fumble = plot
+      }
+      specialInputInfo.dice = 2
+      specialInputInfo.special = 12
+      specialInputInfo.cmdType = 'SG'
+      specialInputInfo.inputFlg = true
+    }
+
+    const chatList = computed(() => chatListStore.list)
+    watch(() => [...chatList.value], (newList, oldList) => {
+      console.log(newList.length, oldList.length)
+      if (newList.length > oldList.length) {
+        setTimeout(() => {
+          chatBottomElm.value?.scrollIntoView(false)
+        })
+      }
+    })
 
     return {
+      chatBottomElm,
+      onChangeMode,
+      onDiceCommand,
+      chatInput,
       globalStyle,
       characterList: computed(() => characterStore.characterList),
-      layoutData: reactiveLayout
+      layoutData: reactiveLayout,
+      chatList,
+      onEnter,
+      onTargetValue,
+      specialInputInfo,
+      getFromLabel: (chat: StoreData<ChatStore>): string => {
+        if (!chat || !chat.data) return ''
+        let fromLabel = ''
+        const type = chat.data.type
+        if (type === 'character') {
+          const c = characterStore.characterList.find(c => c.key === chat.data?.from)
+          fromLabel = c?.data?.sheetInfo.characterName || ''
+        }
+        if (type === 'user') {
+          const u = userStore.userList.find(u => u.name === chat.data?.from)
+          fromLabel = `${u?.name || '???'}(${u?.type.toUpperCase() || '??'})`
+        }
+        if (type === 'system') {
+          fromLabel = 'System'
+        }
+        if (type === 'dice-roll') {
+          fromLabel = ''
+        }
+        if (fromLabel) fromLabel += '：'
+        return fromLabel
+      },
+      getChatStyle: (chat: StoreData<ChatStore>): Record<string, string> => {
+        if (!chat || !chat.data) return {}
+        const result: Record<string, string> = {}
+        const type = chat.data.type
+        if (type === 'character') {
+          const c = characterStore.characterList.find(c => c.key === chat.data?.from)
+          result['--color'] = c?.data?.color || '#000'
+        }
+        if (type === 'user') {
+          result['--color'] = userSettingStore.userSetting?.fontColor || '#000'
+        }
+        if (type === 'system' || type === 'dice-roll' || type === 'dice-roll-scf') {
+          result['--color'] = '#000'
+        }
+        if (type === 'dice-roll' || type === 'dice-roll-scf') {
+          result['margin-top'] = '-0.5rem'
+        }
+        return result
+      }
     }
   },
   name: 'the-play'
@@ -79,6 +270,32 @@ export default defineComponent({
   box-sizing: border-box;
 }
 
+.chat {
+  display: inline;
+  color: var(--color);
+  text-align: left;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+
+  .from-label {
+    font-weight: bold;
+    white-space: nowrap;
+  }
+
+  .dice-roll-scf {
+    border: 1px solid gray;
+    border-radius: 3px;
+    padding: 0 0.2rem;
+    white-space: nowrap;
+    margin-right: 0.3rem;
+  }
+}
+
+textarea {
+  resize: horizontal;
+}
+
 @include common.deep(".right-box") {
   gap: 0.5rem;
 }
@@ -89,6 +306,10 @@ export default defineComponent({
 }
 
 @include common.deep(".simple-center") {
+  gap: 0.5rem;
+}
+
+@include common.deep(".left-box") {
   gap: 0.5rem;
 }
 

@@ -21,7 +21,7 @@ export default defineComponent({
     const state = Store.injector()
     const userSetting = computed(() => state.userSetting)
 
-    const userSettingList: UserSetting[] = [
+    const userSettingList: Pick<UserSetting, 'accent1Color' | 'accent2Color'>[] = [
       {
         accent1Color: 'rgba(255, 40, 0, 1)',
         accent2Color: 'rgba(0, 111, 255, 1)'
@@ -30,15 +30,7 @@ export default defineComponent({
         accent1Color: 'rgba(0, 111, 255, 1)',
         accent2Color: 'rgba(0, 255, 0, 1)'
       }
-    ].map((u): UserSetting => ({
-      ...u,
-      userName: '',
-      fontColor: '#000',
-      skillTableFontSize: 11,
-      ninjaArtsTableFontSize: 11,
-      backgroundTableFontSize: 11,
-      specialArtsTableFontSize: 11
-    }))
+    ]
 
     const selectColorSetting = (c: UserSetting) => {
       if (userSetting.value) {

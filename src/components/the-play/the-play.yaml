@@ -76,6 +76,8 @@ blockList:
       slotName: bottom-box
       layout: h-box
       flexWrap: false
+      justifyContent: flex-start
+      alignItems: stretch
       minHeight:
         px: 80
       maxHeight:

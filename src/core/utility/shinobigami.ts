@@ -18,6 +18,12 @@ type SpecialArts = {
   direction: string;
 }
 
+export type NinjaTool = {
+  name: string;
+  count: number;
+  effect: string;
+}
+
 export type Ninpou = {
   secret: boolean;
   name: string;
@@ -56,6 +62,7 @@ export type Shinobigami = {
   };
   backgroundList: Haikei[]; // 背景
   specialArtsList: SpecialArts[]; // 奥義
+  ninjaToolList: NinjaTool[]; // 忍具
   tokugi: SaikoroFictionTokugi; // 特技
 };
 
@@ -195,7 +202,8 @@ export class ShinobigamiHelper extends TrpgSystemHelper<Shinobigami> {
         false,
         false
       ),
-      specialArtsList: []
+      specialArtsList: [],
+      ninjaToolList: []
     }
   }
 }

@@ -164,8 +164,7 @@ table.character-basic-info {
   font-size: 11px;
   border-collapse: collapse;
   border-spacing: 0;
-  border-right: 1px solid rgb(0, 0, 0);
-  border-top: 1px solid rgb(0, 0, 0);
+  border: 1px solid rgb(0, 0, 0);
   table-layout: fixed;
 
   label {
@@ -188,7 +187,7 @@ table.character-basic-info {
   td, th {
     position: relative;
     border-style: solid;
-    border-width: 0 0 1px 1px;
+    border-width: 1px;
     border-color: black;
     padding: 0;
     margin: 0;

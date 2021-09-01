@@ -4,7 +4,7 @@
       <div class="character-status" v-if="c.data">
         <div
           class="character"
-          :style="{ backgroundColor: c.data.color }"
+          :style="c.styleObj"
         ><span>{{ c.data.sheetInfo.characterName }}</span></div>
         <select v-model="c.data.isActed">
           <option disabled>行動</option>
@@ -23,18 +23,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
-import { Character } from '@/feature/character/data'
-import { StoreData } from '@/core/utility/FileUtility'
+import { defineComponent } from 'vue'
+import CharacterStore from '@/feature/character/data'
 import PlotSelect from '@/components/the-play/select/plot-select.vue'
 
 export default defineComponent({
   name: 'character-status-area',
   components: { PlotSelect },
-  props: {
-    characterList: {
-      type: Array as PropType<StoreData<Character>[]>,
-      required: true
+  setup() {
+    const characterStore = CharacterStore.injector()
+    const characterList = characterStore.makeWrapCharacterList()
+    return {
+      characterList
     }
   }
 })
@@ -62,17 +62,26 @@ export default defineComponent({
       overflow: hidden;
       position: relative;
       @include common.flex-box(row, center, center);
-      color: white;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center top;
+      background-image: var(--chit-image);
 
       &:before {
         content: '';
         display: block;
-        padding-top: 100%;
+        padding-top: calc(100% + 2em);
       }
 
       span {
-        @include common.position-full-size();
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 2em;
         @include common.flex-box(row, center, center);
+        color: var(--color);
+        font-weight: bold;
       }
     }
 
