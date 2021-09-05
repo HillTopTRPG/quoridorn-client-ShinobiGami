@@ -2,17 +2,15 @@
   <div id="the-play" :style="globalStyle">
     <flexible-data-layout :definition="layoutData" :barSetDelay="2700">
       <modal-area />
-      <special-input-area
-        :info="specialInputInfo"
-        @close="specialInputInfo.cmdType = 'normal'"
-        @submit="value => onDiceCommand(value)"
-        v-show="specialInputInfo.cmdType !== 'normal'"
-      />
+      <special-input-area @submit="onDiceCommand()" />
       <template #left-box>
         <div class="chat" v-for="c in chatList" :key="c.key" :style="getChatStyle(c)"><span class="dice-roll-scf" v-if="c.data?.type === 'dice-roll-scf'">{{ c.data?.diceRollResult }}</span><span class="from-label">{{ getFromLabel(c) }}</span>{{ c.data?.raw }}</div>
         <div class="chat-bottom" ref="chatBottomElm"></div>
       </template>
       <template #bottom-box>
+        <select>
+          <option value=""></option>
+        </select>
         <textarea class="chat-input" @keypress.enter="onEnter($event)" v-model="chatInput"></textarea>
         <button @click="onChangeMode('SG')">SGコマンド</button>
       </template>
@@ -29,7 +27,9 @@
       </template>
       <template #right-box>
         <template v-for="c in characterList" :key="c.key">
-          <character-detail-view :character="c" @targetValue="value => onTargetValue(value, c)" />
+          <character-detail-view
+            :character="c"
+          />
         </template>
       </template>
     </flexible-data-layout>
@@ -38,7 +38,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, reactive, ref, watch } from 'vue'
-import CharacterStore, { Character } from '@/feature/character/data'
+import CharacterStore from '@/feature/character/data'
 import ChatListStore, { BcdiceDiceRollResult, ChatStore } from '@/feature/chat-list/data'
 import UserSettingStore from '@/feature/user-setting/data'
 import UserStore from '@/core/data/user'
@@ -49,29 +49,31 @@ import ModalArea from '@/components/the-play/modal-area.vue'
 import CharacterDetailView from '@/components/the-play/character-detail-view.vue'
 import DramaticSceneArea from '@/components/the-play/area/dramatic-scene-area.vue'
 import SceneStatusArea from '@/components/the-play/area/scene-status-area.vue'
-import SpecialInputArea, { SpecialInputInfo, SpecialInputResult } from '@/components/the-play/special-input-area.vue'
+import SpecialInputArea from '@/components/the-play/special-input-area.vue'
 import { StoreData } from '@/core/utility/FileUtility'
+import SpecialInputStore from '@/feature/special-input/data'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const layoutData = require('./the-play.yaml')
 
 export default defineComponent({
   components: { SpecialInputArea, SceneStatusArea, DramaticSceneArea, CharacterDetailView, ModalArea, CharacterStatusArea, VelocityColumn },
   setup() {
+    const characterStore = CharacterStore.injector()
+    const specialInputStore = SpecialInputStore.injector()
+    specialInputStore.characterStore = characterStore
     const chatBottomElm = ref<HTMLElement | null>(null)
     const userSettingStore = UserSettingStore.injector()
     const chatListStore = ChatListStore.injector()
     const userStore = UserStore.injector()
-    const characterStore = CharacterStore.injector()
-    const specialInputInfo = reactive<SpecialInputInfo>({
-      cmdType: 'normal',
-      owner: null,
-      ownerType: 'user',
-      special: 12,
-      target: 5,
-      fumble: 2,
-      dice: 2,
-      inputFlg: true
-    })
+    const selfName = computed(() => userStore.selfUser?.name)
+    const characterList = computed(() => characterStore.characterList)
+    const targetInfoList = computed(() =>
+      userStore.userList
+        .flatMap(u => u.refList.filter(r => r.type === 'character').map(r => ({
+          user: u.name,
+          character: characterStore.characterList.find(c => c.key === r.key)?.data?.sheetInfo.characterName || ''
+        })))
+    )
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const globalStyle = reactive<any>({})
@@ -155,39 +157,25 @@ export default defineComponent({
     }
 
     const onChangeMode = (m: 'normal' | 'SG' | 'D6' | 'D6>=?') => {
-      specialInputInfo.cmdType = m
-      specialInputInfo.inputFlg = true
+      specialInputStore.setCmdType(m)
     }
 
-    const onDiceCommand = async (result: SpecialInputResult) => {
+    const onDiceCommand = async () => {
+      const command = specialInputStore.command
+      const from = specialInputStore.from
       await chatListStore.insertData({
-        raw: result.command,
+        raw: command,
         tag: [''],
         tab: '',
-        type: result.ownerType,
-        from: result.owner || userStore.selfUser?.name || '',
+        type: from.type === 'character' ? 'character' : 'system',
+        from: from.key || userStore.selfUser?.name || '',
         diceRollResult: null
       })
-      const { bcdiceResult, insertChat } = await diceRollAndChat(result.command)
+      const { bcdiceResult, insertChat } = await diceRollAndChat(command)
       if (bcdiceResult) {
         await insertChat()
       }
-    }
-
-    const onTargetValue = (targetValue: number, character: StoreData<Character>) => {
-      console.log(targetValue, character.data?.sheetInfo.characterName)
-      specialInputInfo.target = targetValue
-      specialInputInfo.ownerType = 'character'
-      specialInputInfo.owner = character.key
-      specialInputInfo.fumble = 2
-      const plot = character.data?.plot || 0
-      if (plot > 2 && plot <= 7) {
-        specialInputInfo.fumble = plot
-      }
-      specialInputInfo.dice = 2
-      specialInputInfo.special = 12
-      specialInputInfo.cmdType = 'SG'
-      specialInputInfo.inputFlg = true
+      specialInputStore.setCmdType('normal')
     }
 
     const chatList = computed(() => chatListStore.list)
@@ -206,12 +194,10 @@ export default defineComponent({
       onDiceCommand,
       chatInput,
       globalStyle,
-      characterList: computed(() => characterStore.characterList),
+      characterList,
       layoutData: reactiveLayout,
       chatList,
       onEnter,
-      onTargetValue,
-      specialInputInfo,
       getFromLabel: (chat: StoreData<ChatStore>): string => {
         if (!chat || !chat.data) return ''
         let fromLabel = ''

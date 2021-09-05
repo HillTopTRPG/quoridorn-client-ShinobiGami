@@ -10,6 +10,7 @@ import scenario from '@/feature/scenario'
 import scene from '@/feature/scene'
 import mediaList from '@/feature/media-list'
 import chatList from '@/feature/chat-list'
+import specialInput from '@/feature/special-input'
 import tag from '@/feature/tag'
 import userSetting from '@/feature/user-setting'
 import { installFeatures } from '@/core'
@@ -29,7 +30,8 @@ const Plugin = {
       tag,
       userSetting,
       mediaList,
-      chatList
+      chatList,
+      specialInput
     ]
     installFeatures(app, features)
   }

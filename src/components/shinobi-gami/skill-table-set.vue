@@ -1,7 +1,20 @@
 <template>
   <div class="skill-table-set">
-    <skill-table :character="character" @targetValue="value => onTargetValue(value)" :character-key="characterKey" mode="normal" v-model:target-skill="targetSkillRaw" />
-    <skill-table :character="character" :character-key="characterKey" mode="comparison" v-model:other-character-key="otherCharaKey" v-model:target-skill="targetSkillRaw" />
+    <skill-table
+      :character="character"
+      @clearArts="onClearArts()"
+      :target-arts="targetArts"
+      :character-key="characterKey"
+      mode="normal"
+      v-model:target-skill="targetSkillRaw"
+    />
+    <skill-table
+      :character="character"
+      :character-key="characterKey"
+      mode="comparison"
+      v-model:other-character-key="otherCharaKey"
+      v-model:target-skill="targetSkillRaw"
+    />
   </div>
 </template>
 
@@ -29,9 +42,13 @@ export default defineComponent({
     targetSkill: {
       type: String,
       default: null
+    },
+    targetArts: {
+      type: String,
+      default: null
     }
   },
-  emits: ['target-value', 'update:targetSkill', 'update:otherCharacterKey'],
+  emits: ['update:targetSkill', 'update:otherCharacterKey', 'clear-arts'],
   setup(props, { emit }) {
     const targetSkillRaw = ref<string | null>(props.targetSkill)
     const otherCharaKey = ref<string | null>(props.otherCharacterKey)
@@ -50,9 +67,8 @@ export default defineComponent({
     return {
       targetSkillRaw,
       otherCharaKey,
-      onTargetValue: (targetValue: number) => {
-        console.log(targetValue)
-        emit('target-value', targetValue)
+      onClearArts: () => {
+        emit('clear-arts')
       }
     }
   }

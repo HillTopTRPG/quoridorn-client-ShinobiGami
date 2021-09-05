@@ -27,7 +27,7 @@ type PermissionRule = {
   list: PermissionNode[]
 }
 
-type DataReference = {
+export type DataReference = {
   type: string
   key: string
 }

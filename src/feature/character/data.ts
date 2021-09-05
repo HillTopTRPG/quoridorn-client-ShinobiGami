@@ -53,7 +53,7 @@ export type UploadMediaResponse = {
   urlType: UrlType;
 }[];
 
-type Store = {
+export type Store = {
   ready: boolean,
   characterList: StoreData<Character>[];
   requestData: () => Promise<void>;

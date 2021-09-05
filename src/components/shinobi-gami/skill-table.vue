@@ -66,7 +66,7 @@
               class="target-value"
               v-if="targetValueList.some(tv => tv.name === t)"
               :style="{ '--value': `'>=${targetValueList.find(tv => tv.name === t).targetValue}'` }"
-              @click="onClickTargetValue(targetValueList.find(tv => tv.name === t).targetValue)"
+              @click="onClickTargetValue(targetValueList.find(tv => tv.name === t))"
             ></span>
             <label @click="onClickSkillName(t)">{{ t }}</label>
           </td>
@@ -91,6 +91,7 @@ import { listDelete } from '@/core/utility/PrimaryDataUtility'
 import { HtmlEvent } from '@/core/utility/typescript'
 import { SaikoroFictionTokugi } from '@/core/utility/SaikoroFiction'
 import CharacterStore, { Character } from '@/feature/character/data'
+import SpecialInputStore from '@/feature/special-input/data'
 import { makeComputedObject } from '@/core/utility/vue3'
 
 function getRowCol(name: string): { r: number, c: number } {
@@ -106,12 +107,13 @@ function getRowCol(name: string): { r: number, c: number } {
   return { r, c }
 }
 
-function calcTargetValue(name: string, tokugi: SaikoroFictionTokugi): {
+export type TargetValueCalcResult = {
   r: number;
   c: number;
   name: string;
   targetValue: number;
-}[] {
+}
+export function calcTargetValue(name: string, tokugi: SaikoroFictionTokugi): TargetValueCalcResult[] {
   const { r, c } = getRowCol(name)
   if (r === -1 || c === -1) return []
   return tokugi.learnedList
@@ -189,15 +191,21 @@ export default defineComponent({
       type: String,
       default: null
     },
+    targetArts: {
+      type: String,
+      default: null
+    },
     otherCharacterKey: {
       type: String,
       default: null
     }
   },
-  emits: ['target-value', 'update:otherCharacterKey', 'update:targetSkill'],
+  emits: ['update:otherCharacterKey', 'update:targetSkill', 'clear-arts'],
   setup(props, { emit }) {
+    const specialInputStore = SpecialInputStore.injector()
     // 特技表
     const skill = ref<SaikoroFictionTokugi | null>(null)
+    const targetNinjaArts = ref<string | null>(null)
 
     // 達成値
     const targetValueList = reactive<{ name: string; targetValue: number; }[]>([])
@@ -209,6 +217,10 @@ export default defineComponent({
       const list = calcTargetValue(name, skill.value)
       targetValueList.splice(0, targetValueList.length, ...list.map(o => ({ name: o.name, targetValue: o.targetValue })))
     }
+
+    watch(() => props.targetArts, () => {
+      targetNinjaArts.value = props.targetArts
+    })
 
     // 外部の変更を取り込む
     const characterStore = CharacterStore.injector()
@@ -279,10 +291,15 @@ export default defineComponent({
       } else {
         selectedSkill.value = selectedSkill.value === name ? null : name
       }
+      if (targetNinjaArts.value) emit('clear-arts')
     }
-    const onClickTargetValue = (value: number) => {
-      console.log(value)
-      emit('target-value', value)
+    const onClickTargetValue = (info: { name: string; targetValue: number; }) => {
+      specialInputStore.setUseSkill(info.name)
+      specialInputStore.from.key = props.characterKey
+      specialInputStore.setNinjaArts(targetNinjaArts.value)
+      specialInputStore.setTargetSkill(selectedSkill.value)
+      specialInputStore.from.key = props.characterKey
+      specialInputStore.setCmdType('SG')
     }
 
     const onChangeOutRow = (e: HtmlEvent<HTMLInputElement>) => {

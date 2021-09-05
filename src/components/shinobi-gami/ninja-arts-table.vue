@@ -76,6 +76,7 @@
 <script lang="ts">
 import { computed, defineComponent, PropType, ref } from 'vue'
 import { Character } from '@/feature/character/data'
+import SpecialInputStore from '@/feature/special-input/data'
 import { v4 as uuidV4 } from 'uuid'
 import { ShinobigamiHelper, tokugiTable } from '@/core/utility/shinobigami'
 
@@ -90,6 +91,10 @@ export default defineComponent({
       type: Object as PropType<Character>,
       required: true
     },
+    characterKey: {
+      type: String,
+      default: null
+    },
     selectIndex: {
       type: Number,
       default: null
@@ -97,6 +102,7 @@ export default defineComponent({
   },
   setup(props, { emit }) {
     const elmId = uuidV4()
+    const specialInputStore = SpecialInputStore.injector()
     const currentColumn = ref('')
     const onFocusColumn = (event: { target: HTMLInputElement | HTMLSelectElement }): void => {
       const type = (event.target?.parentNode as HTMLElement).className.split(' ')[0] || ''
@@ -107,6 +113,9 @@ export default defineComponent({
     const selectedArts = computed(() => props.selectIndex)
     const onSelectArts = (index: number) => {
       emit('update:selectIndex', selectedArts.value === index ? null : index)
+      const ninjaArts = props.character.sheetInfo.ninpouList[index]
+      specialInputStore.from.key = props.characterKey
+      specialInputStore.setNinjaArts(ninjaArts.name)
     }
     const reloadNinjaArts = async () => {
       const helper = new ShinobigamiHelper(props.character.sheetInfo.url)

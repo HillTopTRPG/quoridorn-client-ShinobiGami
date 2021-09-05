@@ -27,10 +27,22 @@
         </div>
 
         <div class="part-wrap">
-          <skill-table-set :character="character.data" @targetValue="value => onTargetValue(value)" :character-key="character.key" v-model:other-character-key="otherCharacterKey" v-model:target-skill="targetSkill" />
+          <skill-table-set
+            :character="character.data"
+            @clearArts="onClearArts()"
+            :target-arts="selectedNinjaArtsIndex !== null ? character.data?.sheetInfo.ninpouList[selectedNinjaArtsIndex]?.name || null : null"
+            :character-key="character.key"
+            v-model:other-character-key="otherCharacterKey"
+            v-model:target-skill="targetSkill"
+          />
         </div>
         <div class="part-wrap">
-          <ninja-arts-table :character="character.data" mode="normal" v-model:select-index="selectedNinjaArtsIndex" />
+          <ninja-arts-table
+            :character="character.data"
+            :character-key="character.key"
+            mode="normal"
+            v-model:select-index="selectedNinjaArtsIndex"
+          />
         </div>
       </div>
     </transition>
@@ -53,8 +65,7 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ['target-value'],
-  setup(props, { emit }) {
+  setup(props) {
     const selectedNinjaArtsIndex = ref<number | null>(null)
     const targetSkill = ref<string | null>(null)
     const otherCharacterKey = ref<string | null>(null)
@@ -76,9 +87,8 @@ export default defineComponent({
       selectedNinjaArtsIndex,
       targetSkill,
       otherCharacterKey,
-      onTargetValue: (targetValue: number) => {
-        console.log(targetValue)
-        emit('target-value', targetValue)
+      onClearArts: () => {
+        selectedNinjaArtsIndex.value = null
       }
     }
   }
