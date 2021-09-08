@@ -16,7 +16,7 @@ export type ImageInfo = {
 export type Character = {
   type: 'character';
   plot: number;
-  pcNo: number;
+  pcNo: number | null;
   isFumble: boolean;
   isActed: boolean;
   color: string;

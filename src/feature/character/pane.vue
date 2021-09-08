@@ -1,33 +1,51 @@
 <template>
-  <label class="url"><span>キャラクターシート倉庫URL</span><input type="text" v-model="character.sheetInfo.url" placeholder="https://character-sheets.appspot.com/shinobigami/edit.html?key="></label>
-  <label class="sheet-view-pass"><span>秘匿情報閲覧パス</span><input type="text" v-model="character.sheetViewPass" placeholder=""><button @click="onReadSheet()">読込</button></label>
-  <character-basic-info :character="character" mode="edit" />
-  <skill-table :character="character" mode="edit" />
-  <ninja-arts-table :character="character" mode="edit" />
-  <background-table :character="character" />
-  <special-arts-table :character="character" />
-  <ninja-tool-table :character="character" />
-  <label class="color">
-    <span>チャット文字色</span>
-    <font-color-select v-model="character.color" />
-  </label>
-  <div class="chit-image-box">
-    <template v-for="(n, ind) in chitImageList" :key="n.key">
-      <label>
-        コマ画像{{ ind + 1 }}
-        <image-input :image-info="n" type="chit" @update="value => onUpdateImage('chit', n.key, value)" />
-      </label>
-    </template>
+  <div class="character-pane-container">
+    <details open>
+      <summary>編集</summary>
+      <div class="h-box">
+        <template v-for="c in characterList" :key="c.key">
+          <div
+            class="character"
+            :style="c.styleObj"
+          ><span>{{ c.data.sheetInfo.characterName }}</span></div>
+        </template>
+      </div>
+    </details>
+    <details open>
+      <summary>追加</summary>
+      <div class="h-box">
+        <label class="url"><span>キャラクターシート倉庫URL</span><input type="text" v-model="character.sheetInfo.url" placeholder="https://character-sheets.appspot.com/shinobigami/edit.html?key="></label>
+        <label class="sheet-view-pass"><span>秘匿情報閲覧パス</span><input type="text" v-model="character.sheetViewPass" placeholder=""><button @click="onReadSheet()">読込</button></label>
+        <character-basic-info :character="character" mode="edit" />
+        <skill-table :character="character" mode="edit" />
+        <ninja-arts-table :character="character" mode="edit" />
+        <background-table :character="character" />
+        <special-arts-table :character="character" />
+        <ninja-tool-table :character="character" />
+        <label class="color">
+          <span>チャット文字色</span>
+          <font-color-select v-model="character.color" />
+        </label>
+        <div class="chit-image-box">
+          <template v-for="(n, ind) in chitImageList" :key="n.key">
+            <label>
+              コマ画像{{ ind + 1 }}
+              <image-input :image-info="n" type="chit" @update="value => onUpdateImage('chit', n.key, value)" />
+            </label>
+          </template>
+        </div>
+        <div class="stand-image-box">
+          <template v-for="(n, ind) in standImageList" :key="n.key">
+            <label>
+              立ち絵画像{{ ind + 1 }}
+              <image-input :image-info="n" type="stand" @update="value => onUpdateImage('stand', n.key, value)" />
+            </label>
+          </template>
+        </div>
+        <button @click="insertCharacter()">Add</button>
+      </div>
+    </details>
   </div>
-  <div class="stand-image-box">
-    <template v-for="(n, ind) in standImageList" :key="n.key">
-      <label>
-        立ち絵画像{{ ind + 1 }}
-        <image-input :image-info="n" type="stand" @update="value => onUpdateImage('stand', n.key, value)" />
-      </label>
-    </template>
-  </div>
-  <button @click="insertCharacter()">Add</button>
 </template>
 
 <script lang="ts">
@@ -57,19 +75,9 @@ export default defineComponent({
     const userSetting = computed(() => userSettingStore.userSetting)
 
     const state = Store.injector()
-    let pcNo = 0
-    state.characterList
-      .filter(c => c.data?.type === 'character')
-      .map(c => c.data?.pcNo || 0)
-      .sort((n1, n2) => n1 < n2 ? -1 : n2 < n1 ? 1 : 0)
-      .forEach(n => {
-        if (n <= 0) return
-        if (pcNo === n - 1) pcNo = n
-      })
-    pcNo++
 
     const character = reactive<Character>({
-      pcNo,
+      pcNo: null,
       isActed: false,
       plot: -2,
       type: 'character',
@@ -141,7 +149,7 @@ export default defineComponent({
       }
 
       const pcNoRaw = convertNumberNull(rd.scenario.pcno.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0)))
-      if (pcNoRaw !== null) character.pcNo = pcNoRaw
+      character.pcNo = pcNoRaw
       character.sheetInfo = rd
     }
 
@@ -183,6 +191,7 @@ export default defineComponent({
     }
 
     return {
+      characterList: state.makeWrapCharacterList(),
       onReadSheet,
       userSetting,
       chitImageList,
@@ -203,6 +212,13 @@ export default defineComponent({
 <style scoped lang="scss">
 @use "../../components/common";
 
+.character-pane-container {
+  @include common.flex-box(column, stretch, flex-start);
+  padding-top: 0.5rem;
+  gap: 0.5rem;
+  width: 100%;
+}
+
 .url {
   text-align: left;
   @include common.flex-box(column, stretch, flex-start);
@@ -220,6 +236,51 @@ label.color {
 
   label {
     @include common.flex-box(column, flex-start, stretch);
+  }
+}
+
+details {
+  margin: 0 0.5rem;
+
+  summary {
+    background-color: lightblue;
+    vertical-align: center;
+    text-align: left;
+    line-height: 2em;
+    height: 2em;
+    box-sizing: border-box;
+    cursor: pointer;
+    padding: 0 0.5em;
+    overflow: hidden;
+    font-weight: bold;
+  }
+}
+
+.h-box {
+  @include common.flex-box(row, flex-start, flex-start, wrap);
+  gap: 0.5rem
+}
+.character {
+  width: 5em;
+  height: 7em;
+  font-size: 80%;
+  overflow: hidden;
+  position: relative;
+  @include common.flex-box(row, center, center);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-image: var(--chit-image);
+
+  span {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2em;
+    @include common.flex-box(row, center, center);
+    color: var(--color);
+    font-weight: bold;
   }
 }
 </style>

@@ -6,6 +6,7 @@ export type PC = {
   name: string;
   recommend: string;
   secret: string;
+  openList: string[];
 }
 
 export type NPC = PC & {
@@ -30,6 +31,8 @@ export type Enigma = {
   power: string;
   // バインド
   target: string;
+  // 公開状態
+  open: boolean;
 }
 
 export type RightHand = {

@@ -102,7 +102,9 @@ export function commonStoreDataProcess<T, U extends keyof T>(
     )
     // 削除もここでは無視（削除用のサーバーAPIを叩くことで削除すること！）
     const ignoreKeyList = removeWatchKey(...diffInfoList.map(d => d.n.key))
-    removeFilter(diffInfoList, d => ignoreKeyList.includes(d.n.key || ''))
+    if (ignoreKeyList.length) {
+      removeFilter(diffInfoList, d => ignoreKeyList.includes(d.n.key || ''))
+    }
 
     if (diffInfoList.length) {
       (async () => {

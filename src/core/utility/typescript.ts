@@ -42,7 +42,7 @@ export function pick<T extends { /**/ }, U extends keyof T>(src: T, ...pickKeys:
 type ObjIndex<T> = { data: T; index: number }
 export function removeFilter<T>(list: (T)[], filterFunc: (d: T) => boolean): T[] {
   return list
-    .map((data): ObjIndex<T> => ({ data, index: list.findIndex(filterFunc) }))
+    .map((data, idx): ObjIndex<T> => ({ data, index: filterFunc(data) ? idx : -1 }))
     .filter(info => info.index > -1)
     .sort((i1, i2) => i1.index < i2.index ? 1 : i2.index < i1.index ? -1 : 0)
     .map(info => {
