@@ -15,7 +15,7 @@ type Store = {
 
 export default makeStore<Store>('memo-store', () => {
   const state = reactive<StoreUpdateProperties<Store, never>>({
-    ready: true,
+    ready: false,
     list: []
   })
 

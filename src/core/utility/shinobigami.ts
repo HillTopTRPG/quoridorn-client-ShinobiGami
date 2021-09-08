@@ -1,17 +1,20 @@
 import {
-  createEmotion, createTokugi,
-  outputTokugiChatPalette, Personality, SaikoroFictionTokugi
+  createEmotion,
+  createTokugi,
+  Personality,
+  SaikoroFictionTokugi
 } from '@/core/utility/SaikoroFiction'
-import { TrpgSystemHelper } from '@/core/utility/TrpgSystemHelper'
+import { convertNumberZero } from '@/core/utility/PrimaryDataUtility'
+import { getJsonByGet, getJsonByJsonp } from '@/core/utility/Utility'
 
-type Haikei = {
+export type Background = {
   name: string;
   type: string;
   point: string;
   effect: string;
 };
 
-type SpecialArts = {
+export type SpecialArts = {
   name: string;
   skill: string;
   effect: string;
@@ -24,7 +27,7 @@ export type NinjaTool = {
   effect: string;
 }
 
-export type Ninpou = {
+export type NinjaArts = {
   secret: boolean;
   name: string;
   type: string;
@@ -35,7 +38,7 @@ export type Ninpou = {
   page: string;
 };
 
-export type Shinobigami = {
+export type ShinobiGami = {
   url: string;
   playerName: string;
   characterName: string;
@@ -52,7 +55,7 @@ export type Shinobigami = {
   cover: string;
   belief: string;
   stylerule: string;
-  ninpouList: Ninpou[]; // 忍法
+  ninjaArtsList: NinjaArts[]; // 忍法
   personalityList: Personality[]; // 人物欄
   scenario: {
     handout: string;
@@ -60,118 +63,106 @@ export type Shinobigami = {
     name: string;
     pcno: string;
   };
-  backgroundList: Haikei[]; // 背景
+  backgroundList: Background[]; // 背景
   specialArtsList: SpecialArts[]; // 奥義
   ninjaToolList: NinjaTool[]; // 忍具
-  tokugi: SaikoroFictionTokugi; // 特技
+  skill: SaikoroFictionTokugi; // 特技
 };
 
-export class ShinobigamiHelper extends TrpgSystemHelper<Shinobigami> {
-  public readonly isSupportedOtherText = true;
-  public readonly isSupportedChatPalette = true;
+export class ShinobigamiHelper {
+  protected readonly url: string;
+  protected readonly sheetViewPass: string;
+  protected readonly urlRegExp: RegExp;
+  protected readonly jsonpUrlFormat: string;
+  protected readonly jsonpUrlSecretFormat: string;
 
-  public constructor(url: string) {
-    super(
-      url,
-      /https?:\/\/character-sheets\.appspot\.com\/shinobigami\/.+\?key=([^&]+)/,
-      'https://character-sheets.appspot.com/shinobigami/display?ajax=1&key={key}'
-    )
+  public constructor(url: string, sheetViewPass: string) {
+    this.url = url
+    this.sheetViewPass = sheetViewPass
+    this.urlRegExp = /https?:\/\/character-sheets\.appspot\.com\/shinobigami\/.+\?key=([^&]+)/
+    this.jsonpUrlFormat = 'https://character-sheets.appspot.com/shinobigami/display?ajax=1&key={key}'
+    this.jsonpUrlSecretFormat = 'https://character-sheets.appspot.com/shinobigami/openSecret?ajax=1&key={key}&pass={sheetViewPass}'
   }
 
   /**
    * このシステムに対応しているキャラシのURLかどうかを判定する
    * @return true: 対応したキャラシである, false: 対応したキャラシではない
    */
-  public async isThis(): Promise<boolean> {
+  public isThis(): boolean {
     return this.urlRegExp.test(this.url)
   }
 
-  /**
-   * チャットパレットの情報を生成する
-   */
-  public async createChatPalette(): Promise<
-    {
-      name: string;
-      paletteText: string;
-    }[]
-    > {
-    const { data } = await this.createResultList<string>()
-    if (!data) return []
-
-    return [
-      {
-        name: `◆${data.characterName}`,
-        paletteText: [
-          '2D6',
-          '2D6>=',
-          ...outputTokugiChatPalette(data.tokugi),
-          'ST (無印)シーン表',
-          'FT ファンブル表',
-          'ET 感情表',
-          'KWT 変調表',
-          'RTT ランダム特技決定表',
-          'D66',
-          'choice[〇〇,△△,□□]',
-          '',
-          '兵糧丸を１つ使用',
-          '兵糧丸を１つ獲得',
-          '神通丸を１つ使用',
-          '神通丸を１つ獲得',
-          '遁甲符を１つ使用',
-          '遁甲符を１つ獲得',
-          ...data.ninpouList
-            .flatMap(n => [
-              '',
-              `【${n.name}】《${n.targetSkill}》ｺｽﾄ：${n.cost ||
-                'なし'}／間合:${n.range || 'なし'}`,
-              `効果:${n.effect}`
-            ])
-            .map(text => text.replaceAll(/\r?\n/g, ''))
-        ].join('\n')
-      }
-    ]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public async getData(): Promise<{ jsons: any[] | null; data: ShinobiGami | null; }> {
+    const jsons = await this.getJsonData()
+    const data = this.createData(jsons)
+    return {
+      jsons, data
+    }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public async getData(): Promise<{ json: any; data: Shinobigami | null; }> {
-    const json = await this.getJsonData('jsonp', this.url)
-    const data = this.createData(json)
-    return {
-      json, data
+  /**
+   * JSONPで対象のURLのデータを取得する
+   * @param url 省略された場合はコンストラクタに引き渡されたURLが利用される
+   * @param type jsonp or get 省略された場合は jsonp
+   * @protected
+   * @return JSONPの生データ
+   */
+  private async getJsonData(
+    type: 'jsonp' | 'get' = 'jsonp',
+    url: string = this.url
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ): Promise<any[] | null> {
+    try {
+      const matchResult = url.match(this.urlRegExp)
+      const key = matchResult ? matchResult[1] : null
+      const jsonUrl = this.jsonpUrlFormat
+        .replace('{key}', key || '')
+      const jsonSecretUrl = this.jsonpUrlSecretFormat
+        .replace('{key}', key || '')
+        .replace('{sheetViewPass}', this.sheetViewPass || '')
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const results: any[] = []
+      results.push(type === 'jsonp' ? await getJsonByJsonp(jsonUrl) : await getJsonByGet(jsonUrl))
+      results.push(type === 'jsonp' ? await getJsonByJsonp(jsonSecretUrl) : await getJsonByGet(jsonSecretUrl))
+      return results
+    } catch (err) {
+      return null
     }
   }
 
   /**
    * JSONPから取得した生データから処理用のデータを生成する
-   * @param json JSONPから取得した生データ
+   * @param jsons JSONPから取得した生データ
    * @protected
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
-  protected createData(json: any): Shinobigami | null {
-    if (!json) return null
+  private createData(jsons: any[] | null): ShinobiGami | null {
+    if (!jsons) return null
     const textFilter = (text: string | null) => {
       if (!text) return ''
       return text.trim().replace(/\r?\n/g, '\n')
     }
     return {
       url: this.url,
-      playerName: textFilter(json.base.player),
-      characterName: textFilter(json.base.name),
-      characterNameKana: textFilter(json.base.nameKana),
-      regulation: textFilter(json.base.regulation),
-      foe: textFilter(json.base.foe),
-      exp: textFilter(json.base.exp),
-      memo: textFilter(json.base.memo),
-      upperStyle: upperStyleDict[json.base.upperstyle] || '',
-      subStyle: textFilter(json.base.substyle),
-      level: textFilter(json.base.level),
-      age: textFilter(json.base.age),
-      sex: textFilter(json.base.sex),
-      cover: textFilter(json.base.cover),
-      belief: textFilter(json.base.belief),
-      stylerule: textFilter(json.base.stylerule),
+      playerName: textFilter(jsons[0].base.player),
+      characterName: textFilter(jsons[0].base.name),
+      characterNameKana: textFilter(jsons[0].base.nameKana),
+      regulation: textFilter(jsons[0].base.regulation),
+      foe: textFilter(jsons[0].base.foe),
+      exp: textFilter(jsons[0].base.exp),
+      memo: textFilter(jsons[0].base.memo),
+      upperStyle: upperStyleDict[jsons[0].base.upperstyle] || '',
+      subStyle: textFilter(jsons[0].base.substyle),
+      level: textFilter(jsons[0].base.level),
+      age: textFilter(jsons[0].base.age),
+      sex: textFilter(jsons[0].base.sex),
+      cover: textFilter(jsons[0].base.cover),
+      belief: textFilter(jsons[0].base.belief),
+      stylerule: textFilter(jsons[0].base.stylerule),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ninpouList: (json.ninpou as any[]).map(n => ({
+      ninjaArtsList: (jsons[1].ninpou as any[]).map(n => ({
         secret: !!n.secret,
         name: textFilter(n.name),
         type: textFilter(n.type),
@@ -181,41 +172,43 @@ export class ShinobigamiHelper extends TrpgSystemHelper<Shinobigami> {
         effect: textFilter(n.effect),
         page: textFilter(n.page)
       })),
-      personalityList: createEmotion(json),
+      personalityList: createEmotion(jsons[0]),
       scenario: {
-        handout: textFilter(json.scenario.handout),
-        mission: textFilter(json.scenario.mission),
-        name: textFilter(json.scenario.name),
-        pcno: textFilter(json.scenario.pcno)
+        handout: textFilter(jsons[0].scenario.handout),
+        mission: textFilter(jsons[0].scenario.mission),
+        name: textFilter(jsons[0].scenario.name),
+        pcno: textFilter(jsons[0].scenario.pcno)
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      backgroundList: (json.background as any[]).map(b => ({
+      backgroundList: (jsons[0].background as any[]).map(b => ({
         name: textFilter(b.name),
         type: textFilter(b.type),
         point: b.point || '0',
         effect: textFilter(b.effect)
       })),
-      tokugi: createTokugi(
-        json,
-        tokugiTable,
+      skill: createTokugi(
+        jsons[0],
+        SkillTable,
         true,
         false,
         false
       ),
-      specialArtsList: [],
-      ninjaToolList: []
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      specialArtsList: jsons[1].specialEffect.map((s: any) => ({
+        name: textFilter(s.name),
+        skill: textFilter(s.skill),
+        effect: textFilter(s.effect),
+        direction: textFilter(s.explain)
+      })),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ninjaToolList: jsons[1].item.map((t: any) => ({
+        name: textFilter(t.name),
+        effect: textFilter(t.effect),
+        count: convertNumberZero(t.count)
+      }))
     }
   }
 }
-
-// const gapColList = [
-//   { spaceIndex: 5, colText: '器術' },
-//   { spaceIndex: 0, colText: '体術' },
-//   { spaceIndex: 1, colText: '忍術' },
-//   { spaceIndex: 2, colText: '謀術' },
-//   { spaceIndex: 3, colText: '戦術' },
-//   { spaceIndex: 4, colText: '妖術' }
-// ]
 
 const upperStyleDict: { [key: string]: string } = {
   a: '斜歯忍軍',
@@ -226,7 +219,7 @@ const upperStyleDict: { [key: string]: string } = {
   e: '隠忍の血統'
 }
 
-export const tokugiTable: string[][] = [
+export const SkillTable: string[][] = [
   ['絡繰術', '騎乗術', '生存術', '医術', '兵糧術', '異形化'],
   ['火術', '砲術', '潜伏術', '毒術', '鳥獣術', '召喚術'],
   ['水術', '手裏剣術', '遁走術', '罠術', '野戦術', '死霊術'],

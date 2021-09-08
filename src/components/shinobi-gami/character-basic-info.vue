@@ -198,7 +198,7 @@ table.character-basic-info {
   }
 
   th {
-    background-color: black;
+    background-color: #252525;
     color: white;
     text-align: center;
     padding: 0 0.2rem;

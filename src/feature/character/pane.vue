@@ -1,5 +1,6 @@
 <template>
   <label class="url"><span>キャラクターシート倉庫URL</span><input type="text" v-model="character.sheetInfo.url" placeholder="https://character-sheets.appspot.com/shinobigami/edit.html?key="></label>
+  <label class="sheet-view-pass"><span>秘匿情報閲覧パス</span><input type="text" v-model="character.sheetViewPass" placeholder=""><button @click="onReadSheet()">読込</button></label>
   <character-basic-info :character="character" mode="edit" />
   <skill-table :character="character" mode="edit" />
   <ninja-arts-table :character="character" mode="edit" />
@@ -30,12 +31,12 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, ref, watch } from 'vue'
+import { computed, defineComponent, reactive, ref } from 'vue'
 import Store, { Character, ImageInfo } from './data'
 import UserSettingStore from '@/feature/user-setting/data'
-import { ShinobigamiHelper, tokugiTable } from '@/core/utility/shinobigami'
-import SkillTable from '@/components/shinobi-gami/skill-table.vue'
+import { ShinobigamiHelper } from '@/core/utility/shinobigami'
 import NinjaArtsTable from '@/components/shinobi-gami/ninja-arts-table.vue'
+import SkillTable from '@/components/shinobi-gami/skill-table.vue'
 import CharacterBasicInfo from '@/components/shinobi-gami/character-basic-info.vue'
 import { convertNumberNull } from '@/core/utility/PrimaryDataUtility'
 import FontColorSelect from '@/components/font-color-select.vue'
@@ -45,6 +46,7 @@ import SpecialArtsTable from '@/components/shinobi-gami/special-arts-table.vue'
 import NinjaToolTable from '@/components/shinobi-gami/ninja-tool-table.vue'
 import ImageInput from '@/feature/character/image-input.vue'
 import { v4 as uuidV4 } from 'uuid'
+import { errorDialog } from '@/core/utility/dialog'
 
 export default defineComponent({
   name: 'character-pane',
@@ -73,6 +75,7 @@ export default defineComponent({
       type: 'character',
       isFumble: false,
       color: '#3E2723',
+      sheetViewPass: '',
       sheetInfo: {
         url: '',
         playerName: '',
@@ -90,7 +93,7 @@ export default defineComponent({
         cover: '',
         belief: '',
         stylerule: '',
-        ninpouList: [],
+        ninjaArtsList: [],
         personalityList: [],
         scenario: {
           handout: '',
@@ -99,7 +102,7 @@ export default defineComponent({
           pcno: ''
         },
         backgroundList: [],
-        tokugi: {
+        skill: {
           learnedList: [],
           damagedList: [],
           damagedColList: [],
@@ -118,23 +121,29 @@ export default defineComponent({
       currentStandImage: -1
     })
 
-    watch(() => character.sheetInfo.url, async () => {
+    const onReadSheet = async () => {
       console.log(character.sheetInfo.url)
       if (!character.sheetInfo.url) return
-      const helper = new ShinobigamiHelper(character.sheetInfo.url)
-      if (!await helper.isThis()) {
+      const helper = new ShinobigamiHelper(character.sheetInfo.url, character.sheetViewPass)
+      if (!helper.isThis()) {
         console.log('is not this')
         return
       }
-      const { data: rd, json } = await helper.getData()
-      console.log(json)
+      const { data: rd, jsons } = await helper.getData()
+      console.log(jsons)
       console.log(rd)
-      if (!rd) return
+      if (!rd) {
+        await errorDialog({
+          title: 'Loading Error',
+          text: 'URLまたは秘匿情報閲覧パスが誤っています。'
+        })
+        return
+      }
 
       const pcNoRaw = convertNumberNull(rd.scenario.pcno.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0)))
       if (pcNoRaw !== null) character.pcNo = pcNoRaw
       character.sheetInfo = rd
-    })
+    }
 
     const chitImageList = ref<ImageInfo[]>([{ key: uuidV4(), name: '', base64: '' }])
     const standImageList = ref<ImageInfo[]>([{ key: uuidV4(), name: '', base64: '' }])
@@ -158,7 +167,7 @@ export default defineComponent({
     const insertCharacter = () => {
       // eslint-disable-next-line no-irregular-whitespace
       const deleteSpace = (name: string) => name.replaceAll(/ 　/g, '')
-      removeFilter(character.sheetInfo.ninpouList, n => !deleteSpace(n.name).length)
+      removeFilter(character.sheetInfo.ninjaArtsList, n => !deleteSpace(n.name).length)
       removeFilter(character.sheetInfo.backgroundList, n => !deleteSpace(n.name).length)
       character.chitImageList.splice(0, character.chitImageList.length, ...chitImageList.value.filter(ci => !!ci.name).map(i => i.key))
       character.standImageList.splice(0, character.standImageList.length, ...standImageList.value.filter(ci => !!ci.name).map(i => i.key))
@@ -174,12 +183,13 @@ export default defineComponent({
     }
 
     return {
+      onReadSheet,
       userSetting,
       chitImageList,
       standImageList,
       onUpdateImage,
       character,
-      tokugiTable: tokugiTable,
+      SkillTable,
       skillColumnList: ['器術', '体術', '忍術', '謀術', '戦術', '妖術'],
       insertCharacter,
       selectColor(color: string) {

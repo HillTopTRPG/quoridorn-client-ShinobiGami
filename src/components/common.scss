@@ -4,6 +4,7 @@ $menu-padding: 8px;
 $menu-item-min-height: 32px;
 $menu-item-max-height: 64px;
 $menu-back-color: #f7f7f7;
+$dice-size: 10vmin;
 
 @mixin position-full-size($position: absolute, $offset: 0) {
   position: $position;
@@ -26,6 +27,19 @@ $menu-back-color: #f7f7f7;
   $wrap: nowrap
 ) {
   display: flex;
+  flex-direction: $direction;
+  justify-content: if($direction == row, $horizontal, $vertical);
+  align-items: if($direction == row, $vertical, $horizontal);
+  flex-wrap: $wrap;
+}
+
+@mixin inline-flex-box(
+  $direction: row,
+  $horizontal: null,
+  $vertical: null,
+  $wrap: nowrap
+) {
+  display: inline-flex;
   flex-direction: $direction;
   justify-content: if($direction == row, $horizontal, $vertical);
   align-items: if($direction == row, $vertical, $horizontal);

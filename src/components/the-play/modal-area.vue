@@ -62,14 +62,13 @@ export default defineComponent({
     menuItemList.push({ label: 'ローカル設定', type: 'local-setting', isUnique: true })
     menuItemList.push({ label: 'ユーザー設定', type: 'user-setting', isUnique: true })
     menuItemList.push({ label: 'キャラクター', type: 'character', isUnique: false })
+    menuItemList.push({ label: 'シナリオ', type: 'scenario', isUnique: false })
     if (userType === 'gm') {
-      menuItemList.push({ label: 'シナリオ', type: 'scenario', isUnique: false })
       menuItemList.push({ label: 'シーン', type: 'scene', isUnique: false })
       menuItemList.push({ label: '共有メモ', type: 'memo', isUnique: false })
       menuItemList.push({ label: 'カットイン', type: 'cut-in', isUnique: false })
       menuItemList.push({ label: 'タグ', type: 'tag', isUnique: false })
       menuItemList.push({ label: '戦場表', type: 'battle-field', isUnique: false })
-      menuItemList.push({ label: 'エニグマ', type: 'enigma', isUnique: false })
       menuItemList.push({ label: 'ペルソナ', type: 'persona', isUnique: false })
     }
 

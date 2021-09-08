@@ -1,5 +1,5 @@
 import { convertNumberZero } from '@/core/utility/PrimaryDataUtility'
-import { tokugiTable } from '@/core/utility/shinobigami'
+import { SkillTable } from '@/core/utility/shinobigami'
 
 export type TokugiInfo = {
   name: string;
@@ -33,7 +33,7 @@ const emotionList: string[][] = [
   ['3+:愛情', '3-:妬み'],
   ['4+:忠誠', '4-:侮蔑'],
   ['5+:憧憬', '5-:劣等感'],
-  ['6+:狂信', '6-:殺意']
+  ['black-6+:狂信', 'black-6-:殺意']
 ]
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/explicit-module-boundary-types
@@ -135,7 +135,7 @@ export function outputPersonalityList(
 
 export function outputTokugiChatPalette(tokugi: SaikoroFictionTokugi): string[] {
   return tokugi.learnedList.map(
-    t => `2D6>=5 《${tokugiTable[t.row][t.column]}》`
+    t => `2D6>=5 《${SkillTable[t.row][t.column]}》`
   )
 }
 
@@ -166,7 +166,7 @@ export function createTokugi(
 
       const row = parseInt(id.match(/row([0-9]+)/)[1])
       const column = parseInt(id.match(/name([0-9]+)/)[1])
-      const name = tokugiTable[row][column]
+      const name = SkillTable[row][column]
 
       tokugi.learnedList.push({ column, row, name })
     })
@@ -188,7 +188,7 @@ export function createTokugi(
         tokugi.damagedList.push({
           column: i,
           row: j,
-          name: tokugiTable[j][i]
+          name: SkillTable[j][i]
         })
       }
     }

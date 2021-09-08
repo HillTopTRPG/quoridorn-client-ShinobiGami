@@ -1,3 +1,5 @@
+@use "./common";
+
 $play-slide-animation-duration: 2.1s;
 $play-slide-animation-delay: 0.5s;
 $poyooon-count: 3;
@@ -50,6 +52,140 @@ $poyooon-count: 3;
   100% {
     display: none;
   }
+}
+
+@keyframes random-dice-black-6 {
+  0% { background-image: url("/static/img/dice/black-6/dice-black-6-1.png"); }
+  16% { background-image: url("/static/img/dice/black-6/dice-black-6-1.png"); }
+  17% { background-image: url("/static/img/dice/black-6/dice-black-6-2.png"); }
+  33% { background-image: url("/static/img/dice/black-6/dice-black-6-2.png"); }
+  34% { background-image: url("/static/img/dice/black-6/dice-black-6-3.png"); }
+  50% { background-image: url("/static/img/dice/black-6/dice-black-6-3.png"); }
+  51% { background-image: url("/static/img/dice/black-6/dice-black-6-4.png"); }
+  67% { background-image: url("/static/img/dice/black-6/dice-black-6-4.png"); }
+  68% { background-image: url("/static/img/dice/black-6/dice-black-6-5.png"); }
+  83% { background-image: url("/static/img/dice/black-6/dice-black-6-5.png"); }
+  84% { background-image: url("/static/img/dice/black-6/dice-black-6-6.png"); }
+  100% { background-image: url("/static/img/dice/black-6/dice-black-6-6.png"); }
+}
+
+@keyframes random-dice-white-6 {
+  0% { background-image: url("/static/img/dice/white-6/dice-white-6-1.png"); }
+  16% { background-image: url("/static/img/dice/white-6/dice-white-6-1.png"); }
+  17% { background-image: url("/static/img/dice/white-6/dice-white-6-2.png"); }
+  33% { background-image: url("/static/img/dice/white-6/dice-white-6-2.png"); }
+  34% { background-image: url("/static/img/dice/white-6/dice-white-6-3.png"); }
+  50% { background-image: url("/static/img/dice/white-6/dice-white-6-3.png"); }
+  51% { background-image: url("/static/img/dice/white-6/dice-white-6-4.png"); }
+  67% { background-image: url("/static/img/dice/white-6/dice-white-6-4.png"); }
+  68% { background-image: url("/static/img/dice/white-6/dice-white-6-5.png"); }
+  83% { background-image: url("/static/img/dice/white-6/dice-white-6-5.png"); }
+  84% { background-image: url("/static/img/dice/white-6/dice-white-6-6.png"); }
+  100% { background-image: url("/static/img/dice/white-6/dice-white-6-6.png"); }
+}
+
+@keyframes bounce-org {
+  0% {
+    transform: translateY(-16em);
+    animation-timing-function: cubic-bezier(.51,.01,.79,.02);
+  }
+  15% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(.19,1,.7,1);
+  }
+  25% {
+    transform: translateY(-12em);
+    animation-timing-function: cubic-bezier(.51,.01,.79,.02);
+  }
+  32.5% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(.19,1,.7,1);
+  }
+  40% {
+    transform: translateY(-8em);
+    animation-timing-function: cubic-bezier(.51,.01,.79,.02);
+  }
+  45% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(.19,1,.7,1);
+  }
+  50% {
+    transform: translateY(-5em);
+    animation-timing-function: cubic-bezier(.51,.01,.79,.02);
+  }
+  56% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(.19,1,.7,1);
+  }
+  60% {
+    transform: translateY(-2em);
+    animation-timing-function: cubic-bezier(.51,.01,.79,.02);
+  }
+  64% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(.19,1,.7,1);
+  }
+  66% {
+    transform: translateY(-0.5em);
+    animation-timing-function: cubic-bezier(.51,.01,.79,.02);
+  }
+  70%, 100% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(.19,1,.7,1);
+  }
+}
+
+$bounce-ratio: 1.2;
+@keyframes bounce {
+  0% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(.19,1,.7,1);
+  }
+  18% {
+    transform: translateY(calc(-12vmin * #{$bounce-ratio}));
+    animation-timing-function: cubic-bezier(.51,.01,.79,.02);
+  }
+  31.5% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(.19,1,.7,1);
+  }
+  45% {
+    transform: translateY(calc(-8vmin * #{$bounce-ratio}));
+    animation-timing-function: cubic-bezier(.51,.01,.79,.02);
+  }
+  54% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(.19,1,.7,1);
+  }
+  63% {
+    transform: translateY(calc(-5vmin * #{$bounce-ratio}));
+    animation-timing-function: cubic-bezier(.51,.01,.79,.02);
+  }
+  73.8% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(.19,1,.7,1);
+  }
+  81% {
+    transform: translateY(calc(-2vmin * #{$bounce-ratio}));
+    animation-timing-function: cubic-bezier(.51,.01,.79,.02);
+  }
+  88.2% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(.19,1,.7,1);
+  }
+  91.8% {
+    transform: translateY(calc(-0.5vmin * #{$bounce-ratio}));
+    animation-timing-function: cubic-bezier(.51,.01,.79,.02);
+  }
+  100% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(.19,1,.7,1);
+  }
+}
+
+@keyframes dice-roll-in {
+  0% { transform: translate(calc(30vw + (var(--dice-count) - var(--offset) - 1) * -#{common.$dice-size}), 30vh); }
+  100% { transform: translate(calc((var(--dice-count) - var(--offset) - 1) * -#{common.$dice-size}), 0); }
 }
 
 $offsetX: 5vmin;

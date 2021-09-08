@@ -115,7 +115,7 @@ export async function getJsonByGet<T>(
 
 export async function getJsonByJsonp<T>(url: string): Promise<T> {
   return new Promise((resolve, reject) => {
-    jsonp(url, { name: 'getJson' }, (error: Error | null, data: unknown) => {
+    jsonp(url, { name: 'getJson', timeout: 500 }, (error: Error | null, data: unknown) => {
       if (error) reject(error)
       resolve(data as T)
     })

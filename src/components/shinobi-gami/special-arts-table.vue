@@ -53,20 +53,20 @@ export default defineComponent({
   setup(props) {
     console.log(props.character)
     const reloadBackground = async () => {
-      const helper = new ShinobigamiHelper(props.character.sheetInfo.url)
-      if (!await helper.isThis()) {
+      const helper = new ShinobigamiHelper(props.character.sheetInfo.url, props.character.sheetViewPass)
+      if (!helper.isThis()) {
         console.log('is not this')
         return
       }
-      const { data: rd, json } = await helper.getData()
-      console.log(json)
+      const { data: rd, jsons } = await helper.getData()
+      console.log(jsons)
       console.log(rd)
       if (!rd) return
       const backgroundList = props.character.sheetInfo.backgroundList
       backgroundList.splice(0, props.character.sheetInfo.backgroundList.length, ...rd.backgroundList)
     }
 
-    const skillList = computed(() => props.character.sheetInfo.tokugi.learnedList.map(l => l.name).filter((s, ind, self) => self.findIndex(ss => ss === s) === ind))
+    const skillList = computed(() => props.character.sheetInfo.skill.learnedList.map(l => l.name).filter((s, ind, self) => self.findIndex(ss => ss === s) === ind))
 
     const addSpecialArts = () => {
       const specialArtsList = props.character.sheetInfo.specialArtsList
@@ -121,7 +121,7 @@ table.special-arts {
   }
 
   thead tr {
-    background-color: black;
+    background-color: #252525;
     color: white;
   }
 
@@ -166,7 +166,7 @@ table.special-arts {
 
   .skill {
     white-space: nowrap;
-    width: 4em;
+    width: 7em;
   }
 
   td.effect,

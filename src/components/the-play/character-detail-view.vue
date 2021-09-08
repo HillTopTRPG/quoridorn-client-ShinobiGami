@@ -30,7 +30,7 @@
           <skill-table-set
             :character="character.data"
             @clearArts="onClearArts()"
-            :target-arts="selectedNinjaArtsIndex !== null ? character.data?.sheetInfo.ninpouList[selectedNinjaArtsIndex]?.name || null : null"
+            :target-arts="selectedNinjaArtsIndex !== null ? character.data?.sheetInfo.ninjaArtsList[selectedNinjaArtsIndex]?.name || null : null"
             :character-key="character.key"
             v-model:other-character-key="otherCharacterKey"
             v-model:target-skill="targetSkill"
@@ -54,7 +54,7 @@ import { Character } from '@/feature/character/data'
 import { StoreData } from '@/core/utility/FileUtility'
 import SkillTableSet from '@/components/shinobi-gami/skill-table-set.vue'
 import NinjaArtsTable from '@/components/shinobi-gami/ninja-arts-table.vue'
-import { tokugiTable } from '@/core/utility/shinobigami'
+import { SkillTable } from '@/core/utility/shinobigami'
 
 export default defineComponent({
   name: 'character-detail-view',
@@ -75,8 +75,8 @@ export default defineComponent({
         targetSkill.value = null
         return
       }
-      const targetSkillRaw = props.character.data?.sheetInfo.ninpouList[selectedNinjaArtsIndex.value || 0]?.targetSkill
-      if (tokugiTable.flatMap(tt => tt).some(t => t === targetSkillRaw)) {
+      const targetSkillRaw = props.character.data?.sheetInfo.ninjaArtsList[selectedNinjaArtsIndex.value || 0]?.targetSkill
+      if (SkillTable.flatMap(tt => tt).some(t => t === targetSkillRaw)) {
         targetSkill.value = targetSkillRaw || null
       } else {
         targetSkill.value = null

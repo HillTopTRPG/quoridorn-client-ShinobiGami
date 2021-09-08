@@ -3,9 +3,7 @@
     <span>サイクル</span>
     <select :value="modelValue" @input="inputHandler">
       <option :value="0">始</option>
-      <option :value="1">壱</option>
-      <option :value="2">弐</option>
-      <option :value="3">参</option>
+      <option :value="n" v-for="n in max" :key="n">{{ n }}</option>
       <option :value="99">佳境</option>
       <option :value="100">終</option>
     </select>
@@ -13,8 +11,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { convertNumberZero } from '@/core/utility/PrimaryDataUtility'
+import { computed, defineComponent } from 'vue'
+import { convertNumberNull, convertNumberZero } from '@/core/utility/PrimaryDataUtility'
 export default defineComponent({
   name: 'cycle-select',
   emits: ['update:modelValue'],
@@ -22,13 +20,21 @@ export default defineComponent({
     modelValue: {
       type: Number,
       required: true
+    },
+    limit: {
+      type: String,
+      required: true
     }
   },
-  setup(_, { emit }) {
+  setup(props, { emit }) {
+    const max = computed(() => {
+      return convertNumberNull(props.limit.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0))) || 10
+    })
     return {
       inputHandler: (e: { target: HTMLButtonElement }) => {
         emit('update:modelValue', convertNumberZero(e.target.value))
-      }
+      },
+      max
     }
   }
 })

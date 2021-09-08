@@ -30,7 +30,7 @@
         <option value="">特技未選択</option>
         <template v-for="col of 6" :key="col">
           <optgroup :label="skillColumnList[col - 1]">
-            <option v-for="row of 11" :key="row" :value="tokugiTable[row - 1][col - 1]">{{ tokugiTable[row - 1][col - 1] }}</option>
+            <option v-for="row of 11" :key="row" :value="SkillTable[row - 1][col - 1]">{{ SkillTable[row - 1][col - 1] }}</option>
           </optgroup>
         </template>
       </select>
@@ -69,10 +69,10 @@ import { computed, defineComponent, ref, watch, watchEffect } from 'vue'
 import SpecialInputStore, { SpecialInputType } from '@/feature/special-input/data'
 import CharacterStore, { Character } from '@/feature/character/data'
 import UserStore from '@/core/data/user'
-import { Ninpou, tokugiTable } from '@/core/utility/shinobigami'
+import { NinjaArts, SkillTable } from '@/core/utility/shinobigami'
 import { makeComputedObject } from '@/core/utility/vue3'
-import { calcTargetValue, TargetValueCalcResult } from '@/components/shinobi-gami/skill-table.vue'
 import { convertNumberZero } from '@/core/utility/PrimaryDataUtility'
+import { calcTargetValue, TargetValueCalcResult } from '@/core/utility/TrpgSystemFasade'
 
 export default defineComponent({
   name: 'special-input-area',
@@ -102,7 +102,7 @@ export default defineComponent({
     })
     watch(fromKey, () => {
       specialInputStore.from = {
-        type: 'character',
+        type: fromKey.value === userStore.selfUser?.name ? 'user' : 'character',
         key: fromKey.value
       }
     })
@@ -114,25 +114,25 @@ export default defineComponent({
     })
 
     // 忍法データ
-    const ninjaArtsList = ref<Ninpou[]>(characterList.value.find(c => c.key === fromKey.value)?.data?.sheetInfo.ninpouList || [])
-    watch(() => characterList.value.find(c => c.key === fromKey.value)?.data?.sheetInfo.ninpouList, () => {
-      ninjaArtsList.value.splice(0, ninjaArtsList.value.length, ...(characterList.value.find(c => c.key === fromKey.value)?.data?.sheetInfo.ninpouList || []))
+    const ninjaArtsList = ref<NinjaArts[]>(characterList.value.find(c => c.key === fromKey.value)?.data?.sheetInfo.ninjaArtsList || [])
+    watch(() => characterList.value.find(c => c.key === fromKey.value)?.data?.sheetInfo.ninjaArtsList, () => {
+      ninjaArtsList.value.splice(0, ninjaArtsList.value.length, ...(characterList.value.find(c => c.key === fromKey.value)?.data?.sheetInfo.ninjaArtsList || []))
     }, { deep: true })
 
     // 習得済み特技
-    // const learnedSkillList = ref<string[] | null>(characterRef.value ? characterRef.value.sheetInfo.tokugi.learnedList.map(l => l.name) || null : null)
-    // watch(() => characterRef.value?.sheetInfo.tokugi.learnedList, () => {
-    //   learnedSkillList.value = characterRef.value ? characterRef.value.sheetInfo.tokugi.learnedList.map(l => l.name) || null : null
+    // const learnedSkillList = ref<string[] | null>(characterRef.value ? characterRef.value.sheetInfo.skill.learnedList.map(l => l.name) || null : null)
+    // watch(() => characterRef.value?.sheetInfo.skill.learnedList, () => {
+    //   learnedSkillList.value = characterRef.value ? characterRef.value.sheetInfo.skill.learnedList.map(l => l.name) || null : null
     // }, { deep: true })
 
     // 目標値計算結果
     const targetValueList = ref<TargetValueCalcResult[]>([])
     watch([
       () => specialInputStore.targetSkill,
-      () => characterRef.value?.sheetInfo.tokugi
+      () => characterRef.value?.sheetInfo.skill
     ], () => {
       const targetSkill = specialInputStore.targetSkill
-      const tokugi = characterRef.value?.sheetInfo.tokugi
+      const tokugi = characterRef.value?.sheetInfo.skill
       if (targetSkill && tokugi) {
         targetValueList.value.splice(0, targetValueList.value.length, ...calcTargetValue(targetSkill, tokugi))
       } else {
@@ -174,7 +174,7 @@ export default defineComponent({
       ninjaArtsList,
       ...specialInputStoreWrap,
       close,
-      tokugiTable,
+      SkillTable,
       skillColumnList: ['器術', '体術', '忍術', '謀術', '戦術', '妖術'],
       onSubmit
     }
@@ -194,7 +194,7 @@ export default defineComponent({
   bottom: 0;
   width: 100vw;
   box-sizing: border-box;
-  z-index: 10;
+  z-index: 100;
   gap: 0.3em;
   backdrop-filter: blur(10px);
 }

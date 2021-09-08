@@ -51,7 +51,7 @@
       </tr>
     </thead>
     <tbody v-if="skill">
-      <tr :class="`row-${row}`" v-for="(tList, row) in tokugiTable" :key="row">
+      <tr :class="`row-${row}`" v-for="(tList, row) in SkillTable" :key="row">
         <template v-for="(t, col) in tList" :key="t">
           <td :class="[`gap-${col}`, skill?.spaceList.some(n => n === col) ? 'fill' : '']"></td>
           <td
@@ -86,91 +86,14 @@
 
 <script lang="ts">
 import { defineComponent, watch, ref, reactive, PropType } from 'vue'
-import { tokugiTable } from '@/core/utility/shinobigami'
+import { SkillTable } from '@/core/utility/shinobigami'
 import { listDelete } from '@/core/utility/PrimaryDataUtility'
 import { HtmlEvent } from '@/core/utility/typescript'
 import { SaikoroFictionTokugi } from '@/core/utility/SaikoroFiction'
 import CharacterStore, { Character } from '@/feature/character/data'
 import SpecialInputStore from '@/feature/special-input/data'
 import { makeComputedObject } from '@/core/utility/vue3'
-
-function getRowCol(name: string): { r: number, c: number } {
-  let r = -1
-  let c = -1
-  tokugiTable.forEach((rl, rIdx) => {
-    const cIdx = rl.findIndex(n => n === name)
-    if (cIdx >= 0) {
-      r = rIdx
-      c = cIdx
-    }
-  })
-  return { r, c }
-}
-
-export type TargetValueCalcResult = {
-  r: number;
-  c: number;
-  name: string;
-  targetValue: number;
-}
-export function calcTargetValue(name: string, tokugi: SaikoroFictionTokugi): TargetValueCalcResult[] {
-  const { r, c } = getRowCol(name)
-  if (r === -1 || c === -1) return []
-  return tokugi.learnedList
-    .filter(
-      t =>
-        (!tokugi.isUseColDamage ||
-          !tokugi.damagedColList.some(c => c === t.column)) &&
-        (!tokugi.isUseSingleDamage ||
-          !tokugi.damagedList.some(
-            d => d.row === t.row && d.column === t.column
-          ))
-    )
-    .map(t => {
-      const learnedTokugi = tokugiTable[t.row][t.column]
-      const calcHorizontalMove = (): number => {
-        return [...Array(Math.abs(t.column - c))].reduce(
-          (accumulator, currentValue_, idx) => {
-            const currentColumn = Math.min(t.column, c) + idx
-            const targetGapNum = currentColumn === 5 ? 0 : currentColumn + 1
-            const isContain = tokugi.spaceList.some(s => s === targetGapNum)
-            return accumulator + (isContain ? 1 : 2)
-          },
-          0
-        )
-      }
-      let cMove = calcHorizontalMove()
-      // 一番左のギャップが埋まっていたら、左右が繋がっているものとして扱う
-      if (tokugi.spaceList.some(s => s === 0)) {
-        const cMoveRight: number = [...Array(6 - Math.abs(t.column - c))].reduce(
-          (accumulator, currentValue_, idx) => {
-            let currentColumn = Math.max(t.column, c) + idx
-            if (currentColumn >= 6) currentColumn -= 6
-            const targetGapNum = currentColumn === 5 ? 0 : currentColumn + 1
-            const isContain = tokugi.spaceList.some(s => s === targetGapNum)
-            return accumulator + (isContain ? 1 : 2)
-          },
-          0
-        )
-        cMove = Math.min(cMove, cMoveRight)
-      }
-      let rMove = Math.abs(t.row - r)
-      if (tokugi.outRow) {
-        rMove = Math.min(rMove, Math.min(t.row, r) + 11 - Math.max(t.row, r))
-      }
-
-      return {
-        r: t.row,
-        c: t.column,
-        name: learnedTokugi,
-        targetValue: rMove + cMove + 5
-      }
-    })
-    .sort((v1, v2) => {
-      if (v1.targetValue < v2.targetValue) return -1
-      return v2.targetValue < v1.targetValue ? 1 : 0
-    })
-}
+import { calcTargetValue, getRowCol } from '@/core/utility/TrpgSystemFasade'
 
 export default defineComponent({
   name: 'skill-table',
@@ -227,12 +150,12 @@ export default defineComponent({
     const otherCharaKey = ref<string | null>(props.otherCharacterKey)
     watch(
       props.mode === 'comparison'
-        ? [() => props.character?.sheetInfo.tokugi, () => characterStore.characterList, otherCharaKey]
-        : () => props.character?.sheetInfo.tokugi,
+        ? [() => props.character?.sheetInfo.skill, () => characterStore.characterList, otherCharaKey]
+        : () => props.character?.sheetInfo.skill,
       () => {
         skill.value = props.mode === 'comparison'
-          ? characterStore.characterList.find(c => c.key === otherCharaKey.value)?.data?.sheetInfo.tokugi || null
-          : props.character?.sheetInfo.tokugi || null
+          ? characterStore.characterList.find(c => c.key === otherCharaKey.value)?.data?.sheetInfo.skill || null
+          : props.character?.sheetInfo.skill || null
         if (props.mode === 'normal') onChangeSelectedSkill(props.targetSkill)
       },
       { immediate: true, deep: true }
@@ -262,7 +185,7 @@ export default defineComponent({
       const damageList = skill.value.damagedList
       if (e.target.checked) {
         damagedColList.push(col)
-        damageList.push(...tokugiTable.map((row, ind) => ({
+        damageList.push(...SkillTable.map((row, ind) => ({
           name: row[col],
           row: ind,
           column: col
@@ -316,7 +239,7 @@ export default defineComponent({
       operationType,
       ...makeComputedObject(characterStore),
       skillColumnList: [['　', '器術'], ['A', '体術'], ['B', '忍術'], ['C', '謀術'], ['D', '戦術'], ['E', '妖術']],
-      tokugiTable,
+      SkillTable,
       onChangeGapHead,
       onChangeDamageHead,
       onClickSkillName,
@@ -386,7 +309,7 @@ table.skill-table {
           }
 
           &.selected {
-            background-color: black;
+            background-color: #252525;
             color: white;
           }
         }
@@ -420,7 +343,7 @@ table.skill-table {
     }
   }
   @mixin fill-cell {
-    background-color: black !important;
+    background-color: #252525 !important;
     color: white !important;
   }
   @mixin set-width($width) {

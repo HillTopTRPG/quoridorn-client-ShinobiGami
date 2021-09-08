@@ -2,12 +2,12 @@
   <label>
     <span>戦場表</span>
     <select :value="modelValue" @input="inputHandler">
-      <option :value="1">平地</option>
-      <option :value="2">水中</option>
-      <option :value="3">高所</option>
-      <option :value="4">悪天候</option>
-      <option :value="5">雑踏</option>
-      <option :value="6">極地</option>
+      <option :value="0">平地</option>
+      <option :value="1">水中</option>
+      <option :value="2">高所</option>
+      <option :value="3">悪天候</option>
+      <option :value="4">雑踏</option>
+      <option :value="5">極地</option>
     </select>
   </label>
 </template>

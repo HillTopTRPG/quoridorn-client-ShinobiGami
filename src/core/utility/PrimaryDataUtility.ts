@@ -58,6 +58,22 @@ export function convertNumberZero(
 }
 
 /**
+ * 文字列をbooleanに変換する
+ * 変換できない場合は false を返却する
+ * @param str
+ */
+export function convertBooleanFalse(str: string | null): boolean {
+  if (str === null) return false
+  return str.toLowerCase() === 'true'
+}
+export function convertBooleanNull(str: string | null): boolean | null {
+  if (str === null) return null
+  if (str.toLowerCase() === 'true') return true
+  if (str.toLowerCase() === 'false') return false
+  return null
+}
+
+/**
  * リストから特定の要素を削除する
  *
  * @param list

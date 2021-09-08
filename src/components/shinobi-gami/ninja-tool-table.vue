@@ -89,7 +89,7 @@ table.ninja-tools {
   }
 
   thead tr {
-    background-color: black;
+    background-color: #252525;
     color: white;
   }
 

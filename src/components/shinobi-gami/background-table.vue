@@ -51,13 +51,13 @@ export default defineComponent({
   setup(props) {
     console.log(props.character)
     const reloadBackground = async () => {
-      const helper = new ShinobigamiHelper(props.character.sheetInfo.url)
-      if (!await helper.isThis()) {
+      const helper = new ShinobigamiHelper(props.character.sheetInfo.url, props.character.sheetViewPass)
+      if (!helper.isThis()) {
         console.log('is not this')
         return
       }
-      const { data: rd, json } = await helper.getData()
-      console.log(json)
+      const { data: rd, jsons } = await helper.getData()
+      console.log(jsons)
       console.log(rd)
       if (!rd) return
       const backgroundList = props.character.sheetInfo.backgroundList
@@ -116,7 +116,7 @@ table.background {
   }
 
   thead tr {
-    background-color: black;
+    background-color: #252525;
     color: white;
   }
 

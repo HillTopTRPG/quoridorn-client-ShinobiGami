@@ -2,7 +2,7 @@ import { reactive } from 'vue'
 import { commonStoreDataProcess, makeStore, StoreUpdateProperties } from '@/core/utility/vue3'
 import { StoreData } from '@/core/utility/FileUtility'
 
-type DiceResult = {
+export type DiceResult = {
   kind: 'normal' | 'tens_d10' | 'd9';
   sides: number;
   value: number;
@@ -19,12 +19,16 @@ export type BcdiceDiceRollResult = {
 };
 
 export type ChatStore = {
-  type: 'system' | 'character' | 'user' | 'dice-roll' | 'dice-roll-scf';
+  type: 'chat' | 'system';
+  diceType: 'dice-roll' | 'dice-roll-scf' | null;
   raw: string;
+  diceRaw: string | null;
   tag: string[];
   tab: string;
   from: string;
+  fromType: 'character' | 'user';
   diceRollResult: string | null;
+  rands: DiceResult[] | null;
 };
 
 type Store = {
@@ -37,7 +41,7 @@ type Store = {
 
 export default makeStore<Store>('chat-list-store', () => {
   const state = reactive<StoreUpdateProperties<Store, never>>({
-    ready: true,
+    ready: false,
     list: []
   })
 
@@ -47,7 +51,12 @@ export default makeStore<Store>('chat-list-store', () => {
     [
       'type',
       'raw',
-      'tag'
+      'tag',
+      'tab',
+      'from',
+      'fromType',
+      'diceRollResult',
+      'rands'
     ]
   )
 
@@ -65,7 +74,10 @@ export default makeStore<Store>('chat-list-store', () => {
       return state.list
     },
     requestData,
-    insertData,
+    insertData: async (...list: ChatStore[]) => {
+      console.log(JSON.stringify(list, null, '  '))
+      await insertData(...list)
+    },
     diceRoll: async (command: string): Promise<BcdiceDiceRollResult> => {
       const baseUrl = 'https://bcdice.onlinesession.app'
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

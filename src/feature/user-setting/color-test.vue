@@ -51,7 +51,7 @@ export default defineComponent({
 
   .black-area {
     bottom: 0;
-    background-color: black;
+    background-color: #252525;
   }
 
   *[class$='-test'] {

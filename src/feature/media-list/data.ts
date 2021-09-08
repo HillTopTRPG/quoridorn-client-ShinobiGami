@@ -53,7 +53,7 @@ type Store = {
 
 export default makeStore<Store>('media-list-store', () => {
   const state = reactive<StoreUpdateProperties<Store, never>>({
-    ready: true,
+    ready: false,
     list: []
   })
 

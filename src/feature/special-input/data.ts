@@ -2,8 +2,8 @@ import { reactive } from 'vue'
 import { makeStore, StoreUpdateProperties } from '@/core/utility/vue3'
 import { DataReference } from '@/core/data/user'
 import { Character, Store as CharacterStoreDefinition } from '@/feature/character/data'
-import { tokugiTable } from '@/core/utility/shinobigami'
-import { calcTargetValue } from '@/components/shinobi-gami/skill-table.vue'
+import { SkillTable } from '@/core/utility/shinobigami'
+import { calcTargetValue } from '@/core/utility/TrpgSystemFasade'
 
 export type SpecialInputType = 'normal' | 'SG' | 'D6' | 'D6>=?'
 
@@ -65,8 +65,8 @@ export default makeStore<Store>('local-setting-store', () => {
 
   const resetUseSkill = (character: Character | null) => {
     let newUseSkill: string | null = null
-    if (state.targetSkill && character?.sheetInfo.tokugi) {
-      const targetValueResult = calcTargetValue(state.targetSkill, character?.sheetInfo.tokugi)
+    if (state.targetSkill && character?.sheetInfo.skill) {
+      const targetValueResult = calcTargetValue(state.targetSkill, character?.sheetInfo.skill)
       if (targetValueResult.some(r => r.name === state.useSkill)) {
         newUseSkill = state.useSkill
       } else {
@@ -81,14 +81,14 @@ export default makeStore<Store>('local-setting-store', () => {
 
     // 指定特技が特技表に載っている忍法データを準備
     const character = state.from.type === 'character' ? state.characterStore?.characterList.find(c => c.key === state.from.key)?.data || null : null
-    const ninjaArts = character?.sheetInfo.ninpouList.find(n => n.name === state.ninjaArts) || null
+    const ninjaArts = character?.sheetInfo.ninjaArtsList.find(n => n.name === state.ninjaArts) || null
 
     if (character) {
-      if (state.targetSkill && !tokugiTable.flatMap(tt => tt).some(t => t === state.targetSkill)) {
+      if (state.targetSkill && !SkillTable.flatMap(tt => tt).some(t => t === state.targetSkill)) {
         state.targetSkill = null
       }
       if (state.targetSkill) {
-        const targetValue = calcTargetValue(state.targetSkill, character.sheetInfo.tokugi).find(tv => tv.name === state.useSkill)?.targetValue || null
+        const targetValue = calcTargetValue(state.targetSkill, character.sheetInfo.skill).find(tv => tv.name === state.useSkill)?.targetValue || null
         state.targetValue = targetValue !== null ? targetValue : 5
       } else {
         state.targetValue = 5
@@ -102,7 +102,7 @@ export default makeStore<Store>('local-setting-store', () => {
       text += ninjaArts.name
       if (skillText) text += `(${skillText})`
     } else {
-      if (tokugiTable.flatMap(tt => tt).some(t => t === state.targetSkill)) {
+      if (SkillTable.flatMap(tt => tt).some(t => t === state.targetSkill)) {
         text += text ? ' ' : ''
         text += skillText
       }
@@ -142,12 +142,12 @@ export default makeStore<Store>('local-setting-store', () => {
       state.from = from
       const character = state.from.type === 'character' ? state.characterStore?.characterList.find(c => c.key === state.from.key)?.data || null : null
       if (state.ninjaArts) {
-        const ninjaArts = character?.sheetInfo.ninpouList.find(n => n.name === state.ninjaArts) || null
+        const ninjaArts = character?.sheetInfo.ninjaArtsList.find(n => n.name === state.ninjaArts) || null
         if (ninjaArts) {
           state.targetSkill = ninjaArts.targetSkill
         } else {
-          state.ninjaArts = character?.sheetInfo.ninpouList[0]?.name || null
-          state.targetSkill = character?.sheetInfo.ninpouList[0]?.targetSkill || null
+          state.ninjaArts = character?.sheetInfo.ninjaArtsList[0]?.name || null
+          state.targetSkill = character?.sheetInfo.ninjaArtsList[0]?.targetSkill || null
         }
       }
       resetUseSkill(character)
@@ -175,11 +175,11 @@ export default makeStore<Store>('local-setting-store', () => {
     setNinjaArts(ninjaArts: string | null) {
       state.ninjaArts = ninjaArts
       const character = state.from.type === 'character' ? state.characterStore?.characterList.find(c => c.key === state.from.key)?.data || null : null
-      const ninjaArtsInfo = character?.sheetInfo.ninpouList.find(n => n.name === state.ninjaArts) || null
+      const ninjaArtsInfo = character?.sheetInfo.ninjaArtsList.find(n => n.name === state.ninjaArts) || null
       state.targetSkill = ninjaArtsInfo?.targetSkill || null
 
-      if (character?.sheetInfo.tokugi && state.targetSkill) {
-        const targetValueResult = calcTargetValue(state.targetSkill, character.sheetInfo.tokugi)
+      if (character?.sheetInfo.skill && state.targetSkill) {
+        const targetValueResult = calcTargetValue(state.targetSkill, character.sheetInfo.skill)
         if (!targetValueResult.some(r => r.name === state.useSkill)) {
           state.useSkill = targetValueResult[0]?.name
         }

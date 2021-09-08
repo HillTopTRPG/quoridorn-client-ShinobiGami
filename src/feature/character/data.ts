@@ -1,7 +1,7 @@
 import { computed, reactive } from 'vue'
 import { makeStore, commonStoreDataProcess, StoreUpdateProperties } from '@/core/utility/vue3'
 import { StoreData } from '@/core/utility/FileUtility'
-import { Shinobigami } from '@/core/utility/shinobigami'
+import { ShinobiGami } from '@/core/utility/shinobigami'
 import SocketStore from '@/core/data/socket'
 import { getFileName } from '@/core/utility/PrimaryDataUtility'
 import MediaListStore, { getUrlTypes, MediaStore } from '@/feature/media-list/data'
@@ -24,7 +24,8 @@ export type Character = {
   standImageList: string[];
   currentChitImage: number;
   currentStandImage: number;
-  sheetInfo: Shinobigami;
+  sheetInfo: ShinobiGami;
+  sheetViewPass: string;
 }
 
 export type UrlType = 'youtube' | 'image' | 'music' | 'setting' | 'unknown';
@@ -80,7 +81,12 @@ export default makeStore<Store>('character-store', () => {
       'isFumble',
       'isActed',
       'color',
-      'sheetInfo'
+      'chitImageList',
+      'standImageList',
+      'currentChitImage',
+      'currentStandImage',
+      'sheetInfo',
+      'sheetViewPass'
     ]
   )
 

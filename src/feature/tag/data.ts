@@ -15,7 +15,7 @@ type Store = {
 
 export default makeStore<Store>('tag-store', () => {
   const state = reactive<StoreUpdateProperties<Store, never>>({
-    ready: true,
+    ready: false,
     list: []
   })
 

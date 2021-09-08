@@ -13,7 +13,7 @@
       </tr>
     </thead>
     <tbody>
-      <template v-for="(n, ind) in character.sheetInfo.ninpouList" :key="ind">
+      <template v-for="(n, ind) in character.sheetInfo.ninjaArtsList" :key="ind">
         <tr @click="onSelectArts(ind)">
           <td class="secret" v-if="mode !== 'normal'" :class="{ focused: currentColumn === 'secret' }">
             <template v-if="mode !== 'edit'">{{ n.secret }}</template>
@@ -36,7 +36,7 @@
             <input type="text" @focus="onFocusColumn($event)" :id="`targetSkill-${ind}-${elmId}`" v-else :list="`target-skill-list-${elmId}`" v-model="n.targetSkill">
             <datalist :id="`target-skill-list-${elmId}`">
               <template v-for="col of 6" :key="col">
-                <option v-for="row of 11" :key="row" :label="`${skillColumnList[col - 1]} - ${row + 1}`" :value="tokugiTable[row - 1][col - 1]">{{ tokugiTable[row - 1][col - 1] }}</option>
+                <option v-for="row of 11" :key="row" :label="`${skillColumnList[col - 1]} - ${row + 1}`" :value="SkillTable[row - 1][col - 1]">{{ SkillTable[row - 1][col - 1] }}</option>
               </template>
             </datalist>
           </td>
@@ -78,7 +78,7 @@ import { computed, defineComponent, PropType, ref } from 'vue'
 import { Character } from '@/feature/character/data'
 import SpecialInputStore from '@/feature/special-input/data'
 import { v4 as uuidV4 } from 'uuid'
-import { ShinobigamiHelper, tokugiTable } from '@/core/utility/shinobigami'
+import { ShinobigamiHelper, SkillTable } from '@/core/utility/shinobigami'
 
 export default defineComponent({
   name: 'ninja-arts-table',
@@ -113,26 +113,26 @@ export default defineComponent({
     const selectedArts = computed(() => props.selectIndex)
     const onSelectArts = (index: number) => {
       emit('update:selectIndex', selectedArts.value === index ? null : index)
-      const ninjaArts = props.character.sheetInfo.ninpouList[index]
+      const ninjaArts = props.character.sheetInfo.ninjaArtsList[index]
       specialInputStore.from.key = props.characterKey
       specialInputStore.setNinjaArts(ninjaArts.name)
     }
     const reloadNinjaArts = async () => {
-      const helper = new ShinobigamiHelper(props.character.sheetInfo.url)
-      if (!await helper.isThis()) {
+      const helper = new ShinobigamiHelper(props.character.sheetInfo.url, props.character.sheetViewPass)
+      if (!helper.isThis()) {
         console.log('is not this')
         return
       }
-      const { data: rd, json } = await helper.getData()
-      console.log(json)
+      const { data: rd, jsons } = await helper.getData()
+      console.log(jsons)
       console.log(rd)
       if (!rd) return
-      const ninjaArtsList = props.character.sheetInfo.ninpouList
-      ninjaArtsList.splice(0, props.character.sheetInfo.ninpouList.length, ...rd.ninpouList)
+      const ninjaArtsList = props.character.sheetInfo.ninjaArtsList
+      ninjaArtsList.splice(0, props.character.sheetInfo.ninjaArtsList.length, ...rd.ninjaArtsList)
     }
 
     const addNinjaArts = () => {
-      const ninjaArtsList = props.character.sheetInfo.ninpouList
+      const ninjaArtsList = props.character.sheetInfo.ninjaArtsList
       ninjaArtsList.push({
         secret: false,
         name: '',
@@ -148,7 +148,7 @@ export default defineComponent({
       elmId,
       currentColumn,
       onFocusColumn,
-      tokugiTable,
+      SkillTable,
       skillColumnList: ['器術', '体術', '忍術', '謀術', '戦術', '妖術'],
       selectedArts,
       onSelectArts,
@@ -199,7 +199,7 @@ table.ninja-arts {
   }
 
   thead tr {
-    background-color: black;
+    background-color: #252525;
     color: white;
   }
 

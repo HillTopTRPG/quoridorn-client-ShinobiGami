@@ -162,7 +162,7 @@ export function updateBarList(
   }
 }
 
-function getBlock(data: SlotUnionInfo, key: string): SlotUnionInfo | null {
+export function getBlock(data: SlotUnionInfo, key: string): SlotUnionInfo | null {
   if (data.key === key) return data
   if (data.layout === 'v-box' || data.layout === 'h-box') {
     return data.blockList?.map(block => getBlock(block, key))?.find(block => block) || null
